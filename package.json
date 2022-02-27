@@ -1,0 +1,63 @@
+{
+  "name": "progressive-mine-sweep",
+  "version": "0.0.1",
+  "description": "Progressive (Incremental) take on classic Minesweeper puzzle",
+  "main": "./dist/progressive-mine-sweep.js",
+  "scripts": {
+    "start": "gulp start",
+    "watch": "gulp watch",
+    "debug": "gulp debug",
+    "release": "gulp release",
+    "test": "mocha -r ts-node/register --reporter spec src/**/*Test.ts",
+    "update:packages": "node wipe-dependencies.js && rm -rf node_modules && npm update --save-dev && npm update --save"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lepouya/progressive-mine-sweep.git"
+  },
+  "author": "Pouya Larjani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lepouya/progressive-mine-sweep/issues"
+  },
+  "homepage": "https://github.com/lepouya/progressive-mine-sweep#readme",
+  "dependencies": {
+    "react": "*",
+    "react-dom": "*",
+    "react-router": "*",
+    "react-router-dom": "*",
+    "uikit": "*"
+  },
+  "devDependencies": {
+    "@babel/core": "*",
+    "@babel/preset-env": "*",
+    "@babel/preset-react": "*",
+    "@types/chai": "*",
+    "@types/mocha": "*",
+    "@types/node": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@types/uikit": "*",
+    "babelify": "*",
+    "browserify": "*",
+    "chai": "*",
+    "fancy-log": "*",
+    "gulp": "*",
+    "gulp-cli": "*",
+    "gulp-connect": "*",
+    "gulp-pug": "*",
+    "gulp-rename": "*",
+    "gulp-sass": "*",
+    "gulp-sourcemaps": "*",
+    "gulp-typescript": "*",
+    "gulp-uglify": "*",
+    "mocha": "*",
+    "sass": "*",
+    "ts-node": "*",
+    "tsify": "*",
+    "typescript": "*",
+    "vinyl-buffer": "*",
+    "vinyl-source-stream": "*",
+    "watchify": "*"
+  }
+}

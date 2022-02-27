@@ -1,0 +1,17 @@
+.cell {
+  @extend .uk-button;
+  @extend .uk-button-default;
+  @extend .uk-background-cover;
+  @extend .uk-background-muted;
+
+  width: 64px;
+  height: 64px;
+}
+
+.bomb-diffused {
+  background-image: url(assets/bomb-unlit.svg);
+}
+
+.bomb-blown {
+  background-image: url(assets/bomb-blown.svg);
+}
