@@ -1,19 +1,19 @@
 import React from "react";
 
+import { Playboard, genPlayboard } from "../model/Playboard";
 import bind from "../utils/bind";
 
 interface MineFieldProps {
   width: number;
   height: number;
+
+  minBombs?: number;
+  maxBombs?: number;
 }
 
 interface MineFieldState {
-  width: number;
-  height: number;
-  board: number[][];
+  board: Playboard;
 }
-
-const styles = ["", "bomb-diffused", "bomb-blown"];
 
 export default class MineField extends React.Component<
   MineFieldProps,
@@ -21,24 +21,14 @@ export default class MineField extends React.Component<
 > {
   constructor(props: MineFieldProps) {
     super(props);
-    this.state = { width: 0, height: 0, board: [] };
+    this.state = { board: genPlayboard(0, 0) };
   }
 
   @bind
   makeBoard() {
-    const { width, height } = this.props;
-    const board: number[][] = [];
-
-    for (let r = 0; r < height; r++) {
-      board[r] = [];
-
-      for (let c = 0; c < width; c++) {
-        const style = Math.floor(Math.random() * styles.length);
-        board[r][c] = style;
-      }
-    }
-
-    this.setState({ width, height, board });
+    const { width, height, minBombs, maxBombs } = this.props;
+    const board = genPlayboard(height, width, minBombs, maxBombs);
+    this.setState({ board });
   }
 
   componentDidMount() {
@@ -47,17 +37,21 @@ export default class MineField extends React.Component<
 
   componentDidUpdate(prevProps: MineFieldProps) {
     if (
-      prevProps.width != this.props.width ||
-      prevProps.height != this.props.height
+      prevProps.width !== this.props.width ||
+      prevProps.height !== this.props.height ||
+      prevProps.minBombs !== this.props.minBombs ||
+      prevProps.maxBombs !== this.props.maxBombs
     ) {
       this.makeBoard();
     }
   }
 
   render() {
-    const { width, height, board } = this.state;
+    const { board } = this.state;
 
-    const cellSize = Math.floor(Math.log2(640 / Math.max(width, height)));
+    const cellSize = Math.floor(
+      Math.log2(640 / Math.max(board.rows, board.cols)),
+    );
     const cellStyle =
       cellSize <= 4
         ? "cell-small"
@@ -66,14 +60,21 @@ export default class MineField extends React.Component<
         : "cell-medium";
 
     let rows: JSX.Element[] = [];
-    for (let r = 0; r < height; r++) {
+    for (let r = 0; r < board.rows; r++) {
       let cols: JSX.Element[] = [];
-      for (let c = 0; c < width; c++) {
-        const style = styles[board[r][c]];
+      for (let c = 0; c < board.cols; c++) {
+        const cell = board.cells[r][c];
+
+        const bombStyle =
+          cell.contents === "bomb"
+            ? cell.state === "revealed"
+              ? "bomb-blown"
+              : "bomb-diffused"
+            : "";
 
         cols[c] = (
-          <td key={r + ":" + c} className={cellStyle + " " + style}>
-            {(r + c) % 10}
+          <td key={r + ":" + c} className={cellStyle + " " + bombStyle}>
+            {cell.neighbors}
           </td>
         );
       }

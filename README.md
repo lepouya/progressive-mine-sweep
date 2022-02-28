@@ -20,8 +20,8 @@ Perhaps I could do prestige/reset options once this is ready
 ### M1: Get classic minesweeper working
 
 - ~~Make flexible game grids~~
-- Populate with bombs and %/# choices
-- Implement winning and losing
+- ~~Populate with bombs and %/# choices~~
+- Implement playing the game, winning and losing
 - Track scores
 
 ### M2: Make it incremental

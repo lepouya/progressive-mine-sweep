@@ -13,9 +13,9 @@ export default class Main extends React.Component {
   render() {
     return (
       <div>
-        <MineField width={3} height={3} />
-        <MineField width={10} height={10} />
-        <MineField width={30} height={30} />
+        <MineField width={3} height={3} minBombs={1} />
+        <MineField width={10} height={10} minBombs={3} maxBombs={7} />
+        <MineField width={30} height={30} minBombs={100} />
       </div>
     );
   }
