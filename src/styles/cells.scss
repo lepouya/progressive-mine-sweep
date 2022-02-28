@@ -1,8 +1,26 @@
 .cell {
-  @extend .uk-button;
-  @extend .uk-button-default;
-  @extend .uk-background-cover;
   @extend .uk-background-muted;
+}
+
+.cell-small {
+  @extend .cell;
+  @extend .uk-text-small;
+
+  width: 16px;
+  height: 16px;
+}
+
+.cell-medium {
+  @extend .cell;
+  @extend .uk-text-default;
+
+  width: 32px;
+  height: 32px;
+}
+
+.cell-large {
+  @extend .cell;
+  @extend .uk-text-large;
 
   width: 64px;
   height: 64px;

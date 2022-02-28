@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import MineField from "../components/MineField";
 
 export default class Main extends React.Component {
   componentDidMount() {
@@ -12,9 +13,9 @@ export default class Main extends React.Component {
   render() {
     return (
       <div>
-        <button className="cell"></button>
-        <button className="cell bomb-diffused"></button>
-        <button className="cell bomb-blown"></button>
+        <MineField width={3} height={3} />
+        <MineField width={10} height={10} />
+        <MineField width={30} height={30} />
       </div>
     );
   }

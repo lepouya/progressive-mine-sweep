@@ -1,0 +1,15 @@
+.minefield {
+  @extend .uk-table;
+  @extend .uk-table-middle;
+  @extend .uk-width-auto;
+  @extend .uk-margin-auto;
+
+  & td {
+    @extend .uk-text-center;
+    @extend .uk-text-middle;
+    @extend .uk-padding-remove;
+    @extend .uk-background-contain;
+
+    border: 1px solid gray;
+  }
+}
