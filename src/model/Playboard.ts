@@ -8,6 +8,13 @@ export type Playboard = {
   numBombs: number;
 };
 
+export const emptyBoard: Playboard = {
+  rows: 0,
+  cols: 0,
+  cells: [],
+  numBombs: 0,
+};
+
 export function makeClearPlayboard(rows: number, cols: number): Playboard {
   const cells: Cell[][] = [];
   for (let row = 0; row < rows; row++) {
