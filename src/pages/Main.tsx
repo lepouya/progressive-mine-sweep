@@ -15,6 +15,7 @@ export default class Main extends React.Component<MainProps, MainState> {
     super(props);
     this.state = {};
   }
+
   componentDidMount() {
     let { board1, board2, board3 } = this.state;
 

@@ -4,6 +4,7 @@ import { HashRouter, NavLink, Route, Routes } from "react-router-dom";
 import Main from "../pages/Main";
 import Help from "../pages/Help";
 import bind from "../utils/bind";
+import GameSettings from "../utils/settings";
 
 interface GameProps {}
 
@@ -24,7 +25,10 @@ export default class Game extends React.Component<GameProps, GameState> {
 
   componentDidMount() {
     if (!this.state.timerId) {
-      const timerId = setInterval(this.tick, 1000 / 60);
+      const timerId = setInterval(
+        this.tick,
+        1000 / GameSettings.ticksPerSecond,
+      );
       this.setState({ timerId });
     }
   }
@@ -38,9 +42,11 @@ export default class Game extends React.Component<GameProps, GameState> {
 
   @bind
   tick() {
+    const now = Date.now();
+
     // TODO: Update, save, etc
 
-    const now = Date.now();
+    GameSettings.lastUpdate = now;
     this.setState({ lastUpdate: now });
   }
 
