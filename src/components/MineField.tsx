@@ -2,6 +2,7 @@ import React from "react";
 
 import { Playboard, genPlayboard } from "../model/Playboard";
 import bind from "../utils/bind";
+import MineCell from "./MineCell";
 
 interface MineFieldProps {
   width: number;
@@ -52,38 +53,24 @@ export default class MineField extends React.Component<
     const cellSize = Math.floor(
       Math.log2(640 / Math.max(board.rows, board.cols)),
     );
-    const cellStyle =
-      cellSize <= 4
-        ? "cell-small"
-        : cellSize > 6
-        ? "cell-large"
-        : "cell-medium";
-
-    let rows: JSX.Element[] = [];
-    for (let r = 0; r < board.rows; r++) {
-      let cols: JSX.Element[] = [];
-      for (let c = 0; c < board.cols; c++) {
-        const cell = board.cells[r][c];
-
-        const bombStyle =
-          cell.contents === "bomb"
-            ? cell.state === "revealed"
-              ? "bomb-blown"
-              : "bomb-diffused"
-            : "";
-
-        cols[c] = (
-          <td key={r + ":" + c} className={cellStyle + " " + bombStyle}>
-            {cell.neighbors}
-          </td>
-        );
-      }
-      rows[r] = <tr key={r + ":*"}>{cols}</tr>;
-    }
+    const sizeClass =
+      cellSize <= 4 ? "small" : cellSize > 6 ? "large" : "medium";
 
     return (
       <table className="minefield">
-        <tbody>{rows}</tbody>
+        <tbody>
+          {board.cells.flatMap((row, r) => (
+            <tr key={"row:" + r + ":*"}>
+              {row.map((cell, c) => (
+                <MineCell
+                  key={"cell:" + r + ":" + c}
+                  cell={cell}
+                  size={sizeClass}
+                />
+              ))}
+            </tr>
+          ))}
+        </tbody>
       </table>
     );
   }
