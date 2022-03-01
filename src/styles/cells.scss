@@ -1,5 +1,10 @@
 .cell {
-  @extend .uk-background-muted;
+  @extend .uk-text-center;
+  @extend .uk-text-middle;
+
+  @extend .uk-background-contain;
+
+  @extend .uk-overflow-hidden;
 }
 
 .cell-small {
@@ -26,10 +31,24 @@
   height: 64px;
 }
 
-.bomb-diffused {
+.cell-hidden {
+  background-color: #dddddd;
+}
+
+.cell-revealed {
+  background-color: #eeeeee;
+}
+
+.cell-hinted {
+  background-color: #ddffdd;
+}
+
+.cell-flagged {
+  background-color: #cccccc;
   background-image: url(assets/bomb-unlit.svg);
 }
 
-.bomb-blown {
+.cell-blown {
+  background-color: #999999;
   background-image: url(assets/bomb-blown.svg);
 }

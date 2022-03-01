@@ -28,7 +28,8 @@ Perhaps I could do prestige/reset options once this is ready
 
 - ~~Make flexible game grids~~
 - ~~Populate with bombs and %/# choices~~
-- Implement playing the game, winning and losing
+  ~~Make a playable game~~
+- Implement winning and losing
 - Track scores
 
 ### M2: Make it incremental
