@@ -31,6 +31,9 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Make a playable game~~
 - ~~Implement winning and losing~~
 - Track scores
+- Add temporary UI to modify the game parameters
+- Make everything mobile-friendly
+- Implement saving and loading the current state
 
 ### M2: Make it incremental
 
