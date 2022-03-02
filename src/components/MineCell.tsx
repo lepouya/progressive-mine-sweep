@@ -52,9 +52,7 @@ export default class MineCell extends React.Component<
         onClick={this.handleClick}
         onContextMenu={this.handleClick}
       >
-        {cell.state === "revealed" && cell.neighbors > 0
-          ? cell.neighbors
-          : "\u00a0"}
+        {cell.state === "revealed" ? cell.neighbors : "\u00a0"}
       </td>
     );
   }

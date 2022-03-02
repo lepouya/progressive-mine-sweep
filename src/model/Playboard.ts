@@ -95,3 +95,67 @@ export function genPlayboard(
 
   return playboard;
 }
+
+export function genHints(
+  playboard: Playboard,
+  numHints: number,
+  minHintLevel: number = 0,
+  maxHintLevel: number = 8,
+  hintQuality: number = 0,
+): number {
+  // Input cleanup
+  numHints = Math.floor(Math.max(0, numHints));
+  minHintLevel = Math.floor(Math.max(0, Math.min(8, minHintLevel)));
+  maxHintLevel = Math.floor(Math.max(0, Math.min(8, maxHintLevel)));
+  hintQuality = Math.max(0, Math.min(1, hintQuality));
+  if (numHints === 0) {
+    return 0;
+  }
+
+  // Rank all hidden cells
+  const rankedHints = playboard.cells
+    .flat()
+    .filter(
+      (cell) =>
+        cell.state === "hidden" &&
+        cell.contents === "clear" &&
+        cell.neighbors >= minHintLevel &&
+        cell.neighbors <= maxHintLevel,
+    )
+    .sort((cell1, cell2) => cell1.neighbors - cell2.neighbors);
+  if (rankedHints.length <= numHints) {
+    rankedHints.forEach((cell) => (cell.state = "hinted"));
+    return rankedHints.length;
+  }
+
+  // Pick out hints to mark
+  for (let i = 0; i < numHints; i++) {
+    // With probability p = hintQuality and 0 <= p <= 1, we can draw a line
+    // from p at x=0 to (1-p) at x=1 (later to scale x * |hints|)
+    // f(x) = p + (1-2p) x
+    // The area under this line is always 0.5 independent from p
+    // So if we have a random number r: 0 <= r <= 1, then r/2 can be where our
+    // random sample would lie in the area curve of this function. So
+    // r/2 = ∫f(x).dx = px + (1-2p)/2 x² ==>
+    // x = (-p ± √(p² + r - 2pr)) / (1-2p)
+    // This only works when p ≠ 0.5, otherwise we have linear equation:
+    // r/2 = px  ==> x = r / 2p = r
+    // which is a very easy formula
+
+    let x = 0;
+    const p = hintQuality;
+    const r = Math.random();
+
+    if (p === 0.5) {
+      x = r;
+    } else {
+      const q = Math.sqrt(p * p + r - 2 * p * r);
+      x = (q - p) / (1 - 2 * p);
+    }
+
+    x = Math.floor(x * rankedHints.length);
+    rankedHints.splice(x, 1).map((cell) => (cell.state = "hinted"));
+  }
+
+  return numHints;
+}
