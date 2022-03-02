@@ -6,6 +6,9 @@ import bind from "../utils/bind";
 interface MineCellProps {
   cell: Cell;
   size: "small" | "medium" | "large";
+  enabled: boolean;
+
+  onAction?: (cell: Cell) => void;
 }
 
 interface MineCellState {}
@@ -22,6 +25,9 @@ export default class MineCell extends React.Component<
   @bind
   handleClick(event: MouseEvent<Element>) {
     event.preventDefault();
+    if (!this.props.enabled) {
+      return;
+    }
 
     // To flag: Right click
     //  On devices that don't have right click, hold any of the modifier keys and left click
@@ -31,11 +37,17 @@ export default class MineCell extends React.Component<
       (event.button === 0 && (event.altKey || event.ctrlKey || event.metaKey))
     ) {
       actOnCell(this.props.cell, "flag");
+      if (this.props.onAction) {
+        this.props.onAction(this.props.cell);
+      }
     }
     // To reveal: Left click
     // TODO: differentiate on mobile between a tap and flag
     else if (event.button === 0) {
       actOnCell(this.props.cell, "reveal");
+      if (this.props.onAction) {
+        this.props.onAction(this.props.cell);
+      }
     }
   }
 

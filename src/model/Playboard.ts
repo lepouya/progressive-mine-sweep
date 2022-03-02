@@ -159,3 +159,25 @@ export function genHints(
 
   return numHints;
 }
+
+export function countCells(playboard: Playboard): {
+  hidden: number;
+  hinted: number;
+  flagged: number;
+  revealed: number;
+  blown: number;
+} {
+  const counts = {
+    hidden: 0,
+    hinted: 0,
+    flagged: 0,
+    revealed: 0,
+    blown: 0,
+  };
+
+  playboard.cells.forEach((cells) =>
+    cells.forEach((cell) => counts[cell.state]++),
+  );
+
+  return counts;
+}
