@@ -5,6 +5,8 @@
   @extend .uk-background-contain;
 
   @extend .uk-overflow-hidden;
+
+  cursor: default;
 }
 
 .cell-small {
@@ -40,7 +42,7 @@
 }
 
 .cell-hinted {
-  background-color: #ddffdd;
+  background-color: #ddeedd;
 }
 
 .cell-flagged {
