@@ -32,7 +32,7 @@ export default class MineCell extends React.Component<
     ) {
       actOnCell(this.props.cell, "flag");
     }
-    // To revelar: Left click
+    // To reveal: Left click
     // TODO: differentiate on mobile between a tap and flag
     else if (event.button === 0) {
       actOnCell(this.props.cell, "reveal");
