@@ -26,6 +26,7 @@ export default class MineField extends React.Component<
 
   componentDidMount() {
     this.setCellSize();
+    this.determineOutcome();
   }
 
   componentDidUpdate(prevProps: MineFieldProps) {
@@ -34,6 +35,7 @@ export default class MineField extends React.Component<
       prevProps.board.cols !== this.props.board.cols
     ) {
       this.setCellSize();
+      this.determineOutcome();
     }
   }
 
@@ -49,7 +51,6 @@ export default class MineField extends React.Component<
     const cellSize = estSize <= 4 ? "small" : estSize > 6 ? "large" : "medium";
 
     this.setState({ cellSize });
-    this.determineOutcome();
   }
 
   @bind
