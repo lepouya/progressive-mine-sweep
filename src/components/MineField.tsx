@@ -3,7 +3,7 @@ import { actOnCell } from "../model/Cell";
 
 import { countCells, Playboard } from "../model/Playboard";
 import bind from "../utils/bind";
-import GameSettings from "../utils/settings";
+import Settings from "../model/Settings";
 import MineCell from "./MineCell";
 
 interface MineFieldProps {
@@ -43,7 +43,7 @@ export default class MineField extends React.Component<
 
     const estSize = Math.floor(
       Math.log2(
-        GameSettings.ReferenceMineFieldSize / Math.max(board.rows, board.cols),
+        Settings.ReferenceMineFieldSize / Math.max(board.rows, board.cols),
       ),
     );
     const cellSize = estSize <= 4 ? "small" : estSize > 6 ? "large" : "medium";
@@ -57,7 +57,7 @@ export default class MineField extends React.Component<
     const { board } = this.props;
     const counts = countCells(board);
 
-    if (counts["blown"] >= GameSettings.maxErrors) {
+    if (counts["blown"] >= Settings.maxErrors) {
       // Lost the game!
       board.cells.forEach((cells) =>
         cells.forEach((cell) => actOnCell(cell, "reveal")),

@@ -1,4 +1,4 @@
-export default class GameSettings {
+export default class Settings {
   static lastUpdate = 0;
 
   static ticksPerSecond = 20;
