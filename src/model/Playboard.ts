@@ -160,13 +160,15 @@ export function genHints(
   return numHints;
 }
 
-export function countCells(playboard: Playboard): {
+export type PlayboardCellCounts = {
   hidden: number;
   hinted: number;
   flagged: number;
   revealed: number;
   blown: number;
-} {
+};
+
+export function countCells(playboard: Playboard): PlayboardCellCounts {
   const counts = {
     hidden: 0,
     hinted: 0,

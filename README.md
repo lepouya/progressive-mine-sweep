@@ -30,7 +30,7 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Populate with bombs and %/# choices~~
 - ~~Make a playable game~~
 - ~~Implement winning and losing~~
-- Track scores
+- ~~Track scores~~
 - Add temporary UI to modify the game parameters
 - Make everything mobile-friendly
 - Implement saving and loading the current state

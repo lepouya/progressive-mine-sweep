@@ -4,6 +4,7 @@
 
   @extend .uk-width-auto;
   @extend .uk-margin-auto;
+  @extend .uk-margin-remove-top;
 
   & td {
     @extend .uk-padding-remove;
@@ -13,4 +14,8 @@
 
     border: 1px solid #aaaaaa;
   }
+}
+
+.minefield-chrome {
+  @extend .uk-container;
 }

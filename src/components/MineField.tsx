@@ -1,7 +1,7 @@
 import React from "react";
 import { actOnCell } from "../model/Cell";
 
-import { countCells, Playboard } from "../model/Playboard";
+import { countCells, Playboard, PlayboardCellCounts } from "../model/Playboard";
 import bind from "../utils/bind";
 import Settings from "../model/Settings";
 import MineCell from "./MineCell";
@@ -12,7 +12,9 @@ interface MineFieldProps {
 
 interface MineFieldState {
   cellSize: "small" | "medium" | "large";
-  playable: boolean;
+  cellCounts: PlayboardCellCounts;
+
+  gameState: "inactive" | "active" | "won" | "lost";
 }
 
 export default class MineField extends React.Component<
@@ -21,7 +23,17 @@ export default class MineField extends React.Component<
 > {
   constructor(props: MineFieldProps) {
     super(props);
-    this.state = { cellSize: "medium", playable: false };
+    this.state = {
+      cellSize: "medium",
+      cellCounts: {
+        hidden: 0,
+        hinted: 0,
+        flagged: 0,
+        revealed: 0,
+        blown: 0,
+      },
+      gameState: "inactive",
+    };
   }
 
   componentDidMount() {
@@ -56,52 +68,88 @@ export default class MineField extends React.Component<
   @bind
   determineOutcome() {
     const { board } = this.props;
-    const counts = countCells(board);
+    const cellCounts = countCells(board);
+    this.setState({ cellCounts });
 
-    if (counts["blown"] >= Settings.maxErrors) {
+    if (board.cols * board.rows === 0) {
+      // Unplayable board
+      this.setState({ gameState: "inactive" });
+    } else if (cellCounts["blown"] >= Settings.maxErrors) {
       // Lost the game!
+      this.setState({ gameState: "lost" });
+
       board.cells.forEach((cells) =>
         cells.forEach((cell) => actOnCell(cell, "reveal")),
       );
-      this.setState({ playable: false });
-      alert("Aw lost!");
     } else if (
-      board.cols * board.rows > 0 &&
-      counts["blown"] + counts["flagged"] === board.numBombs &&
-      counts["hidden"] === 0 &&
-      counts["revealed"] === board.cols * board.rows - board.numBombs
+      cellCounts["blown"] + cellCounts["flagged"] === board.numBombs &&
+      cellCounts["hidden"] === 0 &&
+      cellCounts["revealed"] === board.cols * board.rows - board.numBombs
     ) {
       // Won the game!
-      this.setState({ playable: false });
-      alert("Yes! you win");
+      this.setState({ gameState: "won" });
     } else {
       // Still in progress
-      this.setState({ playable: true });
+      this.setState({ gameState: "active" });
     }
   }
 
   render() {
     const { board } = this.props;
-    const { cellSize, playable } = this.state;
+    const { cellCounts, cellSize, gameState } = this.state;
 
     return (
-      <table className="minefield">
-        <tbody>
-          {board.cells.flatMap((row, r) => (
-            <tr key={"row:" + r + ":*"}>
-              {row.map((cell, c) => (
-                <MineCell
-                  key={"cell:" + r + ":" + c}
-                  cell={cell}
-                  size={cellSize}
-                  enabled={playable}
-                  onAction={this.determineOutcome}
-                />
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="minefield-chrome">
+        <div className={"scoreboard scoreboard-" + gameState}>
+          <div className="scoreboard-segment scoreboard-left">
+            <div>
+              Board: {board.rows}x{board.cols}
+            </div>
+          </div>
+          <div className="scoreboard-segment scoreboard-center">
+            <div>
+              {gameState === "won"
+                ? "Minefield swept clean!"
+                : gameState === "lost"
+                ? "Minefield lost!!"
+                : gameState === "active"
+                ? "Progress: " +
+                  Math.floor(
+                    (100 *
+                      (cellCounts.revealed +
+                        cellCounts.flagged +
+                        cellCounts.blown)) /
+                      board.rows /
+                      board.cols,
+                  ) +
+                  "%"
+                : ""}
+            </div>
+          </div>
+          <div className="scoreboard-segment scoreboard-right">
+            <div>
+              Mines: {cellCounts.flagged}/{board.numBombs}
+            </div>
+          </div>
+        </div>
+        <table className="minefield">
+          <tbody>
+            {board.cells.flatMap((row, r) => (
+              <tr key={"row:" + r + ":*"}>
+                {row.map((cell, c) => (
+                  <MineCell
+                    key={"cell:" + r + ":" + c}
+                    cell={cell}
+                    size={cellSize}
+                    enabled={gameState === "active"}
+                    onAction={this.determineOutcome}
+                  />
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     );
   }
 }
