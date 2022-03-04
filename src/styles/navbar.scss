@@ -1,1 +1,53 @@
-$navbar-nav-item-height: 2em;
+.navbar {
+  display: flex;
+  position: relative;
+
+  background-color: #eeeeee;
+
+  &-section {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  &-left {
+    @extend .navbar-section;
+    justify-content: flex-start;
+  }
+
+  &-right {
+    @extend .navbar-section;
+    justify-content: flex-end;
+  }
+
+  & ul {
+    display: flex;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  & a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 0 15px;
+    column-gap: 0.25em;
+    min-height: 2em;
+    box-sizing: border-box;
+
+    color: inherit;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: 0.1s ease-in-out;
+    transition-property: color, background-color;
+  }
+
+  &-active {
+    background-color: #aaaaee;
+  }
+}

@@ -24,9 +24,8 @@
   "dependencies": {
     "react": "*",
     "react-dom": "*",
-    "react-router": "*",
-    "react-router-dom": "*",
-    "uikit": "*"
+    "react-router": "^6.2.2",
+    "react-router-dom": "^6.2.2"
   },
   "devDependencies": {
     "@babel/core": "*",
@@ -37,7 +36,6 @@
     "@types/node": "*",
     "@types/react": "*",
     "@types/react-dom": "*",
-    "@types/uikit": "*",
     "babelify": "*",
     "browserify": "*",
     "chai": "*",

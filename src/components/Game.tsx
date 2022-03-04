@@ -51,13 +51,13 @@ export default class Game extends React.Component<GameProps, GameState> {
     return (
       <HashRouter>
         <div>
-          <nav className="uk-navbar-container" uk-navbar="">
-            <div className="uk-navbar-left">
-              <ul className="uk-navbar-nav">
+          <nav className="navbar">
+            <div className="navbar-left">
+              <ul>
                 <li>
                   <NavLink
                     className={({ isActive }) =>
-                      isActive ? "uk-background-primary uk-active" : ""
+                      isActive ? "navbar-active" : ""
                     }
                     to="/"
                   >
@@ -67,7 +67,7 @@ export default class Game extends React.Component<GameProps, GameState> {
                 <li>
                   <NavLink
                     className={({ isActive }) =>
-                      isActive ? "uk-background-primary uk-active" : ""
+                      isActive ? "navbar-active" : ""
                     }
                     to="/help"
                   >
@@ -76,8 +76,8 @@ export default class Game extends React.Component<GameProps, GameState> {
                 </li>
               </ul>
             </div>
-            <div className="uk-navbar-right">
-              <ul className="uk-navbar-nav">
+            <div className="navbar-right">
+              <ul>
                 <li>-</li>
               </ul>
             </div>

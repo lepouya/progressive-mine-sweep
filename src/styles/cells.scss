@@ -1,56 +1,59 @@
 .cell {
-  @extend .uk-text-center;
-  @extend .uk-text-middle;
+  background-size: contain;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
 
-  @extend .uk-background-contain;
-
-  @extend .uk-overflow-hidden;
+  line-height: 1;
+  overflow: hidden;
 
   cursor: default;
-}
 
-.cell-small {
-  @extend .cell;
-  @extend .uk-text-small;
+  &-small {
+    @extend .cell;
 
-  width: 16px;
-  height: 16px;
-}
+    width: 16px;
+    height: 16px;
 
-.cell-medium {
-  @extend .cell;
-  @extend .uk-text-default;
+    font-size: small;
+  }
 
-  width: 32px;
-  height: 32px;
-}
+  &-medium {
+    @extend .cell;
 
-.cell-large {
-  @extend .cell;
-  @extend .uk-text-large;
+    width: 32px;
+    height: 32px;
 
-  width: 64px;
-  height: 64px;
-}
+    font-size: medium;
+  }
 
-.cell-hidden {
-  background-color: #dddddd;
-}
+  &-large {
+    @extend .cell;
 
-.cell-revealed {
-  background-color: #eeeeee;
-}
+    width: 64px;
+    height: 64px;
 
-.cell-hinted {
-  background-color: #ddeedd;
-}
+    font-size: large;
+  }
 
-.cell-flagged {
-  background-color: #cccccc;
-  background-image: url(assets/bomb-unlit.svg);
-}
+  &-hidden {
+    background-color: #dddddd;
+  }
 
-.cell-blown {
-  background-color: #999999;
-  background-image: url(assets/bomb-blown.svg);
+  &-revealed {
+    background-color: #eeeeee;
+  }
+
+  &-hinted {
+    background-color: #ddeedd;
+  }
+
+  &-flagged {
+    background-color: #cccccc;
+    background-image: url(assets/bomb-unlit.svg);
+  }
+
+  &-blown {
+    background-color: #999999;
+    background-image: url(assets/bomb-blown.svg);
+  }
 }

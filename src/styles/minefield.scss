@@ -1,21 +1,23 @@
 .minefield {
-  @extend .uk-table;
-  @extend .uk-table-middle;
+  margin: 0 auto 20px auto;
+  border-collapse: collapse;
+  border-spacing: 0;
 
-  @extend .uk-width-auto;
-  @extend .uk-margin-auto;
-  @extend .uk-margin-remove-top;
+  width: auto;
 
   & td {
-    @extend .uk-padding-remove;
-
-    @extend .uk-text-center;
-    @extend .uk-text-middle;
-
+    padding: 0;
     border: 1px solid #aaaaaa;
-  }
-}
 
-.minefield-chrome {
-  @extend .uk-container;
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  &-chrome {
+    padding: 0 40px;
+    display: flow-root;
+    box-sizing: content-box;
+    max-width: 640px;
+    margin: auto;
+  }
 }
