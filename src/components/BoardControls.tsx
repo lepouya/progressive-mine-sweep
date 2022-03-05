@@ -2,6 +2,8 @@ import React, { ChangeEvent } from "react";
 import { genHints, genPlayboard, Playboard } from "../model/Playboard";
 import bind from "../utils/bind";
 
+type InputEvent = ChangeEvent<HTMLInputElement>;
+
 interface BoardControlsProps {
   board: Playboard;
   boardChanged?: (board: Playboard) => void;
@@ -45,10 +47,7 @@ export default class BoardControls extends React.Component<
   }
 
   @bind
-  changeInput(
-    param: "rows" | "cols" | "mines",
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
+  changeInput(param: "rows" | "cols" | "mines", event: InputEvent) {
     if (event.target.validity.valid) {
       let num = parseInt(event.target.value);
       if (num < 0 || isNaN(num)) {
@@ -89,63 +88,57 @@ export default class BoardControls extends React.Component<
 
   render() {
     return (
-      <div
-        className="boardcontrols"
-        style={{
-          border: "1px solid black",
-          borderRadius: "5px",
-          margin: "auto",
-          maxWidth: "640px",
-          padding: "5px",
-          backgroundColor: "#eef8f8",
-          boxSizing: "border-box",
-        }}
-      >
-        <div>Game parameters:</div>
-        <div>
-          Number of rows:
-          <input
-            type="number"
-            min={3}
-            max={40}
-            onInput={(e: ChangeEvent<HTMLInputElement>) =>
-              this.changeInput("rows", e)
-            }
-            value={this.state.rows}
-            style={{ width: "4em", marginLeft: "5px" }}
-          />
+      <div className="board-controls">
+        <div className="full-row title-bar">Game parameters</div>
+        <div className="left-half">
+          <div className="left-half">Number of rows:</div>
+          <div className="left-half">
+            <input
+              type="number"
+              min={3}
+              max={40}
+              value={this.state.rows}
+              onInput={(e: InputEvent) => this.changeInput("rows", e)}
+            />
+          </div>
         </div>
-        <div>
-          Number of columns:
-          <input
-            type="number"
-            min={3}
-            max={40}
-            onInput={(e: ChangeEvent<HTMLInputElement>) =>
-              this.changeInput("cols", e)
-            }
-            value={this.state.cols}
-            style={{ width: "4em", marginLeft: "5px" }}
-          />
+        <div className="right-half">
+          <div className="left-half">
+            <input
+              type="button"
+              value="Reset Board"
+              onClick={this.resetBoard}
+            />
+          </div>
         </div>
-        <div>
-          Mines density:
-          <input
-            type="range"
-            min={1}
-            max={99}
-            onInput={(e: ChangeEvent<HTMLInputElement>) =>
-              this.changeInput("mines", e)
-            }
-            value={this.state.mines}
-            style={{ width: "10em", marginLeft: "5px" }}
-          />
+        <div className="left-half">
+          <div className="left-half">Number of columns:</div>
+          <div className="left-half">
+            <input
+              type="number"
+              min={3}
+              max={40}
+              value={this.state.cols}
+              onInput={(e: InputEvent) => this.changeInput("cols", e)}
+            />
+          </div>
         </div>
-        <div>
-          <input type="button" value="Reset Board" onClick={this.resetBoard} />
+        <div className="right-half">
+          <div className="left-half">
+            <input type="button" value="Get A Hint" onClick={this.getHint} />
+          </div>
         </div>
-        <div>
-          <input type="button" value="Get A Hint" onClick={this.getHint} />
+        <div className="left-half">
+          <div className="left-half">Mines density:</div>
+          <div className="left-half">
+            <input
+              type="range"
+              min={1}
+              max={99}
+              value={this.state.mines}
+              onInput={(e: InputEvent) => this.changeInput("mines", e)}
+            />
+          </div>
         </div>
       </div>
     );
