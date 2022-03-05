@@ -5,14 +5,14 @@ export type Playboard = {
   cols: number;
 
   cells: Cell[][];
-  numBombs: number;
+  numMines: number;
 };
 
 export const emptyBoard: Playboard = {
   rows: 0,
   cols: 0,
   cells: [],
-  numBombs: 0,
+  numMines: 0,
 };
 
 export function makeClearPlayboard(rows: number, cols: number): Playboard {
@@ -30,7 +30,7 @@ export function makeClearPlayboard(rows: number, cols: number): Playboard {
     }
   }
 
-  return { rows, cols, cells, numBombs: 0 };
+  return { rows, cols, cells, numMines: 0 };
 }
 
 export function populateRandomBombs(
@@ -42,7 +42,7 @@ export function populateRandomBombs(
   maxBombs = maxBombs ?? minBombs ?? 0;
   let numBombs = Math.min(
     Math.floor(minBombs + Math.random() * (1 + maxBombs - minBombs)),
-    playboard.rows * playboard.cols - playboard.numBombs - 1,
+    playboard.rows * playboard.cols - playboard.numMines - 1,
   );
 
   while (numBombs > 0) {
@@ -50,8 +50,8 @@ export function populateRandomBombs(
     const c = Math.floor(Math.random() * playboard.cols);
 
     if (playboard.cells[r][c].contents === "clear") {
-      playboard.cells[r][c].contents = "bomb";
-      playboard.numBombs++;
+      playboard.cells[r][c].contents = "mine";
+      playboard.numMines++;
       numBombs--;
     }
   }
@@ -62,7 +62,7 @@ export function populateRandomBombs(
 export function populateNeighboringCells(playboard: Playboard): Playboard {
   for (let r = 0; r < playboard.rows; r++) {
     for (let c = 0; c < playboard.cols; c++) {
-      if (playboard.cells[r][c].contents === "bomb") {
+      if (playboard.cells[r][c].contents === "mine") {
         for (let dr = r - 1; dr <= r + 1; dr++) {
           for (let dc = c - 1; dc <= c + 1; dc++) {
             if (

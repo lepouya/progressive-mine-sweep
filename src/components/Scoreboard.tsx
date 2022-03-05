@@ -38,7 +38,7 @@ export default class Scoreboard extends React.Component<
               ? "Progress: " +
                 Math.floor(
                   (100 * cellCounts.revealed) /
-                    (board.rows * board.cols - board.numBombs),
+                    (board.rows * board.cols - board.numMines),
                 ) +
                 "%"
               : ""}
@@ -46,7 +46,7 @@ export default class Scoreboard extends React.Component<
         </div>
         <div className="scoreboard-segment scoreboard-right">
           <div>
-            Mines: {cellCounts.flagged}/{board.numBombs}
+            Mines: {cellCounts.flagged}/{board.numMines}
           </div>
         </div>
       </div>

@@ -55,7 +55,7 @@ export default class MineField extends React.Component<
 
     const estSize = Math.floor(
       Math.log2(
-        Settings.ReferenceMineFieldSize / Math.max(board.rows, board.cols),
+        Settings.referenceMineFieldSize / Math.max(board.rows, board.cols),
       ),
     );
     const cellSize = Math.pow(2, Math.max(4, Math.min(6, estSize)));
@@ -80,9 +80,9 @@ export default class MineField extends React.Component<
         cells.forEach((cell) => actOnCell(cell, "reveal")),
       );
     } else if (
-      cellCounts["blown"] + cellCounts["flagged"] === board.numBombs &&
+      cellCounts["blown"] + cellCounts["flagged"] === board.numMines &&
       cellCounts["hidden"] === 0 &&
-      cellCounts["revealed"] === board.cols * board.rows - board.numBombs
+      cellCounts["revealed"] === board.cols * board.rows - board.numMines
     ) {
       // Won the game!
       this.setState({ gameState: "won" });

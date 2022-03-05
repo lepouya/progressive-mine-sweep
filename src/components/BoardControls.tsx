@@ -41,7 +41,7 @@ export default class BoardControls extends React.Component<
       this.setState({
         rows: board.rows,
         cols: board.cols,
-        mines: Math.floor((100 * board.numBombs) / (board.rows * board.cols)),
+        mines: Math.floor((100 * board.numMines) / (board.rows * board.cols)),
       });
     }
   }

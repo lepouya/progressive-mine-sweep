@@ -1,4 +1,4 @@
-export type CellContents = "clear" | "bomb";
+export type CellContents = "clear" | "mine";
 export type CellState = "hidden" | "hinted" | "flagged" | "revealed" | "blown";
 
 export type Cell = {
@@ -26,7 +26,7 @@ export function actOnCell(cell: Cell, action: CellAction): Cell {
       if (cell.state === "hidden" || cell.state === "hinted") {
         if (cell.contents === "clear") {
           cell.state = "revealed";
-        } else if (cell.contents === "bomb") {
+        } else if (cell.contents === "mine") {
           cell.state = "blown";
         }
       }
