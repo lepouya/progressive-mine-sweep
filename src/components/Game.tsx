@@ -9,7 +9,6 @@ import Settings from "../model/Settings";
 interface GameProps {}
 
 interface GameState {
-  lastUpdate: number;
   timerId?: NodeJS.Timer;
 }
 
@@ -18,7 +17,6 @@ export default class Game extends React.Component<GameProps, GameState> {
     super(props);
 
     this.state = {
-      lastUpdate: Date.now(),
       timerId: undefined,
     };
   }
@@ -44,7 +42,6 @@ export default class Game extends React.Component<GameProps, GameState> {
     // TODO: Update, save, etc
 
     Settings.lastUpdate = now;
-    this.setState({ lastUpdate: now });
   }
 
   render() {
