@@ -5,6 +5,7 @@ import { countCells, Playboard, PlayboardCellCounts } from "../model/Playboard";
 import bind from "../utils/bind";
 import Settings from "../model/Settings";
 import MineCell from "./MineCell";
+import Scoreboard from "./Scoreboard";
 
 interface MineFieldProps {
   board: Playboard;
@@ -98,38 +99,11 @@ export default class MineField extends React.Component<
 
     return (
       <div className="minefield-chrome">
-        <div className={"scoreboard scoreboard-" + gameState}>
-          <div className="scoreboard-segment scoreboard-left">
-            <div>
-              Board: {board.rows}x{board.cols}
-            </div>
-          </div>
-          <div className="scoreboard-segment scoreboard-center">
-            <div>
-              {gameState === "won"
-                ? "Minefield swept clean!"
-                : gameState === "lost"
-                ? "Minefield lost!!"
-                : gameState === "active"
-                ? "Progress: " +
-                  Math.floor(
-                    (100 *
-                      (cellCounts.revealed +
-                        cellCounts.flagged +
-                        cellCounts.blown)) /
-                      board.rows /
-                      board.cols,
-                  ) +
-                  "%"
-                : ""}
-            </div>
-          </div>
-          <div className="scoreboard-segment scoreboard-right">
-            <div>
-              Mines: {cellCounts.flagged}/{board.numBombs}
-            </div>
-          </div>
-        </div>
+        <Scoreboard
+          board={board}
+          cellCounts={cellCounts}
+          gameState={gameState}
+        />
         <table className="minefield">
           <tbody>
             {board.cells.flatMap((row, r) => (
