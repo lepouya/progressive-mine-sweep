@@ -55,8 +55,7 @@ export default class MineField extends React.Component<
 
     const estSize = Math.floor(
       Math.log2(
-        Settings.ReferenceMineFieldSize /
-          (1 + Math.max(board.rows, board.cols)),
+        Settings.ReferenceMineFieldSize / Math.max(board.rows, board.cols),
       ),
     );
     const cellSize = Math.pow(2, Math.max(4, Math.min(6, estSize)));
