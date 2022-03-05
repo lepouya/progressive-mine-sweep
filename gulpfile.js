@@ -20,7 +20,7 @@ const assetEntries = ['assets/**/*'];
 const htmlEntries = ['src/index.pug'];
 const cssEntries = ['src/index.scss'];
 const jsEntries = ['src/index.tsx'];
-const externalLibs = ['react', 'react-dom', 'react-router', 'react-router-dom'];
+const externalLibs = ['react', 'react-dom', 'react-router', 'react-router-dom', '@tabler/icons'];
 const extensions = ['.js', '.ts', '.jsx', '.tsx', '.json'];
 
 gulp.task('prod', function (done) {

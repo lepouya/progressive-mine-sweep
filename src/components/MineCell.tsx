@@ -1,11 +1,33 @@
+import * as Icons from "@tabler/icons";
 import React, { MouseEvent } from "react";
 
 import { actOnCell, Cell } from "../model/Cell";
 import bind from "../utils/bind";
 
+const cellIcons = {
+  hidden: { color: "transparent", icon: Icons.IconQuestionMark },
+  hinted: { color: "green", icon: Icons.IconEye },
+  flagged: { color: "darkblue", icon: Icons.IconFlag2 },
+  blown: { color: "red", icon: Icons.IconAlertTriangle },
+  revealed: {
+    color: "darkgreen",
+    icon: [
+      Icons.IconSquareDot,
+      Icons.IconSquare1,
+      Icons.IconSquare2,
+      Icons.IconSquare3,
+      Icons.IconSquare4,
+      Icons.IconSquare5,
+      Icons.IconSquare6,
+      Icons.IconSquare7,
+      Icons.IconSquare8,
+    ],
+  },
+};
+
 interface MineCellProps {
   cell: Cell;
-  size: "small" | "medium" | "large";
+  size: number;
   enabled: boolean;
 
   onAction?: (cell: Cell) => void;
@@ -54,17 +76,23 @@ export default class MineCell extends React.Component<
   render() {
     const { cell, size } = this.props;
 
-    const cellSize = "cell-" + size;
+    const cellSize =
+      "cell-" + (size <= 16 ? "small" : size >= 64 ? "large" : "medium");
     const cellState = "cell-" + cell.state;
 
-    // TODO: find out how to make the text not adjust the height of cells
+    let color = cellIcons[cell.state].color;
+    let icon = cellIcons[cell.state].icon;
+    if (icon instanceof Array) {
+      icon = icon[cell.neighbors];
+    }
+
     return (
       <td
         className={cellSize + " " + cellState}
         onClick={this.handleClick}
         onContextMenu={this.handleClick}
       >
-        {cell.state === "revealed" ? cell.neighbors : "\u00a0"}
+        {icon ? icon({ color, size: (size * 3) / 4 }) : null}
       </td>
     );
   }

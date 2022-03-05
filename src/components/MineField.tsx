@@ -1,6 +1,6 @@
 import React from "react";
-import { actOnCell } from "../model/Cell";
 
+import { actOnCell } from "../model/Cell";
 import { countCells, Playboard, PlayboardCellCounts } from "../model/Playboard";
 import bind from "../utils/bind";
 import Settings from "../model/Settings";
@@ -11,7 +11,7 @@ interface MineFieldProps {
 }
 
 interface MineFieldState {
-  cellSize: "small" | "medium" | "large";
+  cellSize: number;
   cellCounts: PlayboardCellCounts;
 
   gameState: "inactive" | "active" | "won" | "lost";
@@ -24,7 +24,7 @@ export default class MineField extends React.Component<
   constructor(props: MineFieldProps) {
     super(props);
     this.state = {
-      cellSize: "medium",
+      cellSize: 0,
       cellCounts: {
         hidden: 0,
         hinted: 0,
@@ -57,10 +57,11 @@ export default class MineField extends React.Component<
 
     const estSize = Math.floor(
       Math.log2(
-        Settings.ReferenceMineFieldSize / Math.max(board.rows, board.cols),
+        Settings.ReferenceMineFieldSize /
+          (1 + Math.max(board.rows, board.cols)),
       ),
     );
-    const cellSize = estSize <= 4 ? "small" : estSize > 6 ? "large" : "medium";
+    const cellSize = Math.pow(2, Math.max(4, Math.min(6, estSize)));
 
     this.setState({ cellSize });
   }

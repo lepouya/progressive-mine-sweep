@@ -8,6 +8,10 @@
 
   cursor: default;
 
+  & .icon {
+    vertical-align: middle;
+  }
+
   &-small {
     @extend .cell;
 
@@ -49,11 +53,9 @@
 
   &-flagged {
     background-color: #cccccc;
-    background-image: url(assets/bomb-unlit.svg);
   }
 
   &-blown {
     background-color: #999999;
-    background-image: url(assets/bomb-blown.svg);
   }
 }

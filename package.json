@@ -22,10 +22,11 @@
   },
   "homepage": "https://github.com/lepouya/progressive-mine-sweep#readme",
   "dependencies": {
+    "@tabler/icons": "*",
     "react": "*",
     "react-dom": "*",
-    "react-router": "^6.2.2",
-    "react-router-dom": "^6.2.2"
+    "react-router": "*",
+    "react-router-dom": "*"
   },
   "devDependencies": {
     "@babel/core": "*",
