@@ -42,10 +42,7 @@ export default class MineField extends React.Component<
   }
 
   componentDidUpdate(prevProps: MineFieldProps) {
-    if (
-      prevProps.board.rows !== this.props.board.rows ||
-      prevProps.board.cols !== this.props.board.cols
-    ) {
+    if (prevProps.board !== this.props.board) {
       this.setCellSize();
       this.determineOutcome();
     }
