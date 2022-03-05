@@ -31,18 +31,14 @@ export default class Scoreboard extends React.Component<
         <div className="scoreboard-segment scoreboard-center">
           <div>
             {gameState === "won"
-              ? "Minefield swept clean!"
+              ? "Minefield won!"
               : gameState === "lost"
               ? "Minefield lost!!"
               : gameState === "active"
               ? "Progress: " +
                 Math.floor(
-                  (100 *
-                    (cellCounts.revealed +
-                      cellCounts.flagged +
-                      cellCounts.blown)) /
-                    board.rows /
-                    board.cols,
+                  (100 * cellCounts.revealed) /
+                    (board.rows * board.cols - board.numBombs),
                 ) +
                 "%"
               : ""}
