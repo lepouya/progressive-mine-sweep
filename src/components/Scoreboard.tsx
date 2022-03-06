@@ -22,13 +22,13 @@ export default class Scoreboard extends React.Component<
     const { board, cellCounts, gameState } = this.props;
 
     return (
-      <div className={"scoreboard scoreboard-" + gameState}>
-        <div className="scoreboard-segment scoreboard-left">
+      <div className={"panel scoreboard-" + gameState}>
+        <div className="left">
           <div>
             Board: {board.rows}x{board.cols}
           </div>
         </div>
-        <div className="scoreboard-segment scoreboard-center">
+        <div className="center">
           <div>
             {gameState === "won"
               ? "Minefield won!"
@@ -44,7 +44,7 @@ export default class Scoreboard extends React.Component<
               : ""}
           </div>
         </div>
-        <div className="scoreboard-segment scoreboard-right">
+        <div className="right">
           <div>
             Mines: {cellCounts.flagged}/{board.numMines}
           </div>

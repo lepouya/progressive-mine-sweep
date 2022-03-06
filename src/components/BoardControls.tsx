@@ -88,11 +88,11 @@ export default class BoardControls extends React.Component<
 
   render() {
     return (
-      <div className="board-controls">
-        <div className="full-row title-bar">Game parameters</div>
-        <div className="left-half">
-          <div className="left-half">Number of rows:</div>
-          <div className="left-half">
+      <div className="board-controls panel">
+        <div className="title-bar">Game parameters</div>
+        <div className="half">
+          <div className="half">Number of rows:</div>
+          <div className="half">
             <input
               type="number"
               min={3}
@@ -102,8 +102,8 @@ export default class BoardControls extends React.Component<
             />
           </div>
         </div>
-        <div className="right-half">
-          <div className="left-half">
+        <div className="right half">
+          <div className="half">
             <input
               type="button"
               value="Reset Board"
@@ -111,9 +111,9 @@ export default class BoardControls extends React.Component<
             />
           </div>
         </div>
-        <div className="left-half">
-          <div className="left-half">Number of columns:</div>
-          <div className="left-half">
+        <div className="half">
+          <div className="half">Number of columns:</div>
+          <div className="half">
             <input
               type="number"
               min={3}
@@ -123,14 +123,14 @@ export default class BoardControls extends React.Component<
             />
           </div>
         </div>
-        <div className="right-half">
-          <div className="left-half">
+        <div className="right half">
+          <div className="half">
             <input type="button" value="Get A Hint" onClick={this.getHint} />
           </div>
         </div>
-        <div className="left-half">
-          <div className="left-half">Mines density:</div>
-          <div className="left-half">
+        <div className="half">
+          <div className="half">Mines density:</div>
+          <div className="half">
             <input
               type="range"
               min={1}

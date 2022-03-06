@@ -1,0 +1,58 @@
+.panel {
+  max-width: 640px;
+  margin: auto;
+  padding: 5px;
+
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-content: flex-start;
+
+  border: 1px solid black;
+  border-radius: 5px;
+  box-sizing: border-box;
+
+  div {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .left {
+    justify-content: flex-start;
+  }
+
+  .center {
+    justify-content: center;
+  }
+
+  .right {
+    justify-content: flex-end;
+  }
+
+  .full {
+    width: 100%;
+  }
+
+  .half {
+    width: 50%;
+  }
+
+  .third {
+    width: 33%;
+  }
+
+  .quarter {
+    width: 25%;
+  }
+
+  .title-bar {
+    width: 100%;
+
+    border-bottom: 1px dashed black;
+    padding-bottom: 5px;
+
+    justify-content: center;
+    font-weight: bold;
+  }
+}

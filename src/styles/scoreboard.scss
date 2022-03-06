@@ -1,25 +1,4 @@
 .scoreboard {
-  display: flex;
-
-  &-segment {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    margin: 5px 1ex;
-  }
-
-  &-left {
-    justify-content: flex-start;
-  }
-
-  &-center {
-    justify-content: center;
-  }
-
-  &-right {
-    justify-content: flex-end;
-  }
-
   &-inactive {
     background-color: #dddddd;
   }
