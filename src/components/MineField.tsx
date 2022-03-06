@@ -25,7 +25,7 @@ export default class MineField extends React.Component<
   constructor(props: MineFieldProps) {
     super(props);
     this.state = {
-      cellSize: 0,
+      cellSize: 1,
       cellCounts: {
         hidden: 0,
         hinted: 0,
@@ -53,12 +53,8 @@ export default class MineField extends React.Component<
   setCellSize() {
     const { board } = this.props;
 
-    const estSize = Math.floor(
-      Math.log2(
-        Settings.referenceMineFieldSize / Math.max(board.rows, board.cols),
-      ),
-    );
-    const cellSize = Math.pow(2, Math.max(4, Math.min(6, estSize)));
+    const estSize = Math.floor(95 / Math.max(board.rows, board.cols));
+    const cellSize = Math.max(2, Math.min(30, estSize));
 
     this.setState({ cellSize });
   }

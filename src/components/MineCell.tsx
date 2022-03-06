@@ -76,11 +76,10 @@ export default class MineCell extends React.Component<
   render() {
     const { cell, size } = this.props;
 
-    const cellSize =
-      "cell-" + (size <= 16 ? "small" : size >= 64 ? "large" : "medium");
-    const cellState = "cell-" + cell.state;
+    const minPx = Math.floor((640 * size) / 100);
+    const cellSize = `min(${size}vmin, ${minPx}px)`;
 
-    let color = cellIcons[cell.state].color;
+    const color = cellIcons[cell.state].color;
     let icon = cellIcons[cell.state].icon;
     if (icon instanceof Array) {
       icon = icon[cell.neighbors];
@@ -88,11 +87,13 @@ export default class MineCell extends React.Component<
 
     return (
       <td
-        className={cellSize + " " + cellState}
+        className={"cell cell-" + cell.state}
         onClick={this.handleClick}
         onContextMenu={this.handleClick}
       >
-        {icon ? icon({ color, size: (size * 3) / 4 }) : null}
+        <div style={{ width: cellSize, height: cellSize }}>
+          {icon ? icon({ color, size: "80%" }) : null}
+        </div>
       </td>
     );
   }

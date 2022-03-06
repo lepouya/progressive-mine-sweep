@@ -6,37 +6,19 @@
   line-height: 1;
   overflow: hidden;
 
+  width: 1px;
+  height: 1px;
+
   cursor: default;
 
+  > div {
+    display: flex;
+    align-items: center;
+  }
+
   .icon {
-    vertical-align: middle;
-  }
-
-  &-small {
-    @extend .cell;
-
-    width: 16px;
-    height: 16px;
-
-    font-size: small;
-  }
-
-  &-medium {
-    @extend .cell;
-
-    width: 32px;
-    height: 32px;
-
-    font-size: medium;
-  }
-
-  &-large {
-    @extend .cell;
-
-    width: 64px;
-    height: 64px;
-
-    font-size: large;
+    display: block;
+    margin: 0 auto;
   }
 
   &-hidden {

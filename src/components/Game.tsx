@@ -105,14 +105,16 @@ export default class Game extends React.Component<GameProps, GameState> {
               </ul>
             </div>
           </nav>
-          <Routes>
-            <Route path="/" element={<Main />} />
-            <Route path="/help" element={<Help />} />
-            <Route
-              path="/options"
-              element={<Options onChange={this.resetTimer} />}
-            />
-          </Routes>
+          <div className="main">
+            <Routes>
+              <Route path="/" element={<Main />} />
+              <Route path="/help" element={<Help />} />
+              <Route
+                path="/options"
+                element={<Options onChange={this.resetTimer} />}
+              />
+            </Routes>
+          </div>
         </div>
       </HashRouter>
     );

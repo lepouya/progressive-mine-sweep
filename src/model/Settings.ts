@@ -4,8 +4,6 @@ import { emptyBoard } from "./Playboard";
 const _saveStoreName = "Settings";
 
 const Settings = {
-  referenceMineFieldSize: 640,
-
   ticksPerSecond: 20,
   saveFrequencySecs: 60,
 
@@ -27,8 +25,6 @@ const Settings = {
 
   Reset(): void {
     store.reset(_saveStoreName);
-
-    this.referenceMineFieldSize = 640;
 
     this.ticksPerSecond = 20;
     this.saveFrequencySecs = 60;
