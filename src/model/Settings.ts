@@ -5,7 +5,9 @@ const _saveStoreName = "Settings";
 
 const Settings = {
   referenceMineFieldSize: 640,
-  ticksPerSecond: 1,
+
+  ticksPerSecond: 20,
+  saveFrequencySecs: 60,
 
   lastReset: Date.now(),
   lastUpdate: 0,
@@ -16,7 +18,23 @@ const Settings = {
   mainPlayboard: emptyBoard,
 
   Save(): boolean {
+    return store.save(_saveStoreName, this.toObject());
+  },
+
+  Load(): boolean {
+    return this.fromObject(store.load(_saveStoreName));
+  },
+
+  Reset(): void {
+    store.reset(_saveStoreName);
+    // TODO: reset everything
+    this.lastReset = Date.now();
+  },
+
+  toObject(): any {
     const saveObj: Record<string, any> = {};
+    this.lastSaved = Date.now();
+
     let k: keyof typeof Settings;
     for (k in Settings) {
       const v = Settings[k];
@@ -25,16 +43,10 @@ const Settings = {
       }
     }
 
-    if (!store.save(_saveStoreName, saveObj)) {
-      return false;
-    }
-
-    this.lastSaved = Date.now();
-    return true;
+    return saveObj;
   },
 
-  Load(): boolean {
-    const loadObj = store.load(_saveStoreName);
+  fromObject(loadObj: any): boolean {
     if (!loadObj) {
       return false;
     }
@@ -48,12 +60,6 @@ const Settings = {
 
     this.lastLoaded = Date.now();
     return true;
-  },
-
-  Reset(): void {
-    store.reset(_saveStoreName);
-    // TODO: reset everything
-    this.lastReset = Date.now();
   },
 };
 

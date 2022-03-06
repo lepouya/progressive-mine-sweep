@@ -5,11 +5,13 @@ import Main from "../pages/Main";
 import Help from "../pages/Help";
 import bind from "../utils/bind";
 import Settings from "../model/Settings";
+import Options from "../pages/Options";
 
 interface GameProps {}
 
 interface GameState {
   timerId?: NodeJS.Timer;
+  lastUpdate: number;
 }
 
 export default class Game extends React.Component<GameProps, GameState> {
@@ -18,6 +20,7 @@ export default class Game extends React.Component<GameProps, GameState> {
 
     this.state = {
       timerId: undefined,
+      lastUpdate: 0,
     };
   }
 
@@ -36,13 +39,26 @@ export default class Game extends React.Component<GameProps, GameState> {
   }
 
   @bind
+  resetTimer() {
+    if (this.state.timerId) {
+      clearInterval(this.state.timerId);
+    }
+    const timerId = setInterval(this.tick, 1000 / Settings.ticksPerSecond);
+    this.setState({ timerId });
+  }
+
+  @bind
   tick() {
     const now = Date.now();
 
     // TODO: Update, save, etc
 
     Settings.lastUpdate = now;
-    Settings.Save();
+    if (now - Settings.lastSaved >= Settings.saveFrequencySecs * 1000) {
+      Settings.Save();
+    }
+
+    this.setState({ lastUpdate: now });
   }
 
   render() {
@@ -76,13 +92,27 @@ export default class Game extends React.Component<GameProps, GameState> {
             </div>
             <div className="navbar-right">
               <ul>
-                <li>-</li>
+                <li>
+                  {" "}
+                  <NavLink
+                    className={({ isActive }) =>
+                      isActive ? "navbar-active" : ""
+                    }
+                    to="/options"
+                  >
+                    Settings
+                  </NavLink>
+                </li>
               </ul>
             </div>
           </nav>
           <Routes>
             <Route path="/" element={<Main />} />
             <Route path="/help" element={<Help />} />
+            <Route
+              path="/options"
+              element={<Options onChange={this.resetTimer} />}
+            />
           </Routes>
         </div>
       </HashRouter>
