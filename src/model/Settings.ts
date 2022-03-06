@@ -27,8 +27,19 @@ const Settings = {
 
   Reset(): void {
     store.reset(_saveStoreName);
-    // TODO: reset everything
+
+    this.referenceMineFieldSize = 640;
+
+    this.ticksPerSecond = 20;
+    this.saveFrequencySecs = 60;
+
     this.lastReset = Date.now();
+    this.lastUpdate = 0;
+    this.lastSaved = 0;
+    this.lastLoaded = Date.now();
+
+    this.maxErrors = 1;
+    this.mainPlayboard = emptyBoard;
   },
 
   toObject(): any {

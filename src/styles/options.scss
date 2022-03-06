@@ -32,3 +32,22 @@
     margin: 0 1em;
   }
 }
+
+.reset {
+  .warning {
+    color: darkred;
+  }
+
+  label {
+    color: gray;
+  }
+
+  input {
+    &[type="button"] {
+      width: auto;
+      padding: 1ex 1em;
+      font-size: small;
+      color: darkred;
+    }
+  }
+}

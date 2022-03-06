@@ -12,7 +12,8 @@ interface OptionsProps {
 
 interface OptionsState {
   textContents: string;
-  resetting: boolean;
+  reloading: boolean;
+  resetAcknowledged: boolean;
 }
 
 export default class Options extends React.Component<
@@ -23,7 +24,8 @@ export default class Options extends React.Component<
     super(props);
     this.state = {
       textContents: "",
-      resetting: false,
+      reloading: false,
+      resetAcknowledged: false,
     };
   }
 
@@ -57,7 +59,7 @@ export default class Options extends React.Component<
   @bind
   loadGame() {
     if (Settings.Load()) {
-      this.setState({ resetting: true });
+      this.setState({ reloading: true });
     }
   }
 
@@ -69,7 +71,7 @@ export default class Options extends React.Component<
   @bind
   importGame() {
     if (Settings.fromObject(store.loadAs(this.state.textContents))) {
-      this.setState({ resetting: true });
+      this.setState({ reloading: true });
     }
   }
 
@@ -95,9 +97,21 @@ export default class Options extends React.Component<
     }
   }
 
+  @bind
+  resetGame() {
+    if (this.state.resetAcknowledged) {
+      if (confirm("Are you sure you want to reset? This cannot be undone.")) {
+        Settings.Reset();
+        this.setState({ reloading: true });
+      } else {
+        this.setState({ resetAcknowledged: false });
+      }
+    }
+  }
+
   render() {
-    if (this.state.resetting) {
-      this.setState({ resetting: false });
+    if (this.state.reloading) {
+      this.setState({ reloading: false });
       if (this.props.onChange) {
         this.props.onChange();
       }
@@ -204,6 +218,37 @@ export default class Options extends React.Component<
               max={60}
               value={600 / Settings.saveFrequencySecs}
               onInput={this.changeSaveFrequency}
+            />
+          </div>
+        </div>
+        <div className="panel options reset">
+          <div className="title-bar warning">Game Reset</div>
+          <div className="full">
+            WARNING: this will completely reset your game and delete all saved
+            progress and setting. Only use this if you want to restart the game
+            from beginning, or if something in the settings is so messed up that
+            the game is now unplayable.
+          </div>
+          <div className="full">
+            <label>
+              <input
+                type="checkbox"
+                checked={this.state.resetAcknowledged}
+                onChange={() =>
+                  this.setState({
+                    resetAcknowledged: !this.state.resetAcknowledged,
+                  })
+                }
+              />
+              I understand what this means and still want to reset the game
+            </label>
+          </div>
+          <div className="full right">
+            <input
+              type="button"
+              value="Reset everything"
+              disabled={!this.state.resetAcknowledged}
+              onClick={this.resetGame}
             />
           </div>
         </div>
