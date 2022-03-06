@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from "react";
 import { genHints, genPlayboard, Playboard } from "../model/Playboard";
 import bind from "../utils/bind";
+import clamp from "../utils/clamp";
 
 type InputEvent = ChangeEvent<HTMLInputElement>;
 
@@ -47,17 +48,20 @@ export default class BoardControls extends React.Component<
   }
 
   @bind
-  changeInput(param: "rows" | "cols" | "mines", event: InputEvent) {
-    if (event.target.validity.valid) {
-      let num = parseInt(event.target.value);
-      if (num < 0 || isNaN(num)) {
+  changeInput(event: InputEvent) {
+    const target = event.target;
+
+    if (target.validity.valid) {
+      let num = parseInt(target.value);
+      if (isNaN(num)) {
         num = 0;
       }
-      if (param === "rows") {
+
+      if (target.name === "rows") {
         this.setState({ rows: num });
-      } else if (param === "cols") {
+      } else if (target.name === "cols") {
         this.setState({ cols: num });
-      } else if (param === "mines") {
+      } else if (target.name === "mines") {
         this.setState({ mines: num });
       }
     }
@@ -65,7 +69,13 @@ export default class BoardControls extends React.Component<
 
   @bind
   resetBoard() {
-    const { rows, cols, mines } = this.state;
+    let { rows, cols, mines } = this.state;
+
+    rows = clamp(rows, 3, 40);
+    cols = clamp(cols, 3, 40);
+    mines = clamp(mines, 0, 100);
+    this.setState({ rows, cols, mines });
+
     const board = genPlayboard(
       rows,
       cols,
@@ -95,10 +105,11 @@ export default class BoardControls extends React.Component<
           <div className="half">
             <input
               type="number"
-              min={3}
+              name="rows"
+              min={0}
               max={40}
               value={this.state.rows}
-              onInput={(e: InputEvent) => this.changeInput("rows", e)}
+              onInput={this.changeInput}
             />
           </div>
         </div>
@@ -116,10 +127,11 @@ export default class BoardControls extends React.Component<
           <div className="half">
             <input
               type="number"
-              min={3}
+              name="cols"
+              min={0}
               max={40}
               value={this.state.cols}
-              onInput={(e: InputEvent) => this.changeInput("cols", e)}
+              onInput={this.changeInput}
             />
           </div>
         </div>
@@ -133,10 +145,11 @@ export default class BoardControls extends React.Component<
           <div className="half">
             <input
               type="range"
+              name="mines"
               min={1}
               max={99}
               value={this.state.mines}
-              onInput={(e: InputEvent) => this.changeInput("mines", e)}
+              onInput={this.changeInput}
             />
           </div>
         </div>
