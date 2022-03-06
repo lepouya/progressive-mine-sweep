@@ -1,4 +1,6 @@
 import React from "react";
+import { Navigate } from "react-router";
+
 import Settings from "../model/Settings";
 import bind from "../utils/bind";
 import store from "../utils/store";
@@ -10,6 +12,7 @@ interface OptionsProps {
 
 interface OptionsState {
   textContents: string;
+  resetting: boolean;
 }
 
 export default class Options extends React.Component<
@@ -20,6 +23,7 @@ export default class Options extends React.Component<
     super(props);
     this.state = {
       textContents: "",
+      resetting: false,
     };
   }
 
@@ -48,36 +52,37 @@ export default class Options extends React.Component<
   @bind
   saveGame() {
     Settings.Save();
-    if (this.props.onChange) {
-      this.props.onChange();
-    }
   }
 
   @bind
   loadGame() {
-    Settings.Load();
-    if (this.props.onChange) {
-      this.props.onChange();
+    if (Settings.Load()) {
+      this.setState({ resetting: true });
     }
   }
 
   @bind
   exportGame() {
     this.setState({ textContents: store.saveAs(Settings.toObject()) });
-    if (this.props.onChange) {
-      this.props.onChange();
-    }
   }
 
   @bind
   importGame() {
-    Settings.fromObject(store.loadAs(this.state.textContents));
-    if (this.props.onChange) {
-      this.props.onChange();
+    if (Settings.fromObject(store.loadAs(this.state.textContents))) {
+      this.setState({ resetting: true });
     }
   }
 
   render() {
+    if (this.state.resetting) {
+      this.setState({ resetting: false });
+      if (this.props.onChange) {
+        this.props.onChange();
+      }
+
+      return <Navigate to="/" />;
+    }
+
     return (
       <div>
         <div className="panel options">
