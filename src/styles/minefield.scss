@@ -5,6 +5,15 @@
 
   width: auto;
 
+  th {
+    text-align: start;
+
+    button {
+      margin: 1px 0;
+      padding: 2px 1em;
+    }
+  }
+
   td {
     padding: 0;
     margin: 0;

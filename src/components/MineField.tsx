@@ -6,6 +6,7 @@ import bind from "../utils/bind";
 import Settings from "../model/Settings";
 import MineCell from "./MineCell";
 import Scoreboard from "./Scoreboard";
+import cellIcons from "../utils/cellIcons";
 
 interface MineFieldProps {
   board: Playboard;
@@ -16,6 +17,8 @@ interface MineFieldState {
   cellCounts: PlayboardCellCounts;
 
   gameState: "inactive" | "active" | "won" | "lost";
+
+  tapMode: "reveal" | "flag";
 }
 
 export default class MineField extends React.Component<
@@ -34,6 +37,7 @@ export default class MineField extends React.Component<
         blown: 0,
       },
       gameState: "inactive",
+      tapMode: "reveal",
     };
   }
 
@@ -88,9 +92,24 @@ export default class MineField extends React.Component<
     }
   }
 
+  @bind
+  toggleTapMode() {
+    this.setState({
+      tapMode: this.state.tapMode === "reveal" ? "flag" : "reveal",
+    });
+  }
+
   render() {
     const { board } = this.props;
-    const { cellCounts, cellSize, gameState } = this.state;
+    const { cellCounts, cellSize, gameState, tapMode } = this.state;
+
+    const tapText = tapMode === "reveal" ? "Revealing" : "Flagging";
+    const tapCell = cellIcons[tapMode === "reveal" ? "revealed" : "flagged"];
+    const tapColor = tapCell.color;
+    let tapIcon = tapCell.icon;
+    if (tapIcon instanceof Array) {
+      tapIcon = tapIcon[9];
+    }
 
     return (
       <div className="minefield-chrome">
@@ -100,6 +119,21 @@ export default class MineField extends React.Component<
           gameState={gameState}
         />
         <table className="minefield">
+          <thead>
+            <tr>
+              <th colSpan={board.cols} className="cell">
+                <button
+                  type="button"
+                  value={tapMode}
+                  onClick={this.toggleTapMode}
+                >
+                  {"Tap mode: "}
+                  {tapIcon ? tapIcon({ color: tapColor, size: "1em" }) : null}
+                  {tapText}
+                </button>
+              </th>
+            </tr>
+          </thead>
           <tbody>
             {board.cells.flatMap((row, r) => (
               <tr key={"row:" + r + ":*"}>
@@ -109,6 +143,7 @@ export default class MineField extends React.Component<
                     cell={cell}
                     size={cellSize}
                     enabled={gameState === "active"}
+                    tapMode={tapMode}
                     onAction={this.determineOutcome}
                   />
                 ))}
