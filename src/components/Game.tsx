@@ -26,39 +26,38 @@ export default class Game extends React.Component<GameProps, GameState> {
 
   componentDidMount() {
     if (!this.state.timerId) {
-      const timerId = setInterval(this.tick, 1000 / Settings.ticksPerSecond);
-      this.setState({ timerId });
+      this.resetTimer();
     }
   }
 
   componentWillUnmount() {
+    this.resetTimer(false);
+  }
+
+  @bind
+  resetTimer(startNew = true) {
     if (this.state.timerId) {
       clearInterval(this.state.timerId);
       this.setState({ timerId: undefined });
     }
-  }
-
-  @bind
-  resetTimer() {
-    if (this.state.timerId) {
-      clearInterval(this.state.timerId);
+    if (startNew) {
+      const timerId = setInterval(this.tick, 1000 / Settings.ticksPerSecond);
+      this.setState({ timerId });
     }
-    const timerId = setInterval(this.tick, 1000 / Settings.ticksPerSecond);
-    this.setState({ timerId });
   }
 
   @bind
   tick() {
     const now = Date.now();
 
-    // TODO: Update, save, etc
+    // TODO: Update
 
     Settings.lastUpdate = now;
+    this.setState({ lastUpdate: now });
+
     if (now - Settings.lastSaved >= Settings.saveFrequencySecs * 1000) {
       Settings.Save();
     }
-
-    this.setState({ lastUpdate: now });
   }
 
   render() {
