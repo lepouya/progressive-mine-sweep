@@ -130,7 +130,7 @@ export default class MineField extends React.Component<
                 >
                   {"Tap mode: "}
                   {tapIcon ? tapIcon({ color: tapColor, size: "1em" }) : null}
-                  {tapText}
+                  {" " + tapText}
                 </button>
               </th>
             </tr>
