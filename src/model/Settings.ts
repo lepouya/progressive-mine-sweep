@@ -2,58 +2,59 @@ import store from "../utils/store";
 import { emptyBoard } from "./Playboard";
 
 const _saveStoreName = "Settings";
-export default class Settings {
-  static lastUpdate = 0;
-  static ticksPerSecond = 1;
 
-  static referenceMineFieldSize = 640;
+const Settings = {
+  referenceMineFieldSize: 640,
+  ticksPerSecond: 1,
 
-  static maxErrors = 1;
-  static mainPlayboard = emptyBoard;
+  lastReset: Date.now(),
+  lastUpdate: 0,
+  lastSaved: 0,
+  lastLoaded: 0,
 
-  static Reset(): void {
-    store.reset(_saveStoreName);
-  }
+  maxErrors: 1,
+  mainPlayboard: emptyBoard,
 
-  static Save(): boolean {
-    return store.save(_saveStoreName, {
-      lastUpdate: this.lastUpdate,
-      ticksPerSecond: this.ticksPerSecond,
-      referenceMineFieldSize: this.referenceMineFieldSize,
-      maxErrors: this.maxErrors,
-      mainPlayboard: this.mainPlayboard,
-    });
-  }
+  Save(): boolean {
+    const saveObj: Record<string, any> = {};
+    let k: keyof typeof Settings;
+    for (k in Settings) {
+      const v = Settings[k];
+      if (typeof v !== "function") {
+        saveObj[k] = v;
+      }
+    }
 
-  static Load(): boolean {
-    const obj = store.load(_saveStoreName);
-    if (!obj) {
+    if (!store.save(_saveStoreName, saveObj)) {
       return false;
     }
 
-    if (obj.lastUpdate && typeof obj.lastUpdate === "number") {
-      this.lastUpdate = obj.lastUpdate;
-    }
-
-    if (obj.ticksPerSecond && typeof obj.ticksPerSecond === "number") {
-      this.ticksPerSecond = obj.ticksPerSecond;
-    }
-
-    if (
-      obj.referenceMineFieldSize &&
-      typeof obj.referenceMineFieldSize === "number"
-    ) {
-      this.referenceMineFieldSize = obj.referenceMineFieldSize;
-    }
-
-    if (obj.maxErrors && typeof obj.maxErrors === "number") {
-      this.maxErrors = obj.maxErrors;
-    }
-
-    if (obj.mainPlayboard && typeof obj.mainPlayboard === "object") {
-      this.mainPlayboard = obj.mainPlayboard;
-    }
-
+    this.lastSaved = Date.now();
     return true;
-  }
-}
+  },
+
+  Load(): boolean {
+    const loadObj = store.load(_saveStoreName);
+    if (!loadObj) {
+      return false;
+    }
+
+    let k: keyof typeof Settings;
+    for (k in Settings) {
+      if (typeof loadObj[k] === typeof Settings[k]) {
+        Settings[k] = loadObj[k];
+      }
+    }
+
+    this.lastLoaded = Date.now();
+    return true;
+  },
+
+  Reset(): void {
+    store.reset(_saveStoreName);
+    // TODO: reset everything
+    this.lastReset = Date.now();
+  },
+};
+
+export default Settings;
