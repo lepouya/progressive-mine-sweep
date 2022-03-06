@@ -52,26 +52,37 @@ export default class Options extends React.Component<
   }
 
   @bind
+  changed() {
+    if (this.props.onChange) {
+      this.props.onChange();
+    }
+  }
+
+  @bind
   saveGame() {
     Settings.Save();
+    this.changed();
   }
 
   @bind
   loadGame() {
     if (Settings.Load()) {
       this.setState({ reloading: true });
+      this.changed();
     }
   }
 
   @bind
   exportGame() {
     this.setState({ textContents: store.saveAs(Settings.toObject()) });
+    this.changed();
   }
 
   @bind
   importGame() {
     if (Settings.fromObject(store.loadAs(this.state.textContents))) {
       this.setState({ reloading: true });
+      this.changed();
     }
   }
 
@@ -80,9 +91,7 @@ export default class Options extends React.Component<
     let tickSpeed = parseInt(event.target.value);
     if (tickSpeed >= 1 && tickSpeed <= 60) {
       Settings.ticksPerSecond = tickSpeed;
-      if (this.props.onChange) {
-        this.props.onChange();
-      }
+      this.changed();
     }
   }
 
@@ -91,9 +100,7 @@ export default class Options extends React.Component<
     let saveFreq = parseInt(event.target.value);
     if (saveFreq >= 1 && saveFreq <= 600) {
       Settings.saveFrequencySecs = 600 / saveFreq;
-      if (this.props.onChange) {
-        this.props.onChange();
-      }
+      this.changed();
     }
   }
 
@@ -102,6 +109,7 @@ export default class Options extends React.Component<
     if (this.state.resetAcknowledged) {
       if (confirm("Are you sure you want to reset? This cannot be undone.")) {
         Settings.Reset();
+        this.changed();
         this.setState({ reloading: true });
       } else {
         this.setState({ resetAcknowledged: false });
@@ -111,11 +119,6 @@ export default class Options extends React.Component<
 
   render() {
     if (this.state.reloading) {
-      this.setState({ reloading: false });
-      if (this.props.onChange) {
-        this.props.onChange();
-      }
-
       return <Navigate to="/" />;
     }
 
