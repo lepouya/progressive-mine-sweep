@@ -7,6 +7,7 @@ import Settings from "../model/Settings";
 import MineCell from "./MineCell";
 import Scoreboard from "./Scoreboard";
 import cellIcons from "../utils/cellIcons";
+import clamp from "../utils/clamp";
 
 interface MineFieldProps {
   board: Playboard;
@@ -58,7 +59,7 @@ export default class MineField extends React.Component<
     const { board } = this.props;
 
     const estSize = Math.floor(95 / Math.max(board.rows, board.cols));
-    const cellSize = Math.max(2, Math.min(30, estSize));
+    const cellSize = clamp(estSize, 2, 30);
 
     this.setState({ cellSize });
   }

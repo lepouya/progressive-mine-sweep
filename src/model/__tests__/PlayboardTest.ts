@@ -6,16 +6,16 @@ import { Playboard, genPlayboard } from "../Playboard";
 function setupBoard(
   rows: number,
   cols: number,
-  bombs: number = 0,
-  maxBombs?: number,
+  mines: number = 0,
+  maxMines?: number,
 ): Playboard {
-  let playboard = genPlayboard(rows, cols, bombs, maxBombs);
+  let playboard = genPlayboard(rows, cols, mines, maxMines);
 
   expect(playboard.rows).to.equal(rows);
   expect(playboard.cols).to.equal(cols);
 
-  if (maxBombs === undefined) {
-    expect(playboard.numBombs).to.equal(bombs);
+  if (maxMines === undefined) {
+    expect(playboard.numMines).to.equal(mines);
   }
 
   return playboard;
@@ -46,50 +46,50 @@ describe("Clean playboards", () => {
   });
 });
 
-function expectCorrectBombCounts(playboard: Playboard): void {
-  let countedBombs = 0,
+function expectCorrectMineCounts(playboard: Playboard): void {
+  let countedMines = 0,
     countedClear = 0;
   for (let r = 0; r < playboard.rows; r++) {
     for (let c = 0; c < playboard.cols; c++) {
       const cell = playboard.cells[r][c];
-      if (cell.contents === "bomb") {
-        countedBombs++;
+      if (cell.contents === "mine") {
+        countedMines++;
       } else {
         countedClear++;
       }
     }
   }
 
-  expect(countedBombs).to.equal(playboard.numBombs);
+  expect(countedMines).to.equal(playboard.numMines);
   expect(countedClear).to.equal(
-    playboard.rows * playboard.cols - playboard.numBombs,
+    playboard.rows * playboard.cols - playboard.numMines,
   );
 }
 
-describe("Bomb placements", () => {
+describe("Mine placements", () => {
   it("Small playboard set up correctly", () => {
     const playboard = setupBoard(2, 2, 1);
-    expectCorrectBombCounts(playboard);
+    expectCorrectMineCounts(playboard);
   });
 
   it("Large playboard set up correctly", () => {
     const playboard = setupBoard(20, 20, 20);
-    expectCorrectBombCounts(playboard);
+    expectCorrectMineCounts(playboard);
   });
 
-  it("There aren't too many bombs on board", () => {
+  it("There aren't too many mines on board", () => {
     const playboard = setupBoard(3, 3, 10, 20);
-    expect(playboard.numBombs).to.equal(3 * 3 - 1);
-    expectCorrectBombCounts(playboard);
+    expect(playboard.numMines).to.equal(3 * 3 - 1);
+    expectCorrectMineCounts(playboard);
   });
 });
 
-function expectCorrectNeighboringBombCounts(playboard: Playboard): void {
+function expectCorrectNeighboringMineCounts(playboard: Playboard): void {
   for (let r = 0; r < playboard.rows; r++) {
     for (let c = 0; c < playboard.cols; c++) {
       const cell = playboard.cells[r][c];
 
-      const bombs = [
+      const mines = [
         [r - 1, c - 1],
         [r - 1, c],
         [r - 1, c + 1],
@@ -104,30 +104,30 @@ function expectCorrectNeighboringBombCounts(playboard: Playboard): void {
             r1 >= 0 && c1 >= 0 && r1 < playboard.rows && c1 < playboard.cols,
         )
         .filter(
-          ([r2, c2]) => playboard.cells[r2][c2].contents === "bomb",
+          ([r2, c2]) => playboard.cells[r2][c2].contents === "mine",
         ).length;
 
-      expect(bombs).to.equal(cell.neighbors);
+      expect(mines).to.equal(cell.neighbors);
     }
   }
 }
 
-describe("Neighboring bomb counts", () => {
+describe("Neighboring mine counts", () => {
   it("Small playboard set up correctly", () => {
     const playboard = setupBoard(2, 2, 1);
-    expectCorrectBombCounts(playboard);
-    expectCorrectNeighboringBombCounts(playboard);
+    expectCorrectMineCounts(playboard);
+    expectCorrectNeighboringMineCounts(playboard);
   });
 
   it("Large playboard set up correctly", () => {
     const playboard = setupBoard(20, 20, 10, 20);
-    expectCorrectBombCounts(playboard);
-    expectCorrectNeighboringBombCounts(playboard);
+    expectCorrectMineCounts(playboard);
+    expectCorrectNeighboringMineCounts(playboard);
   });
 
   it("Saturated playboard set up correctly", () => {
     const playboard = setupBoard(3, 3, 10, 20);
-    expectCorrectBombCounts(playboard);
-    expectCorrectNeighboringBombCounts(playboard);
+    expectCorrectMineCounts(playboard);
+    expectCorrectNeighboringMineCounts(playboard);
   });
 });

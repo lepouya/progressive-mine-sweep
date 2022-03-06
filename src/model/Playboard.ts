@@ -1,3 +1,4 @@
+import clamp from "../utils/clamp";
 import { Cell } from "./Cell";
 
 export type Playboard = {
@@ -33,26 +34,27 @@ export function makeClearPlayboard(rows: number, cols: number): Playboard {
   return { rows, cols, cells, numMines: 0 };
 }
 
-export function populateRandomBombs(
+export function populateRandomMines(
   playboard: Playboard,
-  minBombs?: number,
-  maxBombs?: number,
+  minMines?: number,
+  maxMines?: number,
 ): Playboard {
-  minBombs = minBombs ?? maxBombs ?? 0;
-  maxBombs = maxBombs ?? minBombs ?? 0;
-  let numBombs = Math.min(
-    Math.floor(minBombs + Math.random() * (1 + maxBombs - minBombs)),
+  minMines = minMines ?? maxMines ?? 0;
+  maxMines = maxMines ?? minMines ?? 0;
+  let numMines = clamp(
+    Math.floor(minMines + Math.random() * (1 + maxMines - minMines)),
+    0,
     playboard.rows * playboard.cols - playboard.numMines - 1,
   );
 
-  while (numBombs > 0) {
+  while (numMines > 0) {
     const r = Math.floor(Math.random() * playboard.rows);
     const c = Math.floor(Math.random() * playboard.cols);
 
     if (playboard.cells[r][c].contents === "clear") {
       playboard.cells[r][c].contents = "mine";
       playboard.numMines++;
-      numBombs--;
+      numMines--;
     }
   }
 
@@ -86,11 +88,11 @@ export function populateNeighboringCells(playboard: Playboard): Playboard {
 export function genPlayboard(
   rows: number,
   cols: number,
-  minBombs?: number,
-  maxBombs?: number,
+  minMines?: number,
+  maxMines?: number,
 ): Playboard {
   let playboard = makeClearPlayboard(rows, cols);
-  playboard = populateRandomBombs(playboard, minBombs, maxBombs);
+  playboard = populateRandomMines(playboard, minMines, maxMines);
   playboard = populateNeighboringCells(playboard);
 
   return playboard;
@@ -104,10 +106,10 @@ export function genHints(
   hintQuality: number = 0,
 ): number {
   // Input cleanup
-  numHints = Math.floor(Math.max(0, numHints));
-  minHintLevel = Math.floor(Math.max(0, Math.min(8, minHintLevel)));
-  maxHintLevel = Math.floor(Math.max(0, Math.min(8, maxHintLevel)));
-  hintQuality = Math.max(0, Math.min(1, hintQuality));
+  numHints = Math.floor(clamp(numHints, 0, 100));
+  minHintLevel = Math.floor(clamp(minHintLevel, 0, 8));
+  maxHintLevel = Math.floor(clamp(maxHintLevel, 0, 8));
+  hintQuality = clamp(hintQuality, 0, 1);
   if (numHints === 0) {
     return 0;
   }
