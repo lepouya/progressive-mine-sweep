@@ -34,7 +34,7 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Add temporary UI to modify the game parameters~~
 - ~~Implement saving and loading the current state~~
 - ~~Make everything mobile-friendly~~
-- Add help page
+- ~~Add help page~~
 
 ### M2: Make it incremental
 
