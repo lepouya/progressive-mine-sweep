@@ -20,6 +20,10 @@
       padding: 1em;
       font-size: large;
     }
+
+    &[type="range"] {
+      width: 100%;
+    }
   }
 
   textarea {

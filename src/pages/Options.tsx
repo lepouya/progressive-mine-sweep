@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { Navigate } from "react-router";
 
 import Settings from "../model/Settings";
@@ -73,6 +73,28 @@ export default class Options extends React.Component<
     }
   }
 
+  @bind
+  changeTickSpeed(event: ChangeEvent<HTMLInputElement>) {
+    let tickSpeed = parseInt(event.target.value);
+    if (tickSpeed >= 1 && tickSpeed <= 60) {
+      Settings.ticksPerSecond = tickSpeed;
+      if (this.props.onChange) {
+        this.props.onChange();
+      }
+    }
+  }
+
+  @bind
+  changeSaveFrequency(event: ChangeEvent<HTMLInputElement>) {
+    let saveFreq = parseInt(event.target.value);
+    if (saveFreq >= 1 && saveFreq <= 600) {
+      Settings.saveFrequencySecs = 600 / saveFreq;
+      if (this.props.onChange) {
+        this.props.onChange();
+      }
+    }
+  }
+
   render() {
     if (this.state.resetting) {
       this.setState({ resetting: false });
@@ -137,6 +159,55 @@ export default class Options extends React.Component<
             />
           </div>
         </div>
+
+        <div className="panel options">
+          <div className="title-bar">Advanced Settings</div>
+          <div className="full">
+            If you are having performance issues, increase the time between
+            updates. Faster updating frequncies lead to better game experience
+            but might use a lot of CPU.
+          </div>
+          <div className="half">Updating frequency:</div>
+          <div className="half center">
+            {Math.floor(1000 / Settings.ticksPerSecond)}ms
+          </div>
+          <div className="half"></div>
+          <div className="half center">
+            <input
+              type="range"
+              min={4}
+              max={30}
+              value={Settings.ticksPerSecond}
+              onInput={this.changeTickSpeed}
+            />
+          </div>
+          <div className="title-bar"></div>
+          <div className="full">
+            Change how often the game is saved in the background. More frequent
+            saving leads to faster backups, but increases CPU and I/O usage
+          </div>
+          <div className="half">Saving frequency:</div>
+          <div className="half center">
+            {printTime({
+              start: 0,
+              end: Settings.saveFrequencySecs * 1000,
+              never: "",
+              now: "",
+              millis: Settings.saveFrequencySecs < 10,
+            })}
+          </div>
+          <div className="half"></div>
+          <div className="half center">
+            <input
+              type="range"
+              min={1}
+              max={60}
+              value={600 / Settings.saveFrequencySecs}
+              onInput={this.changeSaveFrequency}
+            />
+          </div>
+        </div>
+
         <div className="panel">
           <div className="title-bar">Raw Data</div>
           {this.getRawData()}
