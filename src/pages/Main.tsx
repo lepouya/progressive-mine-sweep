@@ -27,6 +27,7 @@ export default class Main extends React.Component<MainProps, MainState> {
   boardChanged(board: Playboard) {
     Settings.mainPlayboard = board;
     this.setState({ board });
+    Settings.Save();
   }
 
   render() {

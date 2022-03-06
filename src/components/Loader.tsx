@@ -4,6 +4,7 @@ import Spinner from "./Spinner";
 import Game from "./Game";
 
 import bind from "../utils/bind";
+import Settings from "../model/Settings";
 
 interface LoaderState {
   loaded: boolean;
@@ -23,7 +24,7 @@ export default class Loader extends React.Component<{}, LoaderState> {
 
   @bind
   async load() {
-    // TODO: Initialize
+    Settings.Load();
     const initialized = true;
 
     if (initialized) {

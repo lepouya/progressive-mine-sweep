@@ -42,6 +42,7 @@ export default class Game extends React.Component<GameProps, GameState> {
     // TODO: Update, save, etc
 
     Settings.lastUpdate = now;
+    Settings.Save();
   }
 
   render() {
