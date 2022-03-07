@@ -9,7 +9,8 @@
     "debug": "gulp debug",
     "release": "gulp release",
     "test": "mocha -r ts-node/register --reporter spec src/**/*Test.ts",
-    "update:packages": "node wipe-dependencies.js && rm -rf node_modules && npm update --save-dev && npm update --save"
+    "update:packages": "node wipe-dependencies.js && rm -rf node_modules && npm update --save-dev && npm update --save",
+    "github:release": "gulp github-release"
   },
   "repository": {
     "type": "git",

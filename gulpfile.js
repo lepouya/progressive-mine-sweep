@@ -16,6 +16,7 @@ var log = require('fancy-log');
 const package = 'progressive-mine-sweep';
 const outDir = 'dist';
 const vendor = 'vendor';
+const githubPagesDir = '../lepouya.github.io';
 const assetEntries = ['assets/**/*'];
 const htmlEntries = ['src/index.pug'];
 const cssEntries = ['src/index.scss'];
@@ -126,11 +127,32 @@ gulp.task('server', function () {
   });
 });
 
+gulp.task('copy-dist', function () {
+  const debug = (process.env.NODE_ENV !== 'production');
+  const htmlName = 'index' + (debug ? '.html' : '.min.html');
+  const jsName = package + (debug ? '.js' : '.min.js');
+  const cssName = package + (debug ? '.css' : '.min.css');
+  const vendorName = vendor + (debug ? '.js' : '.min.js');
+
+  return gulp
+    .src(
+      [htmlName, jsName, cssName, vendorName]
+        .concat(assetEntries)
+        .map(f => outDir + '/' + f))
+    .pipe(rename(path => {
+      if (path.basename == 'index.min') {
+        path.basename = 'index';
+      }
+    }))
+    .pipe(gulp.dest(githubPagesDir + '/' + package));
+});
+
 gulp.task('compile', gulp.parallel('assets', 'html', 'sass', 'vendor', 'ts'));
 gulp.task('release', gulp.series('prod', 'compile'));
 gulp.task('debug', gulp.series('dev', 'compile'));
 gulp.task('watch', gulp.series('dev', 'watching', 'compile'));
 gulp.task('start', gulp.series('watch', 'server'));
+gulp.task('github-release', gulp.series('release', 'copy-dist'));
 
 var bundler = null;
 
