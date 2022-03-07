@@ -18,13 +18,13 @@ Perhaps I could do prestige/reset options once this is ready
 
 ## TODO
 
-### M0: Framework and project config
+### ~~M0: Framework and project config~~
 
 - ~~Set up project and repository~~
 - ~~Import web skeleton from ssba~~
 - ~~Get builds and packaging working~~
 
-### M1: Get classic minesweeper working
+### ~~M1: Get classic minesweeper working~~
 
 - ~~Make flexible game grids~~
 - ~~Populate with mines and %/# choices~~
@@ -38,15 +38,19 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### M2: Make it incremental
 
+- Track and report game currencies
+- Delay before starting a new game
 - Add options for increasing grid size
 - Add options for increasing mine % and #
-- Maybe other things to customize?
+- Hint purchase, and options to increase hint quality
+- Score multipliers
 
 ### M2: Automation
 
-- Auto reset puzzle
+- Auto reset puzzle + interval
 - Auto fill blank squares + upgrade interval
 - Auto guess when stuck? + interval
+- Auto hint + improvements + interval
 - Auto mine + improvements? + interval
 - Auto reason + improvements + interval
 
