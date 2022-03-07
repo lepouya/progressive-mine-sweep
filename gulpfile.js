@@ -210,7 +210,7 @@ function bundle() {
     })
       .external(externalLibs)
       .plugin(tsify, {
-        target: 'ES5',
+        target: 'ES6',
         module: 'ESNext',
         lib: ['DOM', 'ESNext', 'ScriptHost'],
         allowSyntheticDefaultImports: true,

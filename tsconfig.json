@@ -9,7 +9,7 @@
     "dist"
   ],
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES6",
     "module": "commonjs",
     "lib": ["DOM", "ESNext", "ScriptHost"],
     "allowJs": true,
