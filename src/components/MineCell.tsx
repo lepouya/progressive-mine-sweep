@@ -1,82 +1,58 @@
 import React, { MouseEvent } from "react";
 
-import { actOnCell, Cell } from "../model/Cell";
-import bind from "../utils/bind";
+import { actOnCell, Cell, CellAction } from "../model/Cell";
 import cellIcons from "../utils/cellIcons";
 
-interface MineCellProps {
+const MineCell: React.FC<{
   cell: Cell;
   size: number;
   enabled: boolean;
-  tapMode: "reveal" | "flag";
-
-  onAction?: (cell: Cell) => void;
-}
-
-interface MineCellState {}
-
-export default class MineCell extends React.Component<
-  MineCellProps,
-  MineCellState
-> {
-  constructor(props: MineCellProps) {
-    super(props);
-    this.state = {};
-  }
-
-  @bind
-  handleClick(event: MouseEvent<Element>) {
+  tapMode: CellAction;
+  onAction: (cell: Cell) => void;
+}> = ({ cell, size, enabled, tapMode, onAction }) => {
+  function handleClick(event: MouseEvent<Element>) {
     event.preventDefault();
-    if (!this.props.enabled) {
+
+    if (!enabled) {
       return;
     }
-
     // To flag: Right click
     //  On devices that don't have right click, hold any of the modifier keys and left click
-    if (
+    else if (
       event.button == 2 ||
       (event.button === 0 &&
-        (event.altKey ||
-          event.ctrlKey ||
-          event.metaKey ||
-          this.props.tapMode === "flag"))
+        (event.altKey || event.ctrlKey || event.metaKey || tapMode === "flag"))
     ) {
-      actOnCell(this.props.cell, "flag");
-      if (this.props.onAction) {
-        this.props.onAction(this.props.cell);
-      }
+      actOnCell(cell, "flag");
+      onAction(cell);
     }
     // To reveal: Left click
-    else if (event.button === 0 && this.props.tapMode === "reveal") {
-      actOnCell(this.props.cell, "reveal");
-      if (this.props.onAction) {
-        this.props.onAction(this.props.cell);
-      }
+    else if (event.button === 0 && tapMode === "reveal") {
+      actOnCell(cell, "reveal");
+      onAction(cell);
     }
   }
 
-  render() {
-    const { cell, size } = this.props;
+  const minPx = Math.floor((640 * size) / 100);
+  const cellSize = `min(${size}vmin, ${minPx}px)`;
 
-    const minPx = Math.floor((640 * size) / 100);
-    const cellSize = `min(${size}vmin, ${minPx}px)`;
-
-    const color = cellIcons[cell.state].color;
-    let icon = cellIcons[cell.state].icon;
-    if (icon instanceof Array) {
-      icon = icon[cell.neighbors];
-    }
-
-    return (
-      <td
-        className={"cell cell-" + cell.state}
-        onClick={this.handleClick}
-        onContextMenu={this.handleClick}
-      >
-        <div style={{ width: cellSize, height: cellSize }}>
-          {icon ? icon({ color, size: "80%" }) : null}
-        </div>
-      </td>
-    );
+  const color = cellIcons[cell.state].color;
+  let icon = cellIcons[cell.state].icon;
+  if (icon instanceof Array) {
+    icon = icon[cell.neighbors];
   }
-}
+
+  return (
+    <td
+      className={"cell cell-" + cell.state}
+      onClick={handleClick}
+      onContextMenu={handleClick}
+    >
+      <div style={{ width: cellSize, height: cellSize }}>
+        {icon ? icon({ color, size: "80%" }) : null}
+      </div>
+    </td>
+  );
+};
+
+export default MineCell;

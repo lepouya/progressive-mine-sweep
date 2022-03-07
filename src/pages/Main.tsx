@@ -1,44 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BoardControls from "../components/BoardControls";
 import MineField from "../components/MineField";
-import { genPlayboard, Playboard } from "../model/Playboard";
+import { genPlayboard } from "../model/Playboard";
 import Settings from "../model/Settings";
-import bind from "../utils/bind";
 
-interface MainProps {}
+const Main: React.FC = () => {
+  const [board, setBoard] = useState(Settings.mainPlayboard);
 
-interface MainState {
-  board: Playboard;
-}
-
-export default class Main extends React.Component<MainProps, MainState> {
-  constructor(props: MainProps) {
-    super(props);
-    this.state = { board: Settings.mainPlayboard };
-  }
-
-  componentDidMount() {
-    if (this.state.board.rows === 0 || this.state.board.cols === 0) {
-      this.boardChanged(genPlayboard(10, 10, 10));
+  useEffect(() => {
+    if (board.rows === 0 || board.cols === 0) {
+      setBoard(genPlayboard(10, 10, 10));
     }
-  }
+  }, []);
 
-  @bind
-  boardChanged(board: Playboard) {
+  useEffect(() => {
     Settings.mainPlayboard = board;
-    this.setState({ board });
     Settings.Save();
-  }
+  }, [board]);
 
-  render() {
-    return (
-      <div>
-        <MineField board={this.state.board} />
-        <BoardControls
-          board={this.state.board}
-          boardChanged={this.boardChanged}
-        />
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <MineField board={board} />
+      <BoardControls board={board} setBoard={setBoard} />
+    </div>
+  );
+};
+
+export default Main;

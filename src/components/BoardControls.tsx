@@ -1,54 +1,24 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { genHints, genPlayboard, Playboard } from "../model/Playboard";
-import bind from "../utils/bind";
 import clamp from "../utils/clamp";
 
-type InputEvent = ChangeEvent<HTMLInputElement>;
-
-interface BoardControlsProps {
+const BoardControls: React.FC<{
   board: Playboard;
-  boardChanged?: (board: Playboard) => void;
-}
+  setBoard: (board: Playboard) => void;
+}> = ({ board, setBoard }) => {
+  const [rows, setRows] = useState(0);
+  const [cols, setCols] = useState(0);
+  const [mines, setMines] = useState(0);
 
-interface BoardControlsState {
-  rows: number;
-  cols: number;
-  mines: number;
-}
-
-export default class BoardControls extends React.Component<
-  BoardControlsProps,
-  BoardControlsState
-> {
-  constructor(props: BoardControlsProps) {
-    super(props);
-    this.state = { rows: 0, cols: 0, mines: 0 };
-  }
-
-  componentDidMount() {
-    this.setInputs();
-  }
-
-  componentDidUpdate(prevProps: BoardControlsProps) {
-    if (prevProps.board !== this.props.board) {
-      this.setInputs();
-    }
-  }
-
-  @bind
-  setInputs() {
-    let { board } = this.props;
+  useEffect(() => {
     if (board.rows > 0 && board.cols > 0) {
-      this.setState({
-        rows: board.rows,
-        cols: board.cols,
-        mines: Math.floor((100 * board.numMines) / (board.rows * board.cols)),
-      });
+      setRows(board.rows);
+      setCols(board.cols);
+      setMines(Math.floor((100 * board.numMines) / (board.rows * board.cols)));
     }
-  }
+  }, [board]);
 
-  @bind
-  changeInput(event: InputEvent) {
+  function changeInput(event: ChangeEvent<HTMLInputElement>) {
     const target = event.target;
 
     if (target.validity.valid) {
@@ -58,102 +28,80 @@ export default class BoardControls extends React.Component<
       }
 
       if (target.name === "rows") {
-        this.setState({ rows: num });
+        setRows(num);
       } else if (target.name === "cols") {
-        this.setState({ cols: num });
+        setCols(num);
       } else if (target.name === "mines") {
-        this.setState({ mines: num });
+        setMines(num);
       }
     }
   }
 
-  @bind
-  resetBoard() {
-    let { rows, cols, mines } = this.state;
-
-    rows = clamp(rows, 3, 40);
-    cols = clamp(cols, 3, 40);
-    mines = clamp(mines, 0, 100);
-    this.setState({ rows, cols, mines });
-
-    const board = genPlayboard(
-      rows,
-      cols,
-      Math.floor((rows * cols * mines) / 100),
-      Math.ceil((rows * cols * mines) / 100),
-    );
-    if (this.props.boardChanged) {
-      this.props.boardChanged(board);
-    }
+  function resetBoard() {
+    const r = clamp(rows, 3, 40);
+    const c = clamp(cols, 3, 40);
+    const m = (r * c * clamp(mines, 0, 100)) / 100;
+    setBoard(genPlayboard(r, c, Math.floor(m), Math.ceil(m)));
   }
 
-  @bind
-  getHint() {
-    genHints(this.props.board, 1, 0, 8, 1);
-
-    if (this.props.boardChanged) {
-      this.props.boardChanged(this.props.board);
-    }
+  function getHint() {
+    genHints(board, 1, 0, 8, 1);
   }
 
-  render() {
-    return (
-      <div className="board-controls panel">
-        <div className="title-bar">Game parameters</div>
+  return (
+    <div className="board-controls panel">
+      <div className="title-bar">Game parameters</div>
+      <div className="half">
+        <div className="half">Number of rows:</div>
         <div className="half">
-          <div className="half">Number of rows:</div>
-          <div className="half">
-            <input
-              type="number"
-              name="rows"
-              min={0}
-              max={40}
-              value={this.state.rows}
-              onInput={this.changeInput}
-            />
-          </div>
-        </div>
-        <div className="right half">
-          <div className="half">
-            <input
-              type="button"
-              value="Reset Board"
-              onClick={this.resetBoard}
-            />
-          </div>
-        </div>
-        <div className="half">
-          <div className="half">Number of columns:</div>
-          <div className="half">
-            <input
-              type="number"
-              name="cols"
-              min={0}
-              max={40}
-              value={this.state.cols}
-              onInput={this.changeInput}
-            />
-          </div>
-        </div>
-        <div className="right half">
-          <div className="half">
-            <input type="button" value="Get A Hint" onClick={this.getHint} />
-          </div>
-        </div>
-        <div className="half">
-          <div className="half">Mines density:</div>
-          <div className="half">
-            <input
-              type="range"
-              name="mines"
-              min={1}
-              max={99}
-              value={this.state.mines}
-              onInput={this.changeInput}
-            />
-          </div>
+          <input
+            type="number"
+            name="rows"
+            min={0}
+            max={40}
+            value={rows}
+            onInput={changeInput}
+          />
         </div>
       </div>
-    );
-  }
-}
+      <div className="right half">
+        <div className="half">
+          <input type="button" value="Reset Board" onClick={resetBoard} />
+        </div>
+      </div>
+      <div className="half">
+        <div className="half">Number of columns:</div>
+        <div className="half">
+          <input
+            type="number"
+            name="cols"
+            min={0}
+            max={40}
+            value={cols}
+            onInput={changeInput}
+          />
+        </div>
+      </div>
+      <div className="right half">
+        <div className="half">
+          <input type="button" value="Get A Hint" onClick={getHint} />
+        </div>
+      </div>
+      <div className="half">
+        <div className="half">Mines density:</div>
+        <div className="half">
+          <input
+            type="range"
+            name="mines"
+            min={1}
+            max={99}
+            value={mines}
+            onInput={changeInput}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BoardControls;

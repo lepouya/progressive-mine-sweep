@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import Spinner from "./Spinner";
+import Spinner from "../utils/Spinner";
 import Game from "./Game";
 import Settings from "../model/Settings";
 

@@ -1,6 +1,8 @@
 import clamp from "../utils/clamp";
 import { Cell } from "./Cell";
 
+export type BoardState = "inactive" | "active" | "won" | "lost";
+
 export type Playboard = {
   rows: number;
   cols: number;
