@@ -1,17 +1,19 @@
-var gulp = require('gulp');
-var rename = require('gulp-rename');
-var sourcemaps = require('gulp-sourcemaps');
-var tsify = require('tsify');
 var babelify = require('babelify');
 var browserify = require('browserify');
+var buffer = require('vinyl-buffer');
+var cleanCss = require('gulp-clean-css');
+var concat = require('gulp-concat');
+var connect = require('gulp-connect');
+var gulp = require('gulp');
+var log = require('fancy-log');
+var pug = require('gulp-pug');
+var rename = require('gulp-rename');
+var sass = require('gulp-sass')(require('sass'));
+var source = require('vinyl-source-stream');
+var sourcemaps = require('gulp-sourcemaps');
+var tsify = require('tsify');
 var uglify = require('gulp-uglify');
 var watchify = require('watchify');
-var sass = require('gulp-sass')(require('sass'));
-var pug = require('gulp-pug');
-var connect = require('gulp-connect');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var log = require('fancy-log');
 
 const package = 'progressive-mine-sweep';
 const outDir = 'dist';
@@ -19,7 +21,7 @@ const vendor = 'vendor';
 const githubPagesDir = '../lepouya.github.io';
 const assetEntries = ['assets/**/*'];
 const htmlEntries = ['src/index.pug'];
-const cssEntries = ['src/index.scss'];
+const cssEntries = ['src/**/*.scss'];
 const jsEntries = ['src/index.tsx'];
 const externalLibs = ['react', 'react-dom', 'react-router', 'react-router-dom', '@tabler/icons'];
 const extensions = ['.js', '.ts', '.jsx', '.tsx', '.json'];
@@ -72,14 +74,25 @@ gulp.task('sass', function () {
   const debug = (process.env.NODE_ENV !== 'production');
   const cssName = package + (debug ? '.css' : '.min.css');
 
-  return gulp
+  let fs = gulp
     .src(cssEntries)
+    .pipe(sourcemaps.init())
     .pipe(sass({
-      includePaths: ['node_modules/uikit/src/scss'],
       outputStyle: (debug ? 'expanded' : 'compressed'),
       outFile: cssName,
     }))
-    .pipe(rename(cssName))
+    .pipe(concat('style.css'))
+    .pipe(rename(cssName));
+
+  if (debug) {
+    fs = fs
+      .pipe(sourcemaps.write('./'))
+  } else {
+    fs = fs
+      .pipe(cleanCss());
+  }
+
+  return fs
     .pipe(gulp.dest(outDir));
 });
 
