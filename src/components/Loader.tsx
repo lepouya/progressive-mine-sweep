@@ -1,44 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import Spinner from "./Spinner";
 import Game from "./Game";
-
-import bind from "../utils/bind";
 import Settings from "../model/Settings";
 
-interface LoaderState {
-  loaded: boolean;
-}
+const Loader: React.FC = () => {
+  const [isLoaded, setLoaded] = useState(false);
 
-export default class Loader extends React.Component<{}, LoaderState> {
-  constructor(props: any) {
-    super(props);
-    this.state = { loaded: false };
-  }
-
-  componentDidMount() {
-    if (!this.state.loaded) {
-      setTimeout(this.load, 1);
+  useEffect(() => {
+    if (!isLoaded) {
+      setTimeout(load, 1);
     }
-  }
+  }, []);
 
-  @bind
-  async load() {
+  function load() {
     Settings.Load();
-    const initialized = true;
-
-    if (initialized) {
-      this.setState({ loaded: true });
-    } else {
-      setTimeout(this.load, 100);
-    }
+    setLoaded(true);
   }
 
-  render() {
-    if (this.state.loaded) {
-      return <Game />;
-    } else {
-      return <Spinner />;
-    }
-  }
-}
+  return isLoaded ? <Game /> : <Spinner />;
+};
+
+export default Loader;

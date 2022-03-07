@@ -1,4 +1,6 @@
-type TimeOptions = {
+import React, { useEffect } from "react";
+
+type TimeProperties = {
   start?: number;
   end?: number;
 
@@ -12,19 +14,28 @@ type TimeOptions = {
   negatives?: boolean;
 };
 
-export default function printTime(options: TimeOptions): string {
-  let start = options.start ?? 0;
-  let end = options.end ?? 0;
-  let prefix = options.prefix ?? "";
-  let suffix = options.suffix ?? "";
-  let separator = options.separator ?? ", ";
-  let never = options.never ?? "never";
-  let now = options.now ?? "now";
-  let millis = options.millis ?? false;
-  let negatives = options.negatives ?? false;
+const TimeDuration: React.FC<TimeProperties> = (props) => {
+  let start = props.start ?? 0;
+  let end = props.end ?? 0;
+  let prefix = props.prefix ?? "";
+  let suffix = props.suffix ?? "";
+  let separator = props.separator ?? ", ";
+  let never = props.never ?? "never";
+  let now = props.now ?? "now";
+  let millis = props.millis ?? false;
+  let negatives = props.negatives ?? false;
+
+  useEffect(() => {
+    console.log("props changed!");
+  }, [props]);
 
   if (never.length > 0 && (start <= 0 || end <= 0)) {
-    return prefix + never;
+    return (
+      <div className="time-duration">
+        {prefix}
+        {never}
+      </div>
+    );
   }
 
   let duration = end - start;
@@ -49,7 +60,12 @@ export default function printTime(options: TimeOptions): string {
   }
 
   if (now.length > 0 && days + hours + mins + secs + msec === 0) {
-    return prefix + now;
+    return (
+      <div className="time-duration">
+        {prefix}
+        {now}
+      </div>
+    );
   }
 
   let words: string[] = [];
@@ -75,5 +91,13 @@ export default function printTime(options: TimeOptions): string {
   addWord(mins, "minute");
   addWord(secs, "second", days + hours + mins === 0, msec);
 
-  return prefix + words.join(separator) + suffix;
-}
+  return (
+    <div className="time-duration">
+      {prefix}
+      {words.join(separator)}
+      {suffix}
+    </div>
+  );
+};
+
+export default TimeDuration;
