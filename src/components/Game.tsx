@@ -43,13 +43,11 @@ const Game: React.FC = () => {
     <HashRouter>
       <div>
         <nav className="navbar">
-          <div className="navbar-left">
+          <div className="left">
             <ul>
               <li>
                 <NavLink
-                  className={({ isActive }) =>
-                    isActive ? "navbar-active" : ""
-                  }
+                  className={({ isActive }) => (isActive ? "active" : "")}
                   to="/"
                 >
                   Mine Sweep
@@ -57,9 +55,7 @@ const Game: React.FC = () => {
               </li>
               <li>
                 <NavLink
-                  className={({ isActive }) =>
-                    isActive ? "navbar-active" : ""
-                  }
+                  className={({ isActive }) => (isActive ? "active" : "")}
                   to="/help"
                 >
                   Help
@@ -67,13 +63,11 @@ const Game: React.FC = () => {
               </li>
             </ul>
           </div>
-          <div className="navbar-right">
+          <div className="right">
             <ul>
               <li>
                 <NavLink
-                  className={({ isActive }) =>
-                    isActive ? "navbar-active" : ""
-                  }
+                  className={({ isActive }) => (isActive ? "active" : "")}
                   to="/options"
                 >
                   Settings

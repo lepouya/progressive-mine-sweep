@@ -19,7 +19,7 @@ const MineCell: React.FC<{
     // To flag: Right click
     //  On devices that don't have right click, hold any of the modifier keys and left click
     else if (
-      event.button == 2 ||
+      event.button === 2 ||
       (event.button === 0 &&
         (event.altKey || event.ctrlKey || event.metaKey || tapMode === "flag"))
     ) {

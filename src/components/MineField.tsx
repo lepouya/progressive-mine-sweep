@@ -56,9 +56,9 @@ const MineField: React.FC<{ board: Playboard }> = ({ board }) => {
   }
 
   return (
-    <div className="minefield-chrome">
+    <div className="minefield">
       <Scoreboard board={board} cellCounts={cellCounts} gameState={gameState} />
-      <table className="minefield">
+      <table>
         <thead>
           <tr>
             <th colSpan={board.cols} className="cell">

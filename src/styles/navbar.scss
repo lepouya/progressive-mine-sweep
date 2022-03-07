@@ -4,21 +4,23 @@
 
   background-color: #eeeeee;
 
-  &-section {
+  > div {
     display: flex;
     flex: 1;
     flex-wrap: wrap;
     align-items: center;
   }
 
-  &-left {
-    @extend .navbar-section;
+  .left {
     justify-content: flex-start;
   }
 
-  &-right {
-    @extend .navbar-section;
+  .right {
     justify-content: flex-end;
+  }
+
+  .active {
+    background-color: #aaaaee;
   }
 
   ul {
@@ -45,9 +47,5 @@
     text-transform: uppercase;
     transition: 0.1s ease-in-out;
     transition-property: color, background-color;
-  }
-
-  &-active {
-    background-color: #aaaaee;
   }
 }

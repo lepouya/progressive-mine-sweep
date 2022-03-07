@@ -1,9 +1,19 @@
 .minefield {
-  margin: 0 auto;
-  border-collapse: collapse;
-  border-spacing: 0;
+  display: flow-root;
+  box-sizing: content-box;
 
-  width: auto;
+  padding: 0;
+  margin: auto;
+
+  max-width: 640px;
+
+  table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    width: auto;
+  }
 
   th {
     text-align: start;
@@ -21,13 +31,5 @@
 
     vertical-align: middle;
     text-align: center;
-  }
-
-  &-chrome {
-    padding: 0;
-    display: flow-root;
-    box-sizing: content-box;
-    max-width: 640px;
-    margin: auto;
   }
 }
