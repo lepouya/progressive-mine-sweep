@@ -1,6 +1,6 @@
 {
   "name": "progressive-mine-sweep",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Progressive (Incremental) take on classic Minesweeper puzzle",
   "main": "./dist/progressive-mine-sweep.js",
   "scripts": {
