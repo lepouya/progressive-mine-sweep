@@ -25,6 +25,7 @@ const cssEntries = ['src/**/*.scss'];
 const jsEntries = ['src/index.tsx'];
 const externalLibs = ['react', 'react-dom', 'react-router', 'react-router-dom', '@tabler/icons'];
 const extensions = ['.js', '.ts', '.jsx', '.tsx', '.json'];
+const watchStreams = [];
 
 gulp.task('prod', function (done) {
   process.env.NODE_ENV = 'production';
@@ -73,7 +74,8 @@ gulp.task('html', function () {
     fs = fs
       .pipe(connect.reload());
 
-    gulp.watch(htmlEntries, gulp.series('html'))
+    const watcher = gulp.watch(htmlEntries, gulp.series('html'));
+    watchStreams.push(watcher);
   }
 
   return fs;
@@ -108,7 +110,8 @@ gulp.task('sass', function () {
     fs = fs
       .pipe(connect.reload());
 
-    gulp.watch(cssEntries, gulp.series('sass'));
+    const watcher = gulp.watch(cssEntries, gulp.series('sass'));
+    watchStreams.push(watcher);
   }
 
   return fs;
@@ -160,6 +163,7 @@ gulp.task('server', function (done) {
         if (/_kill_\/?/.test(req.url)) {
           res.end();
           connect.serverClose();
+          watchStreams.forEach(stream => stream.close());
           done();
         }
         next();
@@ -224,6 +228,7 @@ function bundle() {
       bundler = watchify(bundler);
       bundler.on("update", bundle);
       bundler.on("log", log);
+      watchStreams.push(bundler);
     }
   }
 
