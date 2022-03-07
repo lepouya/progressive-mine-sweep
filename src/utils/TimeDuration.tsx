@@ -25,10 +25,6 @@ const TimeDuration: React.FC<TimeProperties> = (props) => {
   let millis = props.millis ?? false;
   let negatives = props.negatives ?? false;
 
-  useEffect(() => {
-    console.log("props changed!");
-  }, [props]);
-
   if (never.length > 0 && (start <= 0 || end <= 0)) {
     return (
       <div className="time-duration">
