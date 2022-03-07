@@ -10,7 +10,7 @@ const Settings = {
   lastReset: Date.now(),
   lastUpdate: 0,
   lastSaved: 0,
-  lastLoaded: 0,
+  lastLoaded: Date.now(),
 
   maxErrors: 1,
   mainPlayboard: emptyBoard,
