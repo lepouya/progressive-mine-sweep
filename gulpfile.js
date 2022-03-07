@@ -56,7 +56,7 @@ gulp.task('html', function () {
   const cssName = package + (debug ? '.css' : '.min.css');
   const vendorName = vendor + (debug ? '.js' : '.min.js');
 
-  return gulp
+  let fs = gulp
     .src(htmlEntries)
     .pipe(pug({
       pretty: debug,
@@ -68,6 +68,15 @@ gulp.task('html', function () {
     }))
     .pipe(rename(htmlName))
     .pipe(gulp.dest(outDir));
+
+  if (process.env.watching) {
+    fs = fs
+      .pipe(connect.reload());
+
+    gulp.watch(htmlEntries, gulp.series('html'))
+  }
+
+  return fs;
 });
 
 gulp.task('sass', function () {
@@ -92,8 +101,17 @@ gulp.task('sass', function () {
       .pipe(cleanCss());
   }
 
-  return fs
+  fs = fs
     .pipe(gulp.dest(outDir));
+
+  if (process.env.watching) {
+    fs = fs
+      .pipe(connect.reload());
+
+    gulp.watch(cssEntries, gulp.series('sass'));
+  }
+
+  return fs;
 });
 
 gulp.task('vendor', function () {
@@ -131,12 +149,22 @@ gulp.task('ts', function () {
   return bundle();
 });
 
-gulp.task('server', function () {
+gulp.task('server', function (done) {
   connect.server({
     name: package,
     root: outDir,
     port: 8080,
     livereload: true,
+    middleware: function () {
+      return [function (req, res, next) {
+        if (/_kill_\/?/.test(req.url)) {
+          res.end();
+          connect.serverClose();
+          done();
+        }
+        next();
+      }];
+    }
   });
 });
 
@@ -215,7 +243,13 @@ function bundle() {
       .pipe(uglify());
   }
 
-  return fs
-    .pipe(gulp.dest(outDir))
-    .pipe(connect.reload());
+  fs = fs
+    .pipe(gulp.dest(outDir));
+
+  if (process.env.watching) {
+    fs = fs
+      .pipe(connect.reload());
+  }
+
+  return fs;
 }
