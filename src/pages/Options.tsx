@@ -6,40 +6,33 @@ import store from "../utils/store";
 import TimeDuration from "../utils/TimeDuration";
 
 const Options: React.FC<{
-  onChange?: () => void;
+  onChange: () => void;
   lastUpdate: number;
 }> = ({ onChange, lastUpdate }) => {
+  const navigate = useNavigate();
   const [textContents, setTextContents] = useState("");
   const [resetAcknowledged, setResetAcknowledged] = useState(false);
 
-  const navigate = useNavigate();
-
-  function changed() {
-    if (onChange) {
-      onChange();
-    }
-  }
-
   function saveGame() {
     Settings.Save();
-    changed();
+    onChange();
   }
 
   function loadGame() {
     if (Settings.Load()) {
-      changed();
+      onChange();
       navigate("/");
     }
   }
 
   function exportGame() {
     setTextContents(store.saveAs(Settings.toObject()));
-    changed();
+    onChange();
   }
 
   function importGame() {
     if (Settings.fromObject(store.loadAs(textContents))) {
-      changed();
+      onChange();
       navigate("/");
     }
   }
@@ -48,7 +41,7 @@ const Options: React.FC<{
     let tickSpeed = parseInt(event.target.value);
     if (tickSpeed >= 1 && tickSpeed <= 60) {
       Settings.ticksPerSecond = tickSpeed;
-      changed();
+      onChange();
     }
   }
 
@@ -56,7 +49,7 @@ const Options: React.FC<{
     let saveFreq = parseInt(event.target.value);
     if (saveFreq >= 1 && saveFreq <= 600) {
       Settings.saveFrequencySecs = 600 / saveFreq;
-      changed();
+      onChange();
     }
   }
 
@@ -64,7 +57,7 @@ const Options: React.FC<{
     if (resetAcknowledged) {
       if (confirm("Are you sure you want to reset? This cannot be undone.")) {
         Settings.Reset();
-        changed();
+        onChange();
         navigate("/");
       } else {
         setResetAcknowledged(false);
