@@ -11,7 +11,7 @@ import clamp from "../utils/clamp";
 const MineField: React.FC<{ board: Playboard }> = ({ board }) => {
   const [cellSize, setCellSize] = useState(1);
   const [gameState, setGameState] = useState("inactive" as BoardState);
-  const [cellCounts, setCellCounts] = useState(countCells(board));
+  const [cellCounts, setCellCounts] = useState(() => countCells(board));
   const [tapMode, setTapMode] = useState("reveal" as CellAction);
 
   useEffect(() => {
