@@ -13,7 +13,7 @@ const Settings = {
   lastLoaded: Date.now(),
 
   maxErrors: 1,
-  mainPlayboard: emptyBoard,
+  mainPlayboard: { ...emptyBoard },
 
   Save(): boolean {
     return store.save(_saveStoreName, this.toObject());
@@ -35,7 +35,7 @@ const Settings = {
     this.lastLoaded = Date.now();
 
     this.maxErrors = 1;
-    this.mainPlayboard = emptyBoard;
+    this.mainPlayboard = { ...emptyBoard };
   },
 
   toObject(): any {
