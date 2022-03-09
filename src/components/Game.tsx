@@ -34,61 +34,41 @@ const Game: React.FC = () => {
     // TODO: Update
 
     // Signal the update down to child elements
-    Settings.lastUpdate = now;
     setLastUpdate(now);
 
+    Settings.lastUpdate = now;
     if (now - Settings.lastSaved >= Settings.saveFrequencySecs * 1000) {
       Settings.Save();
     }
   }, []);
 
+  function activeClass(props: { isActive: boolean }): string {
+    return props.isActive ? "active" : "";
+  }
+
   return (
     <HashRouter>
-      <div>
-        <nav className="navbar">
-          <div className="left">
-            <ul>
-              <li>
-                <NavLink
-                  className={({ isActive }) => (isActive ? "active" : "")}
-                  to="/"
-                >
-                  Mine Sweep
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  className={({ isActive }) => (isActive ? "active" : "")}
-                  to="/help"
-                >
-                  Help
-                </NavLink>
-              </li>
-            </ul>
-          </div>
-          <div className="right">
-            <ul>
-              <li>
-                <NavLink
-                  className={({ isActive }) => (isActive ? "active" : "")}
-                  to="/options"
-                >
-                  Settings
-                </NavLink>
-              </li>
-            </ul>
-          </div>
-        </nav>
-        <div className="main">
-          <Routes>
-            <Route path="/" element={<Main />} />
-            <Route path="/help" element={<Help />} />
-            <Route
-              path="/options"
-              element={<Options onChange={resetTimer} />}
-            />
-          </Routes>
+      <nav className="navbar">
+        <div className="left">
+          <NavLink className={activeClass} to="/">
+            Mine Sweep
+          </NavLink>
+          <NavLink className={activeClass} to="/help">
+            Help
+          </NavLink>
         </div>
+        <div className="right">
+          <NavLink className={activeClass} to="/options">
+            Settings
+          </NavLink>
+        </div>
+      </nav>
+      <div className="main">
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/help" element={<Help />} />
+          <Route path="/options" element={<Options onChange={resetTimer} />} />
+        </Routes>
       </div>
     </HashRouter>
   );
