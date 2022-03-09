@@ -1,70 +1,25 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 
-import { actOnCell, CellAction } from "../model/Cell";
-import { BoardState, countCells, Playboard } from "../model/Playboard";
-import Settings from "../model/Settings";
+import { CellAction } from "../model/Cell";
+import { BoardState, Playboard } from "../model/Playboard";
 import MineCell from "./MineCell";
-import Scoreboard from "./Scoreboard";
 import cellIcons from "../utils/cellIcons";
 import clamp from "../utils/clamp";
 
-const MineField: React.FC<{ board: Playboard }> = ({ board }) => {
-  const [cellSize, setCellSize] = useState(1);
-  const [gameState, setGameState] = useState("inactive" as BoardState);
-  const [cellCounts, setCellCounts] = useState(() => countCells(board));
+const MineField: React.FC<{
+  board: Playboard;
+  setBoard: (board: Playboard) => void;
+  gameState: BoardState;
+  showToggleTap?: boolean;
+}> = ({ board, setBoard, gameState, showToggleTap }) => {
   const [tapMode, setTapMode] = useState("reveal" as CellAction);
 
-  useEffect(() => {
-    const estSize = Math.floor(95 / Math.max(board.rows, board.cols));
-    setCellSize(clamp(estSize, 2, 30));
+  const estSize = Math.floor(95 / Math.max(board.rows, board.cols));
+  const cellSize = clamp(estSize, 2, 30);
 
-    calcBoardState();
-  }, [board]);
-
-  const calcBoardState = useCallback(() => {
-    const counts = countCells(board);
-    setCellCounts(counts);
-
-    if (board.cols * board.rows === 0) {
-      setGameState("inactive");
-    } else if (counts["blown"] >= Settings.maxErrors) {
-      setGameState("lost");
-      board.cells.forEach((cells) =>
-        cells.forEach((cell) => actOnCell(cell, "reveal")),
-      );
-    } else if (
-      counts["blown"] + counts["flagged"] === board.numMines &&
-      counts["hidden"] === 0 &&
-      counts["revealed"] === board.cols * board.rows - board.numMines
-    ) {
-      setGameState("won");
-    } else {
-      setGameState("active");
-    }
-  }, [board]);
-
-  const toggleTapMode = useCallback(() => {
+  function toggleTapMode() {
     setTapMode(tapMode === "reveal" ? "flag" : "reveal");
-  }, [tapMode]);
-
-  const cells = useMemo(
-    () =>
-      board.cells.flatMap((row, r) => (
-        <tr key={"row:" + r + ":*"}>
-          {row.map((cell, c) => (
-            <MineCell
-              key={"cell:" + r + ":" + c}
-              cell={cell}
-              size={cellSize}
-              enabled={gameState === "active"}
-              tapMode={tapMode}
-              onAction={calcBoardState}
-            />
-          ))}
-        </tr>
-      )),
-    [board, cellSize, cellCounts, gameState, tapMode],
-  );
+  }
 
   const tapText = tapMode === "reveal" ? "Revealing" : "Flagging";
   const tapCell = cellIcons[tapMode === "reveal" ? "revealed" : "flagged"];
@@ -76,20 +31,36 @@ const MineField: React.FC<{ board: Playboard }> = ({ board }) => {
 
   return (
     <div className="minefield">
-      <Scoreboard board={board} cellCounts={cellCounts} gameState={gameState} />
       <table>
-        <thead>
-          <tr>
-            <th colSpan={board.cols} className="cell">
-              <button type="button" value={tapMode} onClick={toggleTapMode}>
-                {"Tap mode: "}
-                {tapIcon ? tapIcon({ color: tapColor, size: "1em" }) : null}
-                {" " + tapText}
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>{cells}</tbody>
+        {(showToggleTap ?? true) && (
+          <thead>
+            <tr>
+              <th colSpan={board.cols} className="cell">
+                <button type="button" value={tapMode} onClick={toggleTapMode}>
+                  {"Tap mode: "}
+                  {tapIcon ? tapIcon({ color: tapColor, size: "1em" }) : null}
+                  {" " + tapText}
+                </button>
+              </th>
+            </tr>
+          </thead>
+        )}
+        <tbody>
+          {board.cells.flatMap((row, r) => (
+            <tr key={"row:" + r + ":*"}>
+              {row.map((cell, c) => (
+                <MineCell
+                  key={"cell:" + r + ":" + c}
+                  cell={cell}
+                  size={cellSize}
+                  enabled={gameState === "active"}
+                  tapMode={tapMode}
+                  onAction={() => setBoard({ ...board })}
+                />
+              ))}
+            </tr>
+          ))}
+        </tbody>
       </table>
     </div>
   );
