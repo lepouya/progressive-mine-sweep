@@ -1,4 +1,4 @@
-import React, { MouseEvent } from "react";
+import React, { MouseEvent, useCallback } from "react";
 
 import { actOnCell, Cell, CellAction } from "../model/Cell";
 import cellIcons from "../utils/cellIcons";
@@ -10,28 +10,34 @@ const MineCell: React.FC<{
   tapMode: CellAction;
   onAction: (cell: Cell) => void;
 }> = ({ cell, size, enabled, tapMode, onAction }) => {
-  function handleClick(event: MouseEvent<Element>) {
-    event.preventDefault();
+  const handleClick = useCallback(
+    (event: MouseEvent<Element>) => {
+      event.preventDefault();
 
-    if (!enabled) {
-      return;
-    }
-    // To flag: Right click
-    //  On devices that don't have right click, hold any of the modifier keys and left click
-    else if (
-      event.button === 2 ||
-      (event.button === 0 &&
-        (event.altKey || event.ctrlKey || event.metaKey || tapMode === "flag"))
-    ) {
-      actOnCell(cell, "flag");
-      onAction(cell);
-    }
-    // To reveal: Left click
-    else if (event.button === 0 && tapMode === "reveal") {
-      actOnCell(cell, "reveal");
-      onAction(cell);
-    }
-  }
+      if (!enabled) {
+        return;
+      }
+      // To flag: Right click
+      //  On devices that don't have right click, hold any of the modifier keys and left click
+      else if (
+        event.button === 2 ||
+        (event.button === 0 &&
+          (event.altKey ||
+            event.ctrlKey ||
+            event.metaKey ||
+            tapMode === "flag"))
+      ) {
+        actOnCell(cell, "flag");
+        onAction(cell);
+      }
+      // To reveal: Left click
+      else if (event.button === 0 && tapMode === "reveal") {
+        actOnCell(cell, "reveal");
+        onAction(cell);
+      }
+    },
+    [cell, enabled, tapMode, onAction],
+  );
 
   const minPx = Math.floor((640 * size) / 100);
   const cellSize = `min(${size}vmin, ${minPx}px)`;

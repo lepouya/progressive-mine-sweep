@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { HashRouter, NavLink, Route, Routes } from "react-router-dom";
 
 import Main from "../pages/Main";
@@ -8,24 +8,27 @@ import Options from "../pages/Options";
 
 const Game: React.FC = () => {
   const [timerId, setTimerId] = useState(null as NodeJS.Timer | null);
-  const [lastUpdate, setLastUpdate] = useState(0);
+  const [_, setLastUpdate] = useState(0);
 
   useEffect(() => {
     resetTimer();
     return () => resetTimer(false);
   }, []);
 
-  function resetTimer(startNew = true) {
-    if (timerId) {
-      clearInterval(timerId);
-      setTimerId(null);
-    }
-    if (startNew) {
-      setTimerId(setInterval(tick, 1000 / Settings.ticksPerSecond));
-    }
-  }
+  const resetTimer = useCallback(
+    (startNew = true) => {
+      if (timerId) {
+        clearInterval(timerId);
+        setTimerId(null);
+      }
+      if (startNew) {
+        setTimerId(setInterval(tick, 1000 / Settings.ticksPerSecond));
+      }
+    },
+    [timerId],
+  );
 
-  function tick() {
+  const tick = useCallback(() => {
     const now = Date.now();
 
     // TODO: Update
@@ -37,7 +40,7 @@ const Game: React.FC = () => {
     if (now - Settings.lastSaved >= Settings.saveFrequencySecs * 1000) {
       Settings.Save();
     }
-  }
+  }, []);
 
   return (
     <HashRouter>
@@ -82,9 +85,7 @@ const Game: React.FC = () => {
             <Route path="/help" element={<Help />} />
             <Route
               path="/options"
-              element={
-                <Options onChange={resetTimer} lastUpdate={lastUpdate} />
-              }
+              element={<Options onChange={resetTimer} />}
             />
           </Routes>
         </div>

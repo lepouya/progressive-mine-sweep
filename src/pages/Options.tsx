@@ -7,8 +7,7 @@ import TimeDuration from "../utils/TimeDuration";
 
 const Options: React.FC<{
   onChange: () => void;
-  lastUpdate: number;
-}> = ({ onChange, lastUpdate }) => {
+}> = ({ onChange }) => {
   const navigate = useNavigate();
   const [textContents, setTextContents] = useState("");
   const [resetAcknowledged, setResetAcknowledged] = useState(false);
@@ -93,7 +92,7 @@ const Options: React.FC<{
         <div className="full">
           <TimeDuration
             start={Settings.lastReset}
-            end={lastUpdate}
+            end={Settings.lastUpdate}
             prefix={"You started this game "}
             suffix={" ago"}
           />
@@ -102,7 +101,7 @@ const Options: React.FC<{
         <div className="full">
           <TimeDuration
             start={Settings.lastLoaded}
-            end={lastUpdate}
+            end={Settings.lastUpdate}
             prefix={"This session started "}
             suffix={" ago"}
           />
@@ -111,7 +110,7 @@ const Options: React.FC<{
         <div className="full">
           <TimeDuration
             start={Settings.lastSaved}
-            end={lastUpdate}
+            end={Settings.lastUpdate}
             prefix={"Game was last saved "}
             suffix={" ago"}
           />

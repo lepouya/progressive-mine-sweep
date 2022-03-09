@@ -45,7 +45,9 @@ const BoardControls: React.FC<{
   }
 
   function getHint() {
-    genHints(board, 1, 0, 8, 1);
+    if (genHints(board, 1, 0, 8, 1) > 0) {
+      setBoard({ ...board });
+    }
   }
 
   return (
