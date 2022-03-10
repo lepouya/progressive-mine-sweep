@@ -3,7 +3,7 @@ import { Cell } from "./Cell";
 
 export type BoardState = "inactive" | "active" | "won" | "lost";
 
-export type Playboard = {
+export type Board = {
   rows: number;
   cols: number;
 
@@ -11,14 +11,14 @@ export type Playboard = {
   numMines: number;
 };
 
-export const emptyBoard: Playboard = {
+export const emptyBoard: Board = {
   rows: 0,
   cols: 0,
   cells: [],
   numMines: 0,
 };
 
-export function makeClearPlayboard(rows: number, cols: number): Playboard {
+export function makeClearBoard(rows: number, cols: number): Board {
   const cells: Cell[][] = [];
   for (let row = 0; row < rows; row++) {
     cells[row] = [];
@@ -37,46 +37,46 @@ export function makeClearPlayboard(rows: number, cols: number): Playboard {
 }
 
 export function populateRandomMines(
-  playboard: Playboard,
+  board: Board,
   minMines?: number,
   maxMines?: number,
-): Playboard {
+): Board {
   minMines = minMines ?? maxMines ?? 0;
   maxMines = maxMines ?? minMines ?? 0;
   let numMines = clamp(
     Math.floor(minMines + Math.random() * (1 + maxMines - minMines)),
     0,
-    playboard.rows * playboard.cols - playboard.numMines - 1,
+    board.rows * board.cols - board.numMines - 1,
   );
 
   while (numMines > 0) {
-    const r = Math.floor(Math.random() * playboard.rows);
-    const c = Math.floor(Math.random() * playboard.cols);
+    const r = Math.floor(Math.random() * board.rows);
+    const c = Math.floor(Math.random() * board.cols);
 
-    if (playboard.cells[r][c].contents === "clear") {
-      playboard.cells[r][c].contents = "mine";
-      playboard.numMines++;
+    if (board.cells[r][c].contents === "clear") {
+      board.cells[r][c].contents = "mine";
+      board.numMines++;
       numMines--;
     }
   }
 
-  return playboard;
+  return board;
 }
 
-export function populateNeighboringCells(playboard: Playboard): Playboard {
-  for (let r = 0; r < playboard.rows; r++) {
-    for (let c = 0; c < playboard.cols; c++) {
-      if (playboard.cells[r][c].contents === "mine") {
+export function populateNeighboringCells(board: Board): Board {
+  for (let r = 0; r < board.rows; r++) {
+    for (let c = 0; c < board.cols; c++) {
+      if (board.cells[r][c].contents === "mine") {
         for (let dr = r - 1; dr <= r + 1; dr++) {
           for (let dc = c - 1; dc <= c + 1; dc++) {
             if (
               dr >= 0 &&
               dc >= 0 &&
-              dr < playboard.rows &&
-              dc < playboard.cols &&
+              dr < board.rows &&
+              dc < board.cols &&
               !(dr === r && dc === c)
             ) {
-              playboard.cells[dr][dc].neighbors++;
+              board.cells[dr][dc].neighbors++;
             }
           }
         }
@@ -84,24 +84,24 @@ export function populateNeighboringCells(playboard: Playboard): Playboard {
     }
   }
 
-  return playboard;
+  return board;
 }
 
-export function genPlayboard(
+export function genBoard(
   rows: number,
   cols: number,
   minMines?: number,
   maxMines?: number,
-): Playboard {
-  let playboard = makeClearPlayboard(rows, cols);
-  playboard = populateRandomMines(playboard, minMines, maxMines);
-  playboard = populateNeighboringCells(playboard);
+): Board {
+  let board = makeClearBoard(rows, cols);
+  board = populateRandomMines(board, minMines, maxMines);
+  board = populateNeighboringCells(board);
 
-  return playboard;
+  return board;
 }
 
 export function genHints(
-  playboard: Playboard,
+  board: Board,
   numHints: number,
   minHintLevel: number = 0,
   maxHintLevel: number = 8,
@@ -117,7 +117,7 @@ export function genHints(
   }
 
   // Rank all hidden cells
-  const rankedHints = playboard.cells
+  const rankedHints = board.cells
     .flat()
     .filter(
       (cell) =>
@@ -164,7 +164,7 @@ export function genHints(
   return numHints;
 }
 
-export type PlayboardCellCounts = {
+export type BoardCellCounts = {
   hidden: number;
   hinted: number;
   flagged: number;
@@ -172,7 +172,7 @@ export type PlayboardCellCounts = {
   blown: number;
 };
 
-export function countCells(playboard: Playboard): PlayboardCellCounts {
+export function countCells(board: Board): BoardCellCounts {
   const counts = {
     hidden: 0,
     hinted: 0,
@@ -181,9 +181,7 @@ export function countCells(playboard: Playboard): PlayboardCellCounts {
     blown: 0,
   };
 
-  playboard.cells.forEach((cells) =>
-    cells.forEach((cell) => counts[cell.state]++),
-  );
+  board.cells.forEach((cells) => cells.forEach((cell) => counts[cell.state]++));
 
   return counts;
 }

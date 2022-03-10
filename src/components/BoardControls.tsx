@@ -1,10 +1,10 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { genHints, genPlayboard, Playboard } from "../model/Playboard";
+import { genHints, genBoard, Board } from "../model/Board";
 import clamp from "../utils/clamp";
 
 const BoardControls: React.FC<{
-  board: Playboard;
-  setBoard: (board: Playboard) => void;
+  board: Board;
+  setBoard: (board: Board) => void;
 }> = ({ board, setBoard }) => {
   const [rows, setRows] = useState(0);
   const [cols, setCols] = useState(0);
@@ -41,7 +41,7 @@ const BoardControls: React.FC<{
     const r = clamp(rows, 3, 40);
     const c = clamp(cols, 3, 40);
     const m = (r * c * clamp(mines, 0, 100)) / 100;
-    setBoard(genPlayboard(r, c, Math.floor(m), Math.ceil(m)));
+    setBoard(genBoard(r, c, Math.floor(m), Math.ceil(m)));
   }
 
   function getHint() {

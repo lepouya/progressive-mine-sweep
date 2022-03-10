@@ -1,10 +1,10 @@
 import React from "react";
 
-import { BoardState, Playboard, PlayboardCellCounts } from "../model/Playboard";
+import { BoardState, Board, BoardCellCounts } from "../model/Board";
 
 const Scoreboard: React.FC<{
-  board: Playboard;
-  cellCounts: PlayboardCellCounts;
+  board: Board;
+  cellCounts: BoardCellCounts;
   gameState: BoardState;
 }> = ({ board, cellCounts, gameState }) => {
   return (

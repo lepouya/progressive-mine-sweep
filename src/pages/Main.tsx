@@ -3,22 +3,22 @@ import BoardControls from "../components/BoardControls";
 import MineField from "../components/MineField";
 import Scoreboard from "../components/Scoreboard";
 import { actOnCell } from "../model/Cell";
-import { BoardState, countCells, genPlayboard } from "../model/Playboard";
+import { BoardState, countCells, genBoard } from "../model/Board";
 import Settings from "../model/Settings";
 
 const Main: React.FC = () => {
-  const [board, setBoard] = useState(Settings.mainPlayboard);
+  const [board, setBoard] = useState(Settings.mainBoard);
   const [gameState, setGameState] = useState("inactive" as BoardState);
   const [cellCounts, setCellCounts] = useState(() => countCells(board));
 
   useEffect(() => {
     if (board.rows === 0 || board.cols === 0) {
-      setBoard(genPlayboard(10, 10, 10));
+      setBoard(genBoard(10, 10, 10));
     }
   }, []);
 
   useEffect(() => {
-    Settings.mainPlayboard = board;
+    Settings.mainBoard = board;
 
     const counts = countCells(board);
     setCellCounts(counts);

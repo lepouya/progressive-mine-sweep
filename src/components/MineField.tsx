@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 
 import { CellAction } from "../model/Cell";
-import { BoardState, Playboard } from "../model/Playboard";
+import { BoardState, Board } from "../model/Board";
 import MineCell from "./MineCell";
 import cellIcons from "../utils/cellIcons";
 import clamp from "../utils/clamp";
 
 const MineField: React.FC<{
-  board: Playboard;
-  setBoard: (board: Playboard) => void;
+  board: Board;
+  setBoard: (board: Board) => void;
   gameState: BoardState;
   showToggleTap?: boolean;
 }> = ({ board, setBoard, gameState, showToggleTap }) => {
