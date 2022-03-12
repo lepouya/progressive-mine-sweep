@@ -42,26 +42,55 @@ function _codec(s: string): string {
   );
 }
 
-export default abstract class store {
-  static _skipEncoding() {
-    _skipEncoding = true;
-  }
+function _toObject<T>(value: T): any {
+  const saveObj: Record<string, any> = {};
 
-  static saveAs(value: any): string {
-    return window.btoa(_codec(JSON.stringify(value)));
-  }
-
-  static loadAs(value: string): any {
-    return JSON.parse(_codec(window.atob(value)));
-  }
-
-  static reset(name: string): void {
-    if (_storageAvailable()) {
-      window.localStorage.removeItem(name);
+  let k: keyof typeof value;
+  for (k in value) {
+    const v = value[k];
+    if (typeof v !== "function") {
+      saveObj[k.toString()] = v;
     }
   }
 
-  static save(name: string, value: any): boolean {
+  return saveObj;
+}
+
+function _fromObject<T>(value: T, loadObj: any): boolean {
+  if (!loadObj) {
+    return false;
+  }
+
+  let k: keyof typeof value;
+  for (k in value) {
+    if (typeof loadObj[k] === typeof value[k]) {
+      value[k] = loadObj[k];
+    }
+  }
+
+  return true;
+}
+
+const store = {
+  skipEncoding() {
+    _skipEncoding = true;
+  },
+
+  saveAs<T>(value: T): string {
+    return window.btoa(_codec(JSON.stringify(_toObject(value))));
+  },
+
+  loadAs<T>(value: T, loadStr: string): boolean {
+    return _fromObject(value, JSON.parse(_codec(window.atob(loadStr))));
+  },
+
+  reset(name: string): void {
+    if (_storageAvailable()) {
+      window.localStorage.removeItem(name);
+    }
+  },
+
+  save<T>(name: string, value: T): boolean {
     if (_storageAvailable()) {
       const saveVal = store.saveAs(value);
       if (saveVal) {
@@ -71,18 +100,20 @@ export default abstract class store {
     }
 
     return false;
-  }
+  },
 
-  static load(name: string): any {
+  load<T>(name: string, value: T): boolean {
     if (_storageAvailable()) {
       const saveVal = window.localStorage.getItem(name);
       if (saveVal) {
         try {
-          return store.loadAs(saveVal);
+          return store.loadAs(value, saveVal);
         } catch (_) {}
       }
     }
 
-    return null;
-  }
-}
+    return false;
+  },
+};
+
+export default store;

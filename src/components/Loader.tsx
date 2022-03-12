@@ -2,19 +2,20 @@ import React, { useEffect, useState } from "react";
 
 import Spinner from "../utils/Spinner";
 import Game from "./Game";
-import Settings from "../model/Settings";
+import useGameContext from "../utils/GameContext";
 
 const Loader: React.FC = () => {
+  const { load } = useGameContext();
   const [isLoaded, setLoaded] = useState(false);
 
   useEffect(() => {
     if (!isLoaded) {
-      setTimeout(load, 1);
+      setTimeout(initialize, 1);
     }
   }, []);
 
-  function load() {
-    Settings.Load();
+  function initialize() {
+    load();
     setLoaded(true);
   }
 

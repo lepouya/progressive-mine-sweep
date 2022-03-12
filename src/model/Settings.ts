@@ -1,73 +1,19 @@
-import store from "../utils/store";
-import { emptyBoard } from "./Board";
+export type Settings = {
+  ticksPerSecond: number;
+  saveFrequencySecs: number;
+  lastReset: number;
+  lastUpdate: number;
+  lastSaved: number;
+  lastLoaded: number;
+  maxErrors: number;
+};
 
-const _saveStoreName = "Settings";
-
-const Settings = {
+export const emptySettings = {
   ticksPerSecond: 20,
   saveFrequencySecs: 60,
-
   lastReset: Date.now(),
   lastUpdate: 0,
   lastSaved: 0,
   lastLoaded: Date.now(),
-
   maxErrors: 1,
-  mainBoard: { ...emptyBoard },
-
-  Save(): boolean {
-    return store.save(_saveStoreName, this.toObject());
-  },
-
-  Load(): boolean {
-    return this.fromObject(store.load(_saveStoreName));
-  },
-
-  Reset(): void {
-    store.reset(_saveStoreName);
-
-    this.ticksPerSecond = 20;
-    this.saveFrequencySecs = 60;
-
-    this.lastReset = Date.now();
-    this.lastUpdate = 0;
-    this.lastSaved = 0;
-    this.lastLoaded = Date.now();
-
-    this.maxErrors = 1;
-    this.mainBoard = { ...emptyBoard };
-  },
-
-  toObject(): any {
-    const saveObj: Record<string, any> = {};
-    this.lastSaved = Date.now();
-
-    let k: keyof typeof Settings;
-    for (k in Settings) {
-      const v = Settings[k];
-      if (typeof v !== "function") {
-        saveObj[k] = v;
-      }
-    }
-
-    return saveObj;
-  },
-
-  fromObject(loadObj: any): boolean {
-    if (!loadObj) {
-      return false;
-    }
-
-    let k: keyof typeof Settings;
-    for (k in Settings) {
-      if (typeof loadObj[k] === typeof Settings[k]) {
-        Settings[k] = loadObj[k];
-      }
-    }
-
-    this.lastLoaded = Date.now();
-    return true;
-  },
 };
-
-export default Settings;

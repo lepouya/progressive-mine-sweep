@@ -12,7 +12,7 @@ const MineField: React.FC<{
   gameState: BoardState;
   showToggleTap?: boolean;
 }> = ({ board, setBoard, gameState, showToggleTap }) => {
-  const [tapMode, setTapMode] = useState("reveal" as CellAction);
+  const [tapMode, setTapMode] = useState<CellAction>("reveal");
 
   const estSize = Math.floor(95 / Math.max(board.rows, board.cols));
   const cellSize = clamp(estSize, 2, 30);

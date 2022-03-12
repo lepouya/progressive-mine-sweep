@@ -1,46 +1,42 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HashRouter, NavLink, Route, Routes } from "react-router-dom";
 
 import Main from "../pages/Main";
 import Help from "../pages/Help";
-import Settings from "../model/Settings";
 import Options from "../pages/Options";
+import useGameContext from "../utils/GameContext";
 
 const Game: React.FC = () => {
-  const [timerId, setTimerId] = useState(null as NodeJS.Timer | null);
+  const { settings, save } = useGameContext();
+  const [timerId, setTimerId] = useState<NodeJS.Timer | null>(null);
   const [_, setLastUpdate] = useState(0);
 
   useEffect(() => {
-    resetTimer();
-    return () => resetTimer(false);
-  }, []);
+    setTimerId(setInterval(tick, 1000 / settings.ticksPerSecond));
 
-  const resetTimer = useCallback(
-    (startNew = true) => {
+    return () => {
       if (timerId) {
         clearInterval(timerId);
         setTimerId(null);
       }
-      if (startNew) {
-        setTimerId(setInterval(tick, 1000 / Settings.ticksPerSecond));
-      }
-    },
-    [timerId],
-  );
+    };
+  }, [settings, settings.ticksPerSecond]);
 
-  const tick = useCallback(() => {
+  function tick() {
     const now = Date.now();
 
     // TODO: Update
 
     // Signal the update down to child elements
     setLastUpdate(now);
-
-    Settings.lastUpdate = now;
-    if (now - Settings.lastSaved >= Settings.saveFrequencySecs * 1000) {
-      Settings.Save();
+    settings.lastUpdate = Date.now();
+    if (
+      now - settings.lastSaved >= settings.saveFrequencySecs * 1000 &&
+      now - settings.lastLoaded >= settings.saveFrequencySecs * 1000
+    ) {
+      save();
     }
-  }, []);
+  }
 
   function activeClass(props: { isActive: boolean }): string {
     return props.isActive ? "active" : "";
@@ -67,7 +63,7 @@ const Game: React.FC = () => {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/help" element={<Help />} />
-          <Route path="/options" element={<Options onChange={resetTimer} />} />
+          <Route path="/options" element={<Options />} />
         </Routes>
       </div>
     </HashRouter>

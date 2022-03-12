@@ -1,37 +1,31 @@
 import React, { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router";
 
-import Settings from "../model/Settings";
-import store from "../utils/store";
 import TimeDuration from "../utils/TimeDuration";
+import useGameContext from "../utils/GameContext";
 
-const Options: React.FC<{
-  onChange: () => void;
-}> = ({ onChange }) => {
+const Options: React.FC = () => {
+  const { settings, load, loadAs, save, saveAs, reset } = useGameContext();
   const navigate = useNavigate();
   const [textContents, setTextContents] = useState("");
   const [resetAcknowledged, setResetAcknowledged] = useState(false);
 
   function saveGame() {
-    Settings.Save();
-    onChange();
+    save();
   }
 
   function loadGame() {
-    if (Settings.Load()) {
-      onChange();
+    if (load()) {
       navigate("/");
     }
   }
 
   function exportGame() {
-    setTextContents(store.saveAs(Settings.toObject()));
-    onChange();
+    setTextContents(saveAs());
   }
 
   function importGame() {
-    if (Settings.fromObject(store.loadAs(textContents))) {
-      onChange();
+    if (loadAs(textContents)) {
       navigate("/");
     }
   }
@@ -39,50 +33,26 @@ const Options: React.FC<{
   function changeTickSpeed(event: ChangeEvent<HTMLInputElement>) {
     let tickSpeed = parseInt(event.target.value);
     if (tickSpeed >= 1 && tickSpeed <= 60) {
-      Settings.ticksPerSecond = tickSpeed;
-      onChange();
+      settings.ticksPerSecond = tickSpeed;
     }
   }
 
   function changeSaveFrequency(event: ChangeEvent<HTMLInputElement>) {
     let saveFreq = parseInt(event.target.value);
     if (saveFreq >= 1 && saveFreq <= 600) {
-      Settings.saveFrequencySecs = 600 / saveFreq;
-      onChange();
+      settings.saveFrequencySecs = 600 / saveFreq;
     }
   }
 
   function resetGame() {
     if (resetAcknowledged) {
       if (confirm("Are you sure you want to reset? This cannot be undone.")) {
-        Settings.Reset();
-        onChange();
+        reset();
         navigate("/");
       } else {
         setResetAcknowledged(false);
       }
     }
-  }
-
-  function getRawData() {
-    const settings = [];
-    let pos = 0;
-
-    let k: keyof typeof Settings;
-    for (k in Settings) {
-      const v = Settings[k];
-      if (typeof v !== "function") {
-        settings[pos++] = (
-          <div key={k} className="full">
-            <pre style={{ margin: "2px" }}>
-              {k}: {typeof v === "object" ? JSON.stringify(v, null, 2) : v}
-            </pre>
-          </div>
-        );
-      }
-    }
-
-    return settings;
   }
 
   return (
@@ -91,8 +61,8 @@ const Options: React.FC<{
         <div className="title-bar">Game Data</div>
         <div className="full">
           <TimeDuration
-            start={Settings.lastReset}
-            end={Settings.lastUpdate}
+            start={settings.lastReset}
+            end={settings.lastUpdate}
             prefix={"You started this game "}
             suffix={" ago"}
           />
@@ -100,8 +70,8 @@ const Options: React.FC<{
         </div>
         <div className="full">
           <TimeDuration
-            start={Settings.lastLoaded}
-            end={Settings.lastUpdate}
+            start={settings.lastLoaded}
+            end={settings.lastUpdate}
             prefix={"This session started "}
             suffix={" ago"}
           />
@@ -109,8 +79,8 @@ const Options: React.FC<{
         </div>
         <div className="full">
           <TimeDuration
-            start={Settings.lastSaved}
-            end={Settings.lastUpdate}
+            start={settings.lastSaved}
+            end={settings.lastUpdate}
             prefix={"Game was last saved "}
             suffix={" ago"}
           />
@@ -146,7 +116,7 @@ const Options: React.FC<{
         </div>
         <div className="half">Updating frequency:</div>
         <div className="half center">
-          {Math.floor(1000 / Settings.ticksPerSecond)}ms
+          {Math.floor(1000 / settings.ticksPerSecond)}ms
         </div>
         <div className="half"></div>
         <div className="half center">
@@ -154,7 +124,7 @@ const Options: React.FC<{
             type="range"
             min={4}
             max={30}
-            value={Settings.ticksPerSecond}
+            value={settings.ticksPerSecond}
             onInput={changeTickSpeed}
           />
         </div>
@@ -166,8 +136,8 @@ const Options: React.FC<{
         <div className="half">Saving frequency:</div>
         <div className="half center">
           <TimeDuration
-            end={Settings.saveFrequencySecs * 1000}
-            millis={Settings.saveFrequencySecs < 10}
+            end={settings.saveFrequencySecs * 1000}
+            millis={settings.saveFrequencySecs < 10}
             never=""
             now=""
           />
@@ -178,7 +148,7 @@ const Options: React.FC<{
             type="range"
             min={1}
             max={60}
-            value={600 / Settings.saveFrequencySecs}
+            value={600 / settings.saveFrequencySecs}
             onInput={changeSaveFrequency}
           />
         </div>
@@ -210,11 +180,6 @@ const Options: React.FC<{
             onClick={resetGame}
           />
         </div>
-      </div>
-
-      <div className="panel">
-        <div className="title-bar">Raw Data</div>
-        {getRawData()}
       </div>
     </div>
   );

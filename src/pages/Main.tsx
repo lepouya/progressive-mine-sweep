@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
+
 import BoardControls from "../components/BoardControls";
 import MineField from "../components/MineField";
 import Scoreboard from "../components/Scoreboard";
 import { actOnCell } from "../model/Cell";
 import { BoardState, countCells, genBoard } from "../model/Board";
-import Settings from "../model/Settings";
+import useGameContext from "../utils/GameContext";
 
 const Main: React.FC = () => {
-  const [board, setBoard] = useState(Settings.mainBoard);
+  const { settings, board, setBoard } = useGameContext();
   const [gameState, setGameState] = useState("inactive" as BoardState);
   const [cellCounts, setCellCounts] = useState(() => countCells(board));
 
@@ -18,14 +19,12 @@ const Main: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    Settings.mainBoard = board;
-
     const counts = countCells(board);
     setCellCounts(counts);
 
     if (board.cols * board.rows === 0) {
       setGameState("inactive");
-    } else if (counts["blown"] >= Settings.maxErrors) {
+    } else if (counts["blown"] >= settings.maxErrors) {
       setGameState("lost");
       board.cells.forEach((cells) =>
         cells.forEach((cell) => actOnCell(cell, "reveal")),
