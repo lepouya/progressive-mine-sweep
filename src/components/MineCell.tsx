@@ -6,16 +6,22 @@ import cellIcons from "../utils/cellIcons";
 const MineCell: React.FC<{
   cell: Cell;
   size: number;
+  initialized: boolean;
   enabled: boolean;
   tapMode: CellAction;
   onAction: (cell: Cell) => void;
-}> = ({ cell, size, enabled, tapMode, onAction }) => {
+  onInitialize: (cell: Cell) => void;
+}> = ({ cell, size, initialized, enabled, tapMode, onAction, onInitialize }) => {
   const handleClick = useCallback(
     (event: MouseEvent<Element>) => {
       event.preventDefault();
 
       if (!enabled) {
         return;
+      }
+      else if (!initialized) {
+        onInitialize(cell);
+        actOnCell(cell, "reveal");
       }
       // To flag: Right click
       //  On devices that don't have right click, hold any of the modifier keys and left click

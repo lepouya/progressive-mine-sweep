@@ -6,19 +6,22 @@ export type BoardState = "inactive" | "active" | "won" | "lost";
 export type Board = {
   rows: number;
   cols: number;
-
+  initialized: boolean;
   cells: Cell[][];
   numMines: number;
+  configuredNumMines: number;
 };
 
 export const emptyBoard: Board = {
   rows: 0,
   cols: 0,
+  initialized: false,
   cells: [],
   numMines: 0,
+  configuredNumMines: 0
 };
 
-export function makeClearBoard(rows: number, cols: number): Board {
+function makeClearBoard(rows: number, cols: number, minMines?: number, maxMines?: number): Board {
   const cells: Cell[][] = [];
   for (let row = 0; row < rows; row++) {
     cells[row] = [];
@@ -33,27 +36,32 @@ export function makeClearBoard(rows: number, cols: number): Board {
     }
   }
 
-  return { rows, cols, cells, numMines: 0 };
-}
-
-export function populateRandomMines(
-  board: Board,
-  minMines?: number,
-  maxMines?: number,
-): Board {
   minMines = minMines ?? maxMines ?? 0;
   maxMines = maxMines ?? minMines ?? 0;
   let numMines = clamp(
     Math.floor(minMines + Math.random() * (1 + maxMines - minMines)),
     0,
-    board.rows * board.cols - board.numMines - 1,
+    rows * cols - 1,
   );
 
+  return { rows, cols, initialized: false, cells, numMines: 0, configuredNumMines: numMines };
+}
+
+export function populateRandomMines(
+  board: Board,
+  initialRow: number,
+  initialColumn: number
+): Board {
+
+  let numMines = board.configuredNumMines;
   while (numMines > 0) {
     const r = Math.floor(Math.random() * board.rows);
     const c = Math.floor(Math.random() * board.cols);
 
-    if (board.cells[r][c].contents === "clear") {
+    if (
+      board.cells[r][c].contents === "clear"
+      && !(initialRow == r && initialColumn == c)
+    ) {
       board.cells[r][c].contents = "mine";
       board.numMines++;
       numMines--;
@@ -91,13 +99,21 @@ export function genBoard(
   rows: number,
   cols: number,
   minMines?: number,
-  maxMines?: number,
+  maxMines?: number
 ): Board {
-  let board = makeClearBoard(rows, cols);
-  board = populateRandomMines(board, minMines, maxMines);
-  board = populateNeighboringCells(board);
-
+  let board = makeClearBoard(rows, cols, minMines, maxMines);
   return board;
+}
+
+export function fillBoard(
+  board: Board,
+  initialRow: number,
+  initialColumn: number
+): Board {
+
+  board = populateRandomMines(board, initialRow, initialColumn);
+  board = populateNeighboringCells(board);
+  return { ...board, initialized: true };
 }
 
 export function genHints(

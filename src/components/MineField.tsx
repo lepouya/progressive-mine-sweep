@@ -10,8 +10,9 @@ const MineField: React.FC<{
   board: Board;
   setBoard: (board: Board) => void;
   gameState: BoardState;
+  onInitialClick: (r: number, c: number) => void;
   showToggleTap?: boolean;
-}> = ({ board, setBoard, gameState, showToggleTap }) => {
+}> = ({ board, setBoard, gameState, onInitialClick, showToggleTap }) => {
   const [tapMode, setTapMode] = useState<CellAction>("reveal");
 
   const estSize = Math.floor(95 / Math.max(board.rows, board.cols));
@@ -53,9 +54,11 @@ const MineField: React.FC<{
                   key={"cell:" + r + ":" + c}
                   cell={cell}
                   size={cellSize}
+                  initialized={board.initialized}
                   enabled={gameState === "active"}
                   tapMode={tapMode}
                   onAction={() => setBoard({ ...board })}
+                  onInitialize={cell => onInitialClick(cell.row, cell.col)}
                 />
               ))}
             </tr>
