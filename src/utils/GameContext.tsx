@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { Settings, emptySettings } from "../model/Settings";
 import { Board, emptyBoard } from "../model/Board";
-import store from "./store";
+import * as Store from "./store";
 
 type GameContext = {
   settings: Settings;
@@ -31,7 +31,7 @@ export const useGameContext = () => {
   const setBoard = (board: Board) => (context.board = board);
 
   const save = useCallback(() => {
-    const saved = store.save(_saveStoreName, context);
+    const saved = Store.save(_saveStoreName, context);
     if (saved) {
       context.settings.lastSaved = Date.now();
     }
@@ -39,7 +39,7 @@ export const useGameContext = () => {
   }, [context]);
 
   const load = useCallback(() => {
-    const loaded = store.load(_saveStoreName, context);
+    const loaded = Store.load(_saveStoreName, context);
     if (loaded) {
       context.settings.lastLoaded = Date.now();
     }
@@ -47,7 +47,7 @@ export const useGameContext = () => {
   }, [context]);
 
   const reset = useCallback(() => {
-    store.reset(_saveStoreName);
+    Store.reset(_saveStoreName);
     context.settings = {
       ...emptySettings,
       lastReset: Date.now(),
@@ -58,12 +58,12 @@ export const useGameContext = () => {
 
   const saveAs = useCallback(() => {
     context.settings.lastSaved = Date.now();
-    return store.saveAs(context);
+    return Store.saveAs(context);
   }, [context]);
 
   const loadAs = useCallback(
     (str: string) => {
-      const loaded = store.loadAs(context, str);
+      const loaded = Store.loadAs(context, str);
       if (loaded) {
         context.settings.lastLoaded = Date.now();
       }

@@ -43,13 +43,24 @@ function _codec(s: string): string {
 }
 
 function _toObject<T>(value: T): any {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  } else if (Object.keys(value).length === 0) {
+    // No need to save empty records
+    return null;
+  }
+
   const saveObj: Record<string, any> = {};
 
   let k: keyof typeof value;
   for (k in value) {
-    const v = value[k];
-    if (typeof v !== "function") {
-      saveObj[k.toString()] = v;
+    if (!k.startsWith("_")) {
+      const v = value[k];
+      if (typeof v === "object") {
+        saveObj[k.toString()] = _toObject(v);
+      } else if (typeof v !== "function") {
+        saveObj[k.toString()] = v;
+      }
     }
   }
 
@@ -57,7 +68,7 @@ function _toObject<T>(value: T): any {
 }
 
 function _fromObject<T>(value: T, loadObj: any): boolean {
-  if (!loadObj) {
+  if (!loadObj || typeof loadObj !== "object" || typeof value !== "object") {
     return false;
   }
 
@@ -71,49 +82,45 @@ function _fromObject<T>(value: T, loadObj: any): boolean {
   return true;
 }
 
-const store = {
-  skipEncoding() {
-    _skipEncoding = true;
-  },
+export function skipEncoding() {
+  _skipEncoding = true;
+}
 
-  saveAs<T>(value: T): string {
-    return window.btoa(_codec(JSON.stringify(_toObject(value))));
-  },
+export function saveAs<T>(value: T): string {
+  return window.btoa(_codec(JSON.stringify(_toObject(value))));
+}
 
-  loadAs<T>(value: T, loadStr: string): boolean {
-    return _fromObject(value, JSON.parse(_codec(window.atob(loadStr))));
-  },
+export function loadAs<T>(value: T, loadStr: string): boolean {
+  return _fromObject(value, JSON.parse(_codec(window.atob(loadStr))));
+}
 
-  reset(name: string): void {
-    if (_storageAvailable()) {
-      window.localStorage.removeItem(name);
+export function reset(name: string): void {
+  if (_storageAvailable()) {
+    window.localStorage.removeItem(name);
+  }
+}
+
+export function save<T>(name: string, value: T): boolean {
+  if (_storageAvailable()) {
+    const saveVal = saveAs(value);
+    if (saveVal) {
+      window.localStorage.setItem(name, saveVal);
+      return true;
     }
-  },
+  }
 
-  save<T>(name: string, value: T): boolean {
-    if (_storageAvailable()) {
-      const saveVal = store.saveAs(value);
-      if (saveVal) {
-        window.localStorage.setItem(name, saveVal);
-        return true;
-      }
+  return false;
+}
+
+export function load<T>(name: string, value: T): boolean {
+  if (_storageAvailable()) {
+    const saveVal = window.localStorage.getItem(name);
+    if (saveVal) {
+      try {
+        return loadAs(value, saveVal);
+      } catch (_) {}
     }
+  }
 
-    return false;
-  },
-
-  load<T>(name: string, value: T): boolean {
-    if (_storageAvailable()) {
-      const saveVal = window.localStorage.getItem(name);
-      if (saveVal) {
-        try {
-          return store.loadAs(value, saveVal);
-        } catch (_) {}
-      }
-    }
-
-    return false;
-  },
-};
-
-export default store;
+  return false;
+}
