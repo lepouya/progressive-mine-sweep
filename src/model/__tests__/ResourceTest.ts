@@ -3,6 +3,7 @@ import { expect } from "chai";
 
 import {
   applyToResource,
+  checkHasResources,
   combineResources,
   genEmptyResource,
   subtractResources,
@@ -259,5 +260,68 @@ describe("applyToResource", () => {
     expect(rc[2].resource).to.equal(R1);
     expect(rc[2].count).to.equal(9);
     expect(rc[2].kind ?? "").to.equal("bonus");
+  });
+});
+
+describe("checkHasResources", () => {
+  it("Simple Resource", () => {
+    const R1 = genEmptyResource("test1");
+    R1.count = 5;
+
+    expect(checkHasResources(R1, [])).to.be.true;
+    expect(checkHasResources(R1, [{ resource: "test1", count: 1 }])).to.be.true;
+    expect(checkHasResources(R1, [{ resource: R1, count: 8 }])).to.be.false;
+    expect(
+      checkHasResources(R1, [
+        { resource: "test1", count: 1 },
+        { resource: R1, count: 4 },
+      ]),
+    ).to.be.true;
+    expect(
+      checkHasResources(R1, [
+        { resource: "test1", count: 4 },
+        { resource: R1, count: 4 },
+      ]),
+    ).to.be.false;
+    expect(checkHasResources(R1, [{ resource: R1, count: 1, kind: "auto" }])).to
+      .be.false;
+  });
+
+  it("Multiple kinds", () => {
+    const R1 = genEmptyResource("test1");
+    R1.count = 10;
+    R1.bonus = 2;
+    R1.extra["e1"] = 5;
+
+    expect(checkHasResources(R1, [{ resource: R1, count: 1, kind: "auto" }])).to
+      .be.false;
+    expect(
+      checkHasResources(R1, [{ resource: "test1", count: 1, kind: "bonus" }]),
+    ).to.be.true;
+    expect(
+      checkHasResources(R1, [
+        { resource: R1, count: 4, kind: "count" },
+        { resource: R1, count: 1, kind: "bonus" },
+      ]),
+    ).to.be.true;
+    expect(
+      checkHasResources(R1, [
+        { resource: R1, count: 2, kind: "bonus" },
+        { resource: R1, count: 1, kind: "e1" },
+      ]),
+    ).to.be.true;
+    expect(
+      checkHasResources(R1, [
+        { resource: R1, count: 2 },
+        { resource: R1, count: 5, kind: "bonus" },
+        { resource: R1, count: 5, kind: "e1" },
+      ]),
+    ).to.be.false;
+    expect(
+      checkHasResources(R1, [
+        { resource: R1, count: 2 },
+        { resource: R1, count: 5, kind: "e1" },
+      ]),
+    ).to.be.true;
   });
 });

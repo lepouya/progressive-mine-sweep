@@ -41,6 +41,7 @@ export function combineResources(
 ): ResourceCount[] {
   return [rcs, ...rcss]
     .flat()
+    .map((rc) => (rc.kind === "count" ? { ...rc, kind: "" } : rc))
     .reduce((res: ResourceCount[], rc: ResourceCount) => {
       const frc = res.find(
         (orc) =>
@@ -74,6 +75,35 @@ export function subtractResources(
       count: -count,
       kind,
     })),
+  );
+}
+
+export function getResourceCounts(resource: Resource): ResourceCount[] {
+  return [
+    { resource, count: resource.count },
+    { resource, count: resource.bonus, kind: "bonus" },
+    { resource, count: resource.auto, kind: "auto" },
+    ...Object.entries(resource.extra).map(([kind, count]) => ({
+      resource,
+      count,
+      kind,
+    })),
+  ].filter(({ count }) => count !== 0);
+}
+
+export function checkHasResources(
+  res: Resource,
+  rcs: ResourceCount[],
+): boolean {
+  return (
+    subtractResources(
+      getResourceCounts(res),
+      rcs.filter(
+        ({ resource }) =>
+          res.name ===
+          (typeof resource === "string" ? resource : resource.name),
+      ),
+    ).filter(({ count }) => count < 0).length === 0
   );
 }
 
