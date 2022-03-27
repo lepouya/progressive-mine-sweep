@@ -69,7 +69,11 @@ export function subtractResources(
 ): ResourceCount[] {
   return combineResources(
     rcs1,
-    rcs2.map(({ resource, count }) => ({ resource, count: -count })),
+    rcs2.map(({ resource, count, kind }) => ({
+      resource,
+      count: -count,
+      kind,
+    })),
   );
 }
 

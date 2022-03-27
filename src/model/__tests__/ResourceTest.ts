@@ -173,6 +173,30 @@ describe("subtractResources", () => {
     expect(rc[2].resource).to.equal(R3);
     expect(rc[2].count).to.equal(-3);
   });
+
+  it("Kinds", () => {
+    const rc = subtractResources(
+      [
+        { resource: "test1", count: 3 },
+        { resource: R1, count: 2, kind: "auto" },
+      ],
+      [
+        { resource: "test1", count: 5, kind: "auto" },
+        { resource: R1, count: 5, kind: "what" },
+      ],
+    );
+
+    expect(rc).to.have.length(3);
+    expect(rc[0].resource).to.equal("test1");
+    expect(rc[0].count).to.equal(3);
+    expect(rc[0].kind ?? "").to.equal("");
+    expect(rc[1].resource).to.equal(R1);
+    expect(rc[1].count).to.equal(-3);
+    expect(rc[1].kind ?? "").to.equal("auto");
+    expect(rc[2].resource).to.equal(R1);
+    expect(rc[2].count).to.equal(-5);
+    expect(rc[2].kind ?? "").to.equal("what");
+  });
 });
 
 describe("applyToResource", () => {
