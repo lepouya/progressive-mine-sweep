@@ -71,6 +71,41 @@ describe("combineResources", () => {
     expect(rc[2].resource).to.equal(R3);
     expect(rc[2].count).to.equal(5);
   });
+
+  it("Multiple Kinds", () => {
+    const rc = combineResources(
+      [
+        { resource: R1, count: 1 },
+        { resource: R2, count: 2 },
+        { resource: "test1", count: 3 },
+        { resource: R1, count: 4, kind: "auto" },
+      ],
+      [{ resource: R3, count: 5 }],
+      [
+        { resource: "test2", count: 6, kind: "" },
+        { resource: "test1", count: 7 },
+      ],
+      [
+        { resource: "test3", count: 0 },
+        { resource: R2, count: 8 },
+        { resource: R1, count: 9, kind: "auto" },
+      ],
+    );
+
+    expect(rc).to.have.length(4);
+    expect(rc[0].resource).to.equal(R1);
+    expect(rc[0].count).to.equal(11);
+    expect(rc[0].kind ?? "").to.equal("");
+    expect(rc[1].resource).to.equal(R2);
+    expect(rc[1].count).to.equal(16);
+    expect(rc[1].kind ?? "").to.equal("");
+    expect(rc[2].resource).to.equal(R1);
+    expect(rc[2].count).to.equal(13);
+    expect(rc[2].kind ?? "").to.equal("auto");
+    expect(rc[3].resource).to.equal(R3);
+    expect(rc[3].count).to.equal(5);
+    expect(rc[3].kind ?? "").to.equal("");
+  });
 });
 
 describe("subtractResources", () => {

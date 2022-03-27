@@ -1,6 +1,7 @@
 export type ResourceCount = {
   resource: Resource | string;
   count: number;
+  kind?: string;
 };
 
 export type Resource = {
@@ -43,11 +44,14 @@ export function combineResources(
     .reduce((res: ResourceCount[], rc: ResourceCount) => {
       const frc = res.find(
         (orc) =>
-          orc.resource === rc.resource ||
-          (typeof orc.resource === "string"
-            ? orc.resource
-            : orc.resource.name) ===
-            (typeof rc.resource === "string" ? rc.resource : rc.resource.name),
+          (orc.resource === rc.resource ||
+            (typeof orc.resource === "string"
+              ? orc.resource
+              : orc.resource.name) ===
+              (typeof rc.resource === "string"
+                ? rc.resource
+                : rc.resource.name)) &&
+          (orc.kind ?? "") === (rc.kind ?? ""),
       );
       if (frc) {
         frc.count += rc.count;
