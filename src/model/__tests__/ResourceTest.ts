@@ -2,6 +2,7 @@ import "mocha";
 import { expect } from "chai";
 
 import {
+  applyToResource,
   combineResources,
   genEmptyResource,
   subtractResources,
@@ -171,5 +172,68 @@ describe("subtractResources", () => {
     expect(rc[1].count).to.equal(2);
     expect(rc[2].resource).to.equal(R3);
     expect(rc[2].count).to.equal(-3);
+  });
+});
+
+describe("applyToResource", () => {
+  it("Single Resource", () => {
+    const R1 = genEmptyResource("test1");
+    const rc = applyToResource(R1, [{ resource: R1, count: 1 }]);
+
+    expect(R1.count).to.equal(1);
+    expect(R1.bonus).to.equal(0);
+    expect(R1.auto).to.equal(0);
+
+    expect(rc).to.have.length(1);
+    expect(rc[0].resource).to.equal(R1);
+    expect(rc[0].count).to.equal(1);
+  });
+
+  it("Multiple Resources", () => {
+    const R1 = genEmptyResource("test1");
+    const R2 = genEmptyResource("test2");
+    const rc = applyToResource(R1, [
+      { resource: R1, count: 1 },
+      { resource: "test1", count: 2 },
+      { resource: R2, count: 3 },
+      { resource: "test2", count: 4 },
+      { resource: "something invalid", count: 5 },
+    ]);
+
+    expect(R1.count).to.equal(3);
+    expect(R2.count).to.equal(0);
+
+    expect(rc).to.have.length(1);
+    expect(rc[0].resource).to.equal(R1);
+    expect(rc[0].count).to.equal(3);
+  });
+
+  it("Multiple changes", () => {
+    const R1 = genEmptyResource("test1");
+    R1.count = 5;
+    R1.bonus = 1;
+    const rc = applyToResource(R1, [
+      { resource: R1, count: 1 },
+      { resource: "test1", count: 3, kind: "count" },
+      { resource: R1, count: 1, kind: "" },
+      { resource: "test1", count: 5, kind: "auto" },
+      { resource: R1, count: 3, kind: "bonus" },
+      { resource: R1, count: 6, kind: "bonus" },
+    ]);
+
+    expect(R1.count).to.equal(10);
+    expect(R1.bonus).to.equal(10);
+    expect(R1.auto).to.equal(5);
+
+    expect(rc).to.have.length(3);
+    expect(rc[0].resource).to.equal(R1);
+    expect(rc[0].count).to.equal(5);
+    expect(rc[0].kind ?? "").to.equal("");
+    expect(rc[1].resource).to.equal(R1);
+    expect(rc[1].count).to.equal(5);
+    expect(rc[1].kind ?? "").to.equal("auto");
+    expect(rc[2].resource).to.equal(R1);
+    expect(rc[2].count).to.equal(9);
+    expect(rc[2].kind ?? "").to.equal("bonus");
   });
 });

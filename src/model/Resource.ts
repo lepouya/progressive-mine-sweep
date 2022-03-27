@@ -72,3 +72,52 @@ export function subtractResources(
     rcs2.map(({ resource, count }) => ({ resource, count: -count })),
   );
 }
+
+export function applyToResource(
+  res: Resource,
+  rcs: ResourceCount[],
+): ResourceCount[] {
+  return combineResources(
+    rcs
+      .map(({ resource, count, kind }) => {
+        if (
+          res.name !== (typeof resource === "string" ? resource : resource.name)
+        ) {
+          return [];
+        }
+
+        let prev = 0;
+        switch ((kind ?? "").toLowerCase()) {
+          case "":
+          case "count":
+            prev = res.count;
+            res.count = Math.max(0, prev + count);
+            if (res.min !== undefined && res.count < res.min) {
+              res.count = res.min;
+            } else if (res.max !== undefined && res.count > res.max) {
+              res.count = res.max;
+            }
+            return [{ resource: res, count: res.count - prev }];
+
+          case "bonus":
+            prev = res.bonus;
+            res.bonus = Math.max(0, prev + count);
+            return [{ resource: res, count: res.bonus - prev, kind }];
+
+          case "auto":
+            prev = res.auto;
+            res.auto = Math.max(0, prev + count);
+            return [{ resource: res, count: res.auto - prev, kind }];
+
+          default:
+            if (!kind) {
+              return [];
+            }
+            prev = res.extra[kind] ?? 0;
+            res.extra[kind] = Math.max(0, prev + count);
+            return [{ resource: res, count: res.extra[kind] - prev, kind }];
+        }
+      })
+      .flat(),
+  );
+}
