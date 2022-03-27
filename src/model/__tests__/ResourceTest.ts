@@ -324,4 +324,37 @@ describe("checkHasResources", () => {
       ]),
     ).to.be.true;
   });
+
+  it("Multiple Resource", () => {
+    const R1 = genEmptyResource("test1");
+    const R2 = genEmptyResource("test2");
+    R1.count = 5;
+    R2.count = 10;
+    R2.bonus = 2;
+    R2.extra["e1"] = 5;
+
+    expect(checkHasResources(R1, [{ resource: "test2", count: 100 }])).to.be
+      .true;
+    expect(checkHasResources(R2, [{ resource: "test2", count: 100 }])).to.be
+      .false;
+    expect(checkHasResources(R1, [{ resource: "test1", count: 8 }])).to.be
+      .false;
+    expect(checkHasResources(R2, [{ resource: "test2", count: 8 }])).to.be.true;
+    expect(checkHasResources(R1, [{ resource: R1, count: 3, kind: "e1" }])).to
+      .be.false;
+    expect(checkHasResources(R2, [{ resource: R2, count: 3, kind: "e1" }])).to
+      .be.true;
+    expect(
+      checkHasResources(R1, [
+        { resource: R1, count: 3 },
+        { resource: R2, count: 5, kind: "bonus" },
+      ]),
+    ).to.be.true;
+    expect(
+      checkHasResources(R2, [
+        { resource: R1, count: 3 },
+        { resource: R2, count: 5, kind: "bonus" },
+      ]),
+    ).to.be.false;
+  });
 });
