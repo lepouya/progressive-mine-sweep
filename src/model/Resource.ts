@@ -83,13 +83,12 @@ export function applyToResource(
 ): ResourceCount[] {
   return combineResources(
     rcs
-      .map(({ resource, count, kind }) => {
-        if (
-          res.name !== (typeof resource === "string" ? resource : resource.name)
-        ) {
-          return [];
-        }
-
+      .filter(
+        ({ resource }) =>
+          res.name ===
+          (typeof resource === "string" ? resource : resource.name),
+      )
+      .map(({ count, kind }) => {
         let prev = 0;
         switch ((kind ?? "").toLowerCase()) {
           case "":
