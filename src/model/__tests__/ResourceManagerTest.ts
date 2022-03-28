@@ -42,7 +42,7 @@ describe("Creating resources", () => {
     const R1 = rm.create({ name: "test1", count: 5 });
     const R2 = rm.create({ name: "test1", extra: { auto: 7 }, maxCount: 1 });
 
-    expect(rm.resources["test1"]).to.not.equal(R1);
+    expect(rm.resources["test1"]).to.equal(R1);
     expect(rm.resources["test1"]).to.equal(R2);
     expect(rm.resources["test1"].name).to.equal("test1");
     expect(rm.resources["test1"].count).to.equal(5);

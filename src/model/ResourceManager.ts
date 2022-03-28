@@ -1,3 +1,4 @@
+import assign from "../utils/assign";
 import clamp from "../utils/clamp";
 import Optional from "../utils/Optional";
 import {
@@ -34,8 +35,12 @@ export function genResourceManager(): ResourceManager {
 
 function create(rm: ResourceManager, props: Optional<Resource>): Resource {
   const name = props.name ?? "";
-  let res = rm.resources[name] ?? genEmptyResource(name);
-  res = { ...res, ...props };
+  const res = rm.resources[name] ?? genEmptyResource(name);
+
+  let k: keyof Resource;
+  for (k in props) {
+    assign(res, k, props[k]);
+  }
 
   if (name) {
     rm.resources[name] = res;
