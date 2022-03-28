@@ -2,10 +2,14 @@ import clamp from "../utils/clamp";
 import Optional from "../utils/Optional";
 import {
   applyToResource,
+  checkHasResources,
+  combineResources,
   genEmptyResource,
   Resource,
   ResourceCount,
 } from "./Resource";
+
+export type PurchaseStyle = "full" | "partial" | "free";
 
 export type ResourceManager = {
   resources: Record<string, Resource>;
@@ -13,7 +17,7 @@ export type ResourceManager = {
 
   create: (props: Optional<Resource>) => Resource;
   update: (now?: number) => void;
-  purchase: (toBuy: ResourceCount[]) => ResourceCount[];
+  purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => ResourceCount[];
 };
 
 export function genResourceManager(): ResourceManager {
@@ -22,7 +26,7 @@ export function genResourceManager(): ResourceManager {
     lastUpdate: Date.now(),
     create: (props) => create(rm, props),
     update: (now) => update(rm, now),
-    purchase: (toBuy) => purchase(rm, toBuy),
+    purchase: (toBuy, style) => purchase(rm, toBuy, style),
   };
 
   return rm;
@@ -69,12 +73,124 @@ function update(rm: ResourceManager, now?: number) {
 function purchase(
   rm: ResourceManager,
   toBuy: ResourceCount[],
+  style?: PurchaseStyle,
 ): ResourceCount[] {
-  toBuy.forEach((rc) =>
-    applyToResource(
-      typeof rc.resource === "string" ? rm.resources[rc.resource] : rc.resource,
-      [rc],
-    ),
+  return combineResources(
+    resolve(rm, toBuy)
+      .map((rc) => {
+        const [gain, cost] = getPurchaseCost(
+          rm,
+          rc.resource,
+          rc.count,
+          rc.kind,
+          style ?? (rc.kind === "" ? "partial" : "free"),
+        );
+
+        applyToResource(rc.resource, [gain]);
+        cost.forEach(({ resource, count, kind }) =>
+          applyToResource(
+            typeof resource === "string" ? rm.resources[resource] : resource,
+            [{ resource, count: -count, kind }],
+          ),
+        );
+
+        return [gain];
+      })
+      .flat(),
   );
-  return toBuy;
+}
+
+function resolve(
+  rm: ResourceManager,
+  rcs: ResourceCount[],
+): {
+  resource: Resource;
+  count: number;
+  kind: string;
+}[] {
+  return rcs
+    .map(({ resource, count, kind }) => ({
+      resource:
+        typeof resource === "string" ? rm.resources[resource] : resource,
+      count,
+      kind: kind === undefined || kind === "count" ? "" : kind,
+    }))
+    .filter(({ resource, count }) => resource !== undefined && count !== 0);
+}
+
+function canAfford(rm: ResourceManager, cost: ResourceCount[]): boolean {
+  return resolve(rm, combineResources(cost)).every((rc) =>
+    checkHasResources(rc.resource, [rc]),
+  );
+}
+
+function getPurchaseCost(
+  rm: ResourceManager,
+  resource: Resource,
+  count: number,
+  kind: string,
+  style: PurchaseStyle,
+): [ResourceCount, ResourceCount[]] {
+  if (!resource || count <= 0) {
+    return [{ resource, count: 0, kind }, []];
+  }
+
+  let [start, target] = [0, 0];
+  switch (kind.toLowerCase()) {
+    case "":
+    case "count":
+      start = resource.count;
+      target = Math.max(0, start + count);
+      if (resource.min !== undefined && target < resource.min) {
+        target = resource.min;
+      } else if (resource.max !== undefined && target > resource.max) {
+        target = resource.max;
+      }
+      break;
+
+    case "bonus":
+      start = resource.bonus;
+      target = Math.max(0, start + count);
+      break;
+
+    case "auto":
+      start = resource.auto;
+      target = Math.max(0, start + count);
+      break;
+
+    default:
+      start = resource.extra[kind] ?? 0;
+      target = Math.max(0, start + count);
+  }
+
+  if (style === "free") {
+    return [{ resource, count: target - start, kind }, []];
+  }
+
+  let cost: ResourceCount[] = [];
+  let partialCost = cost;
+  let partialCount = 0;
+  for (let i = start; i < target; i++) {
+    if (style === "partial") {
+      partialCost = combineResources(
+        partialCost,
+        resolve(rm, resource.cost(partialCount + 1)),
+      );
+      if (!canAfford(rm, partialCost)) {
+        break;
+      }
+    }
+
+    partialCount++;
+    cost = combineResources(cost, resolve(rm, resource.cost(partialCount)));
+  }
+
+  if (
+    !canAfford(rm, cost) ||
+    (style === "full" && start + partialCount !== target)
+  ) {
+    return [{ resource, count: 0, kind }, []];
+  }
+
+  return [{ resource, count: partialCount, kind }, cost];
 }
