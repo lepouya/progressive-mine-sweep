@@ -20,38 +20,34 @@ describe("Creating resources", () => {
 
   it("Adding multiple fields", () => {
     const rm = genResourceManager();
-    const R1 = rm.create({ name: "test1", count: 5, min: 1 });
-    const R2 = rm.create({ name: "test2", bonus: 1 });
+    const R1 = rm.create({ name: "test1", count: 5, maxCount: 1 });
+    const R2 = rm.create({ name: "test2", extra: { bonus: 1 } });
 
     expect(rm.resources["test1"]).to.equal(R1);
     expect(rm.resources["test1"].name).to.equal("test1");
     expect(rm.resources["test1"].count).to.equal(5);
-    expect(rm.resources["test1"].bonus).to.equal(0);
-    expect(rm.resources["test1"].auto).to.equal(0);
-    expect(rm.resources["test1"].min).to.equal(1);
-    expect(rm.resources["test1"].max).to.be.undefined;
+    expect(rm.resources["test1"].extra["bonus"]).to.be.undefined;
+    expect(rm.resources["test1"].maxCount).to.equal(1);
 
     expect(rm.resources["test2"]).to.equal(R2);
     expect(rm.resources["test2"].name).to.equal("test2");
     expect(rm.resources["test2"].count).to.equal(0);
-    expect(rm.resources["test2"].bonus).to.equal(1);
-    expect(rm.resources["test2"].auto).to.equal(0);
-    expect(rm.resources["test2"].min).to.be.undefined;
-    expect(rm.resources["test2"].max).to.be.undefined;
+    expect(rm.resources["test2"].extra["bonus"]).to.equal(1);
+    expect(rm.resources["test2"].extra["auto"]).to.be.undefined;
+    expect(rm.resources["test2"].maxCount).to.be.undefined;
   });
 
   it("Overwriting fields", () => {
     const rm = genResourceManager();
     const R1 = rm.create({ name: "test1", count: 5 });
-    const R2 = rm.create({ name: "test1", auto: 7, min: 1 });
+    const R2 = rm.create({ name: "test1", extra: { auto: 7 }, maxCount: 1 });
 
     expect(rm.resources["test1"]).to.not.equal(R1);
     expect(rm.resources["test1"]).to.equal(R2);
     expect(rm.resources["test1"].name).to.equal("test1");
     expect(rm.resources["test1"].count).to.equal(5);
-    expect(rm.resources["test1"].auto).to.equal(7);
-    expect(rm.resources["test1"].min).to.equal(1);
-    expect(rm.resources["test1"].max).to.be.undefined;
+    expect(rm.resources["test1"].extra["auto"]).to.equal(7);
+    expect(rm.resources["test1"].maxCount).to.equal(1);
   });
 });
 
@@ -266,11 +262,11 @@ describe("Purchasing", () => {
 
   it("Multiple purchases", () => {
     const rm = genResourceManager();
-    const r1 = rm.create({ name: "r1", count: 100, auto: 10 });
+    const r1 = rm.create({ name: "r1", count: 100, extra: { auto: 10 } });
     const r2 = rm.create({ name: "r2", count: 20 });
     const r3 = rm.create({ name: "r3", count: 0 });
     r2.cost = (n) => [
-      { resource: "r1", count: r2.count + n, kind: "count" },
+      { resource: "r1", count: r2.count + n, kind: "" },
       { resource: "r1", count: 1, kind: "auto" },
     ];
     r3.cost = (n) => [
@@ -280,13 +276,13 @@ describe("Purchasing", () => {
 
     rm.purchase([{ resource: "r3", count: 1 }]);
     expect(r1.count).to.equal(99);
-    expect(r1.auto).to.equal(10);
+    expect(r1.extra["auto"]).to.equal(10);
     expect(r2.count).to.equal(19);
     expect(r3.count).to.equal(1);
 
     rm.purchase([{ resource: "r2", count: 1 }]);
     expect(r1.count).to.equal(79);
-    expect(r1.auto).to.equal(9);
+    expect(r1.extra["auto"]).to.equal(9);
     expect(r2.count).to.equal(20);
     expect(r3.count).to.equal(1);
 
@@ -295,7 +291,7 @@ describe("Purchasing", () => {
       { resource: "r2", count: 2 },
     ]);
     expect(r1.count).to.equal(33);
-    expect(r1.auto).to.equal(7);
+    expect(r1.extra["auto"]).to.equal(7);
     expect(r2.count).to.equal(17);
     expect(r3.count).to.equal(3);
   });

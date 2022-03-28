@@ -206,9 +206,6 @@ describe("applyToResource", () => {
     const rc = applyToResource(R1, [{ resource: R1, count: 1 }]);
 
     expect(R1.count).to.equal(1);
-    expect(R1.bonus).to.equal(0);
-    expect(R1.auto).to.equal(0);
-
     expect(rc).to.have.length(1);
     expect(rc[0].resource).to.equal(R1);
     expect(rc[0].count).to.equal(1);
@@ -236,10 +233,10 @@ describe("applyToResource", () => {
   it("Multiple changes", () => {
     const R1 = genEmptyResource("test1");
     R1.count = 5;
-    R1.bonus = 1;
+    R1.extra["bonus"] = 1;
     const rc = applyToResource(R1, [
       { resource: R1, count: 1 },
-      { resource: "test1", count: 3, kind: "count" },
+      { resource: "test1", count: 3 },
       { resource: R1, count: 1, kind: "" },
       { resource: "test1", count: 5, kind: "auto" },
       { resource: R1, count: 3, kind: "bonus" },
@@ -247,8 +244,8 @@ describe("applyToResource", () => {
     ]);
 
     expect(R1.count).to.equal(10);
-    expect(R1.bonus).to.equal(10);
-    expect(R1.auto).to.equal(5);
+    expect(R1.extra["bonus"]).to.equal(10);
+    expect(R1.extra["auto"]).to.equal(5);
 
     expect(rc).to.have.length(3);
     expect(rc[0].resource).to.equal(R1);
@@ -290,7 +287,7 @@ describe("checkHasResources", () => {
   it("Multiple kinds", () => {
     const R1 = genEmptyResource("test1");
     R1.count = 10;
-    R1.bonus = 2;
+    R1.extra["bonus"] = 2;
     R1.extra["e1"] = 5;
 
     expect(checkHasResources(R1, [{ resource: R1, count: 1, kind: "auto" }])).to
@@ -300,7 +297,7 @@ describe("checkHasResources", () => {
     ).to.be.true;
     expect(
       checkHasResources(R1, [
-        { resource: R1, count: 4, kind: "count" },
+        { resource: R1, count: 4, kind: "" },
         { resource: R1, count: 1, kind: "bonus" },
       ]),
     ).to.be.true;
@@ -330,7 +327,7 @@ describe("checkHasResources", () => {
     const R2 = genEmptyResource("test2");
     R1.count = 5;
     R2.count = 10;
-    R2.bonus = 2;
+    R2.extra["bonus"] = 2;
     R2.extra["e1"] = 5;
 
     expect(checkHasResources(R1, [{ resource: "test2", count: 100 }])).to.be

@@ -113,7 +113,7 @@ function resolve(
       resource:
         typeof resource === "string" ? rm.resources[resource] : resource,
       count,
-      kind: kind === undefined || kind === "count" ? "" : kind,
+      kind: kind ?? "",
     }))
     .filter(({ resource, count }) => resource !== undefined && count !== 0);
 }
@@ -136,31 +136,15 @@ function getPurchaseCost(
   }
 
   let [start, target] = [0, 0];
-  switch (kind.toLowerCase()) {
-    case "":
-    case "count":
-      start = resource.count;
-      target = Math.max(0, start + count);
-      if (resource.min !== undefined && target < resource.min) {
-        target = resource.min;
-      } else if (resource.max !== undefined && target > resource.max) {
-        target = resource.max;
-      }
-      break;
-
-    case "bonus":
-      start = resource.bonus;
-      target = Math.max(0, start + count);
-      break;
-
-    case "auto":
-      start = resource.auto;
-      target = Math.max(0, start + count);
-      break;
-
-    default:
-      start = resource.extra[kind] ?? 0;
-      target = Math.max(0, start + count);
+  if (!kind || kind === "") {
+    start = resource.count;
+    target = Math.max(0, start + count);
+    if (resource.maxCount !== undefined && target > resource.maxCount) {
+      target = resource.maxCount;
+    }
+  } else {
+    start = resource.extra[kind] ?? 0;
+    target = Math.max(0, start + count);
   }
 
   if (style === "free") {

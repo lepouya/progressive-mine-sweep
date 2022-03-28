@@ -10,29 +10,26 @@ export type Resource = {
   unlocked?: boolean;
 
   count: number;
-  bonus: number;
-  auto: number;
+  maxCount?: number;
   extra: Record<string, number>;
 
-  min?: number;
-  max?: number;
-
-  value: () => ResourceCount[];
+  value: () => number;
   cost: (n: number) => ResourceCount[];
   tick: (dt: number) => void;
 };
 
 export function genEmptyResource(name: string): Resource {
-  return {
+  const res: Resource = {
     name,
     count: 0,
-    bonus: 0,
-    auto: 0,
     extra: {},
-    value: () => [],
+    value: () =>
+      res.count + Object.values(res.extra).reduce((s, c) => s + c, 0),
     cost: () => [],
     tick: () => {},
   };
+
+  return res;
 }
 
 export function combineResources(
@@ -41,7 +38,6 @@ export function combineResources(
 ): ResourceCount[] {
   return [rcs, ...rcss]
     .flat()
-    .map((rc) => (rc.kind === "count" ? { ...rc, kind: "" } : rc))
     .reduce((res: ResourceCount[], rc: ResourceCount) => {
       const frc = res.find(
         (orc) =>
@@ -81,8 +77,6 @@ export function subtractResources(
 export function getResourceCounts(resource: Resource): ResourceCount[] {
   return [
     { resource, count: resource.count },
-    { resource, count: resource.bonus, kind: "bonus" },
-    { resource, count: resource.auto, kind: "auto" },
     ...Object.entries(resource.extra).map(([kind, count]) => ({
       resource,
       count,
@@ -119,36 +113,17 @@ export function applyToResource(
           (typeof resource === "string" ? resource : resource.name),
       )
       .map(({ count, kind }) => {
-        let prev = 0;
-        switch ((kind ?? "").toLowerCase()) {
-          case "":
-          case "count":
-            prev = res.count;
-            res.count = Math.max(0, prev + count);
-            if (res.min !== undefined && res.count < res.min) {
-              res.count = res.min;
-            } else if (res.max !== undefined && res.count > res.max) {
-              res.count = res.max;
-            }
-            return [{ resource: res, count: res.count - prev }];
-
-          case "bonus":
-            prev = res.bonus;
-            res.bonus = Math.max(0, prev + count);
-            return [{ resource: res, count: res.bonus - prev, kind }];
-
-          case "auto":
-            prev = res.auto;
-            res.auto = Math.max(0, prev + count);
-            return [{ resource: res, count: res.auto - prev, kind }];
-
-          default:
-            if (!kind) {
-              return [];
-            }
-            prev = res.extra[kind] ?? 0;
-            res.extra[kind] = Math.max(0, prev + count);
-            return [{ resource: res, count: res.extra[kind] - prev, kind }];
+        if (!kind || kind === "") {
+          const prev = res.count;
+          res.count = Math.max(0, prev + count);
+          if (res.maxCount !== undefined && res.count > res.maxCount) {
+            res.count = res.maxCount;
+          }
+          return [{ resource: res, count: res.count - prev }];
+        } else {
+          const prev = res.extra[kind] ?? 0;
+          res.extra[kind] = Math.max(0, prev + count);
+          return [{ resource: res, count: res.extra[kind] - prev, kind }];
         }
       })
       .flat(),
