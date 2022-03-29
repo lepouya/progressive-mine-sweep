@@ -16,17 +16,28 @@ export type Resource = {
   value: () => number;
   cost: (n: number) => ResourceCount[];
   tick: (dt: number) => void;
+
+  rate: number;
+  _rate: {
+    lastCheck?: number;
+    lastCount?: number;
+  };
 };
 
 export function genEmptyResource(name: string): Resource {
   const res: Resource = {
     name,
+
     count: 0,
     extra: {},
+
     value: () =>
       res.count + Object.values(res.extra).reduce((s, c) => s + c, 0),
     cost: () => [],
     tick: () => {},
+
+    rate: 0,
+    _rate: {},
   };
 
   return res;

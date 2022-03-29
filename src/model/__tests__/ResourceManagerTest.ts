@@ -152,6 +152,36 @@ describe("Updating resources", () => {
     expect(rm.resources["test1"].count).to.be.equal(86400.5);
     expect(rm.resources["test2"].count).to.be.equal(86401);
   });
+
+  it("Rate update works", () => {
+    const rm = genResourceManager();
+    rm.lastUpdate = 0;
+
+    const R1 = rm.create({ name: "test1" });
+    R1.tick = (dt) => {
+      R1.count += dt;
+    };
+    const R2 = rm.create({ name: "test2" });
+    R2.tick = () => {
+      R2.count += R1.count;
+    };
+
+    rm.update(1000);
+    expect(rm.resources["test1"].count).to.be.equal(1);
+    expect(rm.resources["test2"].count).to.be.equal(1);
+
+    rm.update(2000);
+    expect(rm.resources["test1"].count).to.be.equal(2);
+    expect(rm.resources["test1"].rate).to.be.equal(1);
+    expect(rm.resources["test2"].count).to.be.equal(3);
+    expect(rm.resources["test2"].rate).to.be.equal(2);
+
+    rm.update(5000);
+    expect(rm.resources["test1"].count).to.be.equal(5);
+    expect(rm.resources["test1"].rate).to.be.equal(1);
+    expect(rm.resources["test2"].count).to.be.equal(15);
+    expect(rm.resources["test2"].rate).to.be.equal(4);
+  });
 });
 
 describe("Purchasing", () => {

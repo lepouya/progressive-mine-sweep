@@ -14,7 +14,7 @@ export type PurchaseStyle = "full" | "partial" | "free";
 
 export type ResourceManager = {
   resources: Record<string, Resource>;
-  lastUpdate?: number;
+  lastUpdate: number;
 
   create: (props: Optional<Resource>) => Resource;
   update: (now?: number) => void;
@@ -55,6 +55,7 @@ function update(rm: ResourceManager, now?: number) {
   const maxUpdate = 86400.0; // 1 day
   const maxTickDelta = 1; // Max granularity 1s per tick
   const timeDilation = 1; // Regular speed
+  const rateUpdateWindow = 1; // Update the rates every 1s
 
   if (!now) {
     now = Date.now();
@@ -72,7 +73,25 @@ function update(rm: ResourceManager, now?: number) {
     dt -= tick;
   }
 
-  // TODO: rate calculations
+  Object.values(rm.resources).forEach((res) => {
+    const rateDt = (rm.lastUpdate - (res._rate.lastCheck ?? 0)) / 1000.0;
+    if (rateDt >= rateUpdateWindow) {
+      if (res._rate.lastCount !== undefined) {
+        res.rate = (res.count - res._rate.lastCount) / rateDt;
+      } else {
+        res.rate = 0;
+      }
+    }
+
+    if (
+      res._rate.lastCheck === undefined ||
+      res._rate.lastCount === undefined ||
+      rateDt >= rateUpdateWindow
+    ) {
+      res._rate.lastCheck = rm.lastUpdate;
+      res._rate.lastCount = res.count;
+    }
+  });
 }
 
 function purchase(
