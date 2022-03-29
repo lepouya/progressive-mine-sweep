@@ -33,6 +33,22 @@ export function genResourceManager(): ResourceManager {
   return rm;
 }
 
+export function mergeResourceManagers(
+  rm: ResourceManager,
+  toLoad: Optional<ResourceManager>,
+): ResourceManager {
+  let k: keyof ResourceManager;
+  for (k in toLoad) {
+    if (k === "resources") {
+      Object.values(toLoad[k] ?? {}).forEach((res) => rm.create(res));
+    } else {
+      assign(rm, k, toLoad[k]);
+    }
+  }
+
+  return rm;
+}
+
 function create(rm: ResourceManager, props: Optional<Resource>): Resource {
   const name = props.name ?? "";
   const res = rm.resources[name] ?? genEmptyResource(name);

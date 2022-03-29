@@ -38,6 +38,7 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### M2: Make it incremental
 
+- ~~Set up resource management~~
 - Track and report game currencies
 - Delay before starting a new game
 - Add options for increasing grid size
@@ -68,4 +69,5 @@ Perhaps I could do prestige/reset options once this is ready
 - More complex bonuses?
 
 ### M5: Prestige
+
 - Brainstorm on what can be done here

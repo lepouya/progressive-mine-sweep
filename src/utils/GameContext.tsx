@@ -2,15 +2,22 @@ import React, { useCallback, useContext } from "react";
 import { Settings, emptySettings } from "../model/Settings";
 import { Board, emptyBoard } from "../model/Board";
 import * as Store from "./store";
+import {
+  genResourceManager,
+  mergeResourceManagers,
+  ResourceManager,
+} from "../model/ResourceManager";
 
 type GameContext = {
   settings: Settings;
   board: Board;
+  resources: ResourceManager;
 };
 
 const emptyGameContext = {
   settings: { ...emptySettings },
   board: { ...emptyBoard },
+  resources: genResourceManager(),
 };
 
 const GameReactContext = React.createContext<GameContext>(emptyGameContext);
@@ -39,10 +46,20 @@ export const useGameContext = () => {
   }, [context]);
 
   const load = useCallback(() => {
+    const oldResources = context.resources;
     const loaded = Store.load(_saveStoreName, context);
+
     if (loaded) {
       context.settings.lastLoaded = Date.now();
+      context.resources = mergeResourceManagers(
+        oldResources,
+        context.resources,
+      );
+      context.resources.update(context.settings.lastLoaded);
+    } else {
+      context.resources = oldResources;
     }
+
     return loaded;
   }, [context]);
 
@@ -54,6 +71,7 @@ export const useGameContext = () => {
       lastLoaded: Date.now(),
     };
     context.board = { ...emptyBoard };
+    context.resources = genResourceManager();
   }, [context]);
 
   const saveAs = useCallback(() => {
@@ -63,10 +81,20 @@ export const useGameContext = () => {
 
   const loadAs = useCallback(
     (str: string) => {
+      const oldResources = context.resources;
       const loaded = Store.loadAs(context, str);
+
       if (loaded) {
         context.settings.lastLoaded = Date.now();
+        context.resources = mergeResourceManagers(
+          oldResources,
+          context.resources,
+        );
+        context.resources.update(context.settings.lastLoaded);
+      } else {
+        context.resources = oldResources;
       }
+
       return loaded;
     },
     [context],

@@ -7,7 +7,7 @@ import Options from "../pages/Options";
 import useGameContext from "../utils/GameContext";
 
 const Game: React.FC = () => {
-  const { settings, save } = useGameContext();
+  const { settings, resources, save } = useGameContext();
   const [timerId, setTimerId] = useState<NodeJS.Timer | null>(null);
   const [_, setLastUpdate] = useState(0);
 
@@ -25,17 +25,18 @@ const Game: React.FC = () => {
   function tick() {
     const now = Date.now();
 
-    // TODO: Update
+    settings.lastUpdate = now;
+    resources.update(now);
 
-    // Signal the update down to child elements
-    setLastUpdate(now);
-    settings.lastUpdate = Date.now();
     if (
       now - settings.lastSaved >= settings.saveFrequencySecs * 1000 &&
       now - settings.lastLoaded >= settings.saveFrequencySecs * 1000
     ) {
       save();
     }
+
+    // Signal the update down to child elements
+    setLastUpdate(now);
   }
 
   function activeClass(props: { isActive: boolean }): string {
