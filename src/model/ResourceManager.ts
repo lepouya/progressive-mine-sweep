@@ -16,7 +16,7 @@ export type ResourceManager = {
   resources: Record<string, Resource>;
   lastUpdate: number;
 
-  create: (props: Optional<Resource>) => Resource;
+  upsert: (props: Optional<Resource>) => Resource;
   update: (now?: number) => void;
   purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => ResourceCount[];
 };
@@ -25,7 +25,8 @@ export function genResourceManager(): ResourceManager {
   const rm: ResourceManager = {
     resources: {},
     lastUpdate: Date.now(),
-    create: (props) => create(rm, props),
+
+    upsert: (props) => upsert(rm, props),
     update: (now) => update(rm, now),
     purchase: (toBuy, style) => purchase(rm, toBuy, style),
   };
@@ -40,7 +41,7 @@ export function mergeResourceManagers(
   let k: keyof ResourceManager;
   for (k in toLoad) {
     if (k === "resources") {
-      Object.values(toLoad[k] ?? {}).forEach((res) => rm.create(res));
+      Object.values(toLoad[k] ?? {}).forEach((res) => rm.upsert(res));
     } else {
       assign(rm, k, toLoad[k]);
     }
@@ -49,7 +50,7 @@ export function mergeResourceManagers(
   return rm;
 }
 
-function create(rm: ResourceManager, props: Optional<Resource>): Resource {
+function upsert(rm: ResourceManager, props: Optional<Resource>): Resource {
   const name = props.name ?? "";
   const res = rm.resources[name] ?? genEmptyResource(name);
 

@@ -12,7 +12,7 @@ describe("Creating resources", () => {
 
   it("Creating new resource works", () => {
     const rm = genResourceManager();
-    const R1 = rm.create({ name: "test1" });
+    const R1 = rm.upsert({ name: "test1" });
 
     expect(rm.resources["test1"]).to.equal(R1);
     expect(rm.resources["test1"].name).to.equal("test1");
@@ -20,8 +20,8 @@ describe("Creating resources", () => {
 
   it("Adding multiple fields", () => {
     const rm = genResourceManager();
-    const R1 = rm.create({ name: "test1", count: 5, maxCount: 1 });
-    const R2 = rm.create({ name: "test2", extra: { bonus: 1 } });
+    const R1 = rm.upsert({ name: "test1", count: 5, maxCount: 1 });
+    const R2 = rm.upsert({ name: "test2", extra: { bonus: 1 } });
 
     expect(rm.resources["test1"]).to.equal(R1);
     expect(rm.resources["test1"].name).to.equal("test1");
@@ -39,8 +39,8 @@ describe("Creating resources", () => {
 
   it("Overwriting fields", () => {
     const rm = genResourceManager();
-    const R1 = rm.create({ name: "test1", count: 5 });
-    const R2 = rm.create({ name: "test1", extra: { auto: 7 }, maxCount: 1 });
+    const R1 = rm.upsert({ name: "test1", count: 5 });
+    const R2 = rm.upsert({ name: "test1", extra: { auto: 7 }, maxCount: 1 });
 
     expect(rm.resources["test1"]).to.equal(R1);
     expect(rm.resources["test1"]).to.equal(R2);
@@ -75,11 +75,11 @@ describe("Updating resources", () => {
     const rm = genResourceManager();
     rm.lastUpdate = 0;
 
-    const R1 = rm.create({ name: "test1" });
+    const R1 = rm.upsert({ name: "test1" });
     R1.tick = (dt) => {
       R1.count += dt;
     };
-    const R2 = rm.create({ name: "test2" });
+    const R2 = rm.upsert({ name: "test2" });
     R2.tick = () => {
       R2.count++;
     };
@@ -99,11 +99,11 @@ describe("Updating resources", () => {
     const rm = genResourceManager();
     rm.lastUpdate = 0;
 
-    const R1 = rm.create({ name: "test1" });
+    const R1 = rm.upsert({ name: "test1" });
     R1.tick = (dt) => {
       R1.count += dt;
     };
-    const R2 = rm.create({ name: "test2" });
+    const R2 = rm.upsert({ name: "test2" });
     R2.tick = () => {
       R2.count++;
     };
@@ -133,11 +133,11 @@ describe("Updating resources", () => {
     const rm = genResourceManager();
     rm.lastUpdate = 0;
 
-    const R1 = rm.create({ name: "test1" });
+    const R1 = rm.upsert({ name: "test1" });
     R1.tick = (dt) => {
       R1.count += dt;
     };
-    const R2 = rm.create({ name: "test2" });
+    const R2 = rm.upsert({ name: "test2" });
     R2.tick = () => {
       R2.count++;
     };
@@ -157,11 +157,11 @@ describe("Updating resources", () => {
     const rm = genResourceManager();
     rm.lastUpdate = 0;
 
-    const R1 = rm.create({ name: "test1" });
+    const R1 = rm.upsert({ name: "test1" });
     R1.tick = (dt) => {
       R1.count += dt;
     };
-    const R2 = rm.create({ name: "test2" });
+    const R2 = rm.upsert({ name: "test2" });
     R2.tick = () => {
       R2.count += R1.count;
     };
@@ -187,8 +187,8 @@ describe("Updating resources", () => {
 describe("Purchasing", () => {
   it("Simple purchases", () => {
     const rm = genResourceManager();
-    const r1 = rm.create({ name: "r1", count: 10 });
-    const r2 = rm.create({ name: "r2", count: 0 });
+    const r1 = rm.upsert({ name: "r1", count: 10 });
+    const r2 = rm.upsert({ name: "r2", count: 0 });
     r2.cost = () => [{ resource: "r1", count: 1 }];
 
     rm.purchase([{ resource: "r2", count: 1 }]);
@@ -202,8 +202,8 @@ describe("Purchasing", () => {
 
   it("Full purchases", () => {
     const rm = genResourceManager();
-    const r1 = rm.create({ name: "r1", count: 10 });
-    const r2 = rm.create({ name: "r2", count: 0 });
+    const r1 = rm.upsert({ name: "r1", count: 10 });
+    const r2 = rm.upsert({ name: "r2", count: 0 });
     r2.cost = () => [{ resource: "r1", count: 1 }];
 
     rm.purchase([{ resource: "r2", count: 3 }], "full");
@@ -221,8 +221,8 @@ describe("Purchasing", () => {
 
   it("Partial purchases", () => {
     const rm = genResourceManager();
-    const r1 = rm.create({ name: "r1", count: 10 });
-    const r2 = rm.create({ name: "r2", count: 0 });
+    const r1 = rm.upsert({ name: "r1", count: 10 });
+    const r2 = rm.upsert({ name: "r2", count: 0 });
     r2.cost = () => [{ resource: "r1", count: 1 }];
 
     rm.purchase([{ resource: "r2", count: 3 }], "partial");
@@ -240,8 +240,8 @@ describe("Purchasing", () => {
 
   it("Free purchases", () => {
     const rm = genResourceManager();
-    const r1 = rm.create({ name: "r1", count: 10 });
-    const r2 = rm.create({ name: "r2", count: 0 });
+    const r1 = rm.upsert({ name: "r1", count: 10 });
+    const r2 = rm.upsert({ name: "r2", count: 0 });
     r2.cost = () => [{ resource: "r1", count: 1 }];
 
     rm.purchase([{ resource: "r2", count: 3 }], "free");
@@ -251,9 +251,9 @@ describe("Purchasing", () => {
 
   it("Complex purchases", () => {
     const rm = genResourceManager();
-    const r1 = rm.create({ name: "r1", count: 100 });
-    const r2 = rm.create({ name: "r2", count: 20 });
-    const r3 = rm.create({ name: "r3", count: 0 });
+    const r1 = rm.upsert({ name: "r1", count: 100 });
+    const r2 = rm.upsert({ name: "r2", count: 20 });
+    const r3 = rm.upsert({ name: "r3", count: 0 });
     r3.cost = (n) => [
       { resource: "r1", count: (r3.count + n) ** 2 },
       { resource: "r2", count: r3.count + n },
@@ -292,9 +292,9 @@ describe("Purchasing", () => {
 
   it("Multiple purchases", () => {
     const rm = genResourceManager();
-    const r1 = rm.create({ name: "r1", count: 100, extra: { auto: 10 } });
-    const r2 = rm.create({ name: "r2", count: 20 });
-    const r3 = rm.create({ name: "r3", count: 0 });
+    const r1 = rm.upsert({ name: "r1", count: 100, extra: { auto: 10 } });
+    const r2 = rm.upsert({ name: "r2", count: 20 });
+    const r3 = rm.upsert({ name: "r3", count: 0 });
     r2.cost = (n) => [
       { resource: "r1", count: r2.count + n, kind: "" },
       { resource: "r1", count: 1, kind: "auto" },
