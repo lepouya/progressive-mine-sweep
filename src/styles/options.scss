@@ -1,18 +1,10 @@
 .options {
-  font-family:
-    ui-monospace,
-    Menlo, Monaco,
-    "Cascadia Mono", "Segoe UI Mono",
-    "Roboto Mono",
-    "Oxygen Mono",
-    "Ubuntu Monospace",
-    "Source Code Pro",
-    "Fira Mono",
-    "Droid Sans Mono",
-    "Courier New", monospace;
+  font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+    "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
+    "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
 
   gap: 10px 0;
-  margin-bottom: 20px;
+  margin-bottom: 10px !important;
 
   input {
     &[type="button"] {
@@ -49,5 +41,12 @@
       font-size: small;
       color: darkred;
     }
+  }
+}
+
+.debug {
+  .full {
+    font-size: small;
+    white-space: pre;
   }
 }

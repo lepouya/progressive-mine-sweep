@@ -1,14 +1,21 @@
 import React, { ChangeEvent, useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 import TimeDuration from "../utils/TimeDuration";
 import useGameContext from "../utils/GameContext";
 
 const Options: React.FC = () => {
-  const { settings, load, loadAs, save, saveAs, reset } = useGameContext();
-  const navigate = useNavigate();
+  const { settings, resources, board, load, loadAs, save, saveAs, reset } =
+    useGameContext();
   const [textContents, setTextContents] = useState("");
   const [resetAcknowledged, setResetAcknowledged] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const showDebug =
+    (location.pathname + location.search + location.hash + location.key)
+      .toLowerCase()
+      .indexOf("debug") >= 0;
 
   function saveGame() {
     save();
@@ -181,6 +188,20 @@ const Options: React.FC = () => {
           />
         </div>
       </div>
+
+      {showDebug && (
+        <div className="panel options debug">
+          <div className="title-bar">Debug Context</div>
+          <div className="half">Settings:</div>
+          <div className="full">{JSON.stringify(settings, null, 2)}</div>
+          <div className="title-bar" />
+          <div className="half">Resources:</div>
+          <div className="full">{JSON.stringify(resources, null, 2)}</div>
+          <div className="title-bar" />
+          <div className="half">Board:</div>
+          <div className="full">{JSON.stringify(board, null, 2)}</div>
+        </div>
+      )}
     </div>
   );
 };
