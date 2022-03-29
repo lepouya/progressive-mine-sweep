@@ -9,7 +9,7 @@ import useGameContext from "../utils/GameContext";
 
 const Main: React.FC = () => {
   const { settings, board, setBoard } = useGameContext();
-  const [gameState, setGameState] = useState("inactive" as BoardState);
+  const [gameState, setGameState] = useState<BoardState>("inactive");
   const [cellCounts, setCellCounts] = useState(() => countCells(board));
 
   useEffect(() => {

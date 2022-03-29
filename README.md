@@ -71,3 +71,10 @@ Perhaps I could do prestige/reset options once this is ready
 ### M5: Prestige
 
 - Brainstorm on what can be done here
+
+### Bugs to fix
+
+- After full reset, game gets stuck in saving on every tick
+- Resource purchasing should honor the `unlocked` flag
+- Using `resources.resources` is kinda weird
+- Move ResourceManager's updating params to Settings
