@@ -17,6 +17,7 @@ export type ResourceManager = {
   lastUpdate: number;
 
   upsert: (props: Optional<Resource>) => Resource;
+  get: (resource: Resource | string) => Resource;
   update: (now?: number) => void;
   purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => ResourceCount[];
 };
@@ -27,6 +28,7 @@ export function genResourceManager(): ResourceManager {
     lastUpdate: Date.now(),
 
     upsert: (props) => upsert(rm, props),
+    get: (resource) => resolve(rm, resource),
     update: (now) => update(rm, now),
     purchase: (toBuy, style) => purchase(rm, toBuy, style),
   };
@@ -64,6 +66,10 @@ function upsert(rm: ResourceManager, props: Optional<Resource>): Resource {
   }
 
   return res;
+}
+
+function resolve(rm: ResourceManager, resource: Resource | string): Resource {
+  return typeof resource === "string" ? rm.resources[resource] : resource;
 }
 
 function update(rm: ResourceManager, now?: number) {
@@ -117,7 +123,7 @@ function purchase(
   style?: PurchaseStyle,
 ): ResourceCount[] {
   return combineResources(
-    resolve(rm, toBuy)
+    resolveAll(rm, toBuy)
       .map((rc) => {
         const [gain, cost] = getPurchaseCost(
           rm,
@@ -141,7 +147,7 @@ function purchase(
   );
 }
 
-function resolve(
+function resolveAll(
   rm: ResourceManager,
   rcs: ResourceCount[],
 ): {
@@ -151,8 +157,7 @@ function resolve(
 }[] {
   return rcs
     .map(({ resource, count, kind }) => ({
-      resource:
-        typeof resource === "string" ? rm.resources[resource] : resource,
+      resource: resolve(rm, resource),
       count,
       kind: kind ?? "",
     }))
@@ -160,7 +165,7 @@ function resolve(
 }
 
 function canAfford(rm: ResourceManager, cost: ResourceCount[]): boolean {
-  return resolve(rm, combineResources(cost)).every((rc) =>
+  return resolveAll(rm, combineResources(cost)).every((rc) =>
     checkHasResources(rc.resource, [rc]),
   );
 }
@@ -199,7 +204,7 @@ function getPurchaseCost(
     if (style === "partial") {
       partialCost = combineResources(
         partialCost,
-        resolve(rm, resource.cost(partialCount + 1)),
+        resolveAll(rm, resource.cost(partialCount + 1)),
       );
       if (!canAfford(rm, partialCost)) {
         break;
@@ -207,7 +212,7 @@ function getPurchaseCost(
     }
 
     partialCount++;
-    cost = combineResources(cost, resolve(rm, resource.cost(partialCount)));
+    cost = combineResources(cost, resolveAll(rm, resource.cost(partialCount)));
   }
 
   if (
