@@ -16,10 +16,13 @@ export type ResourceManager = {
   resources: Record<string, Resource>;
   lastUpdate: number;
 
-  upsert: (props: Optional<Resource>) => Resource;
   get: (resource: Resource | string) => Resource;
-  update: (now?: number) => void;
+  valueOf: (resource: Resource | string, kind?: string) => number;
+
+  upsert: (props: Optional<Resource>) => Resource;
   purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => ResourceCount[];
+
+  update: (now?: number) => void;
 };
 
 export function genResourceManager(): ResourceManager {
@@ -27,10 +30,13 @@ export function genResourceManager(): ResourceManager {
     resources: {},
     lastUpdate: Date.now(),
 
-    upsert: (props) => upsert(rm, props),
     get: (resource) => resolve(rm, resource),
-    update: (now) => update(rm, now),
+    valueOf: (resource, kind) => getValueOf(rm, resource, kind),
+
+    upsert: (props) => upsert(rm, props),
     purchase: (toBuy, style) => purchase(rm, toBuy, style),
+
+    update: (now) => update(rm, now),
   };
 
   return rm;
@@ -52,6 +58,23 @@ export function mergeResourceManagers(
   return rm;
 }
 
+function resolve(rm: ResourceManager, resource: Resource | string): Resource {
+  return typeof resource === "string" ? rm.resources[resource] : resource;
+}
+
+function getValueOf(
+  rm: ResourceManager,
+  resource: Resource | string,
+  kind?: string,
+): number {
+  resource = resolve(rm, resource);
+  if (!kind || kind === "") {
+    return resource.value(rm.get);
+  } else {
+    return resource.extra[kind];
+  }
+}
+
 function upsert(rm: ResourceManager, props: Optional<Resource>): Resource {
   const name = props.name ?? "";
   const res = rm.resources[name] ?? genEmptyResource(name);
@@ -66,10 +89,6 @@ function upsert(rm: ResourceManager, props: Optional<Resource>): Resource {
   }
 
   return res;
-}
-
-function resolve(rm: ResourceManager, resource: Resource | string): Resource {
-  return typeof resource === "string" ? rm.resources[resource] : resource;
 }
 
 function update(rm: ResourceManager, now?: number) {
@@ -92,7 +111,9 @@ function update(rm: ResourceManager, now?: number) {
 
   while (dt > 0) {
     const tick = clamp(dt, minUpdate, maxTickDelta);
-    Object.values(rm.resources).forEach((res) => res.tick(tick / timeDilation));
+    Object.values(rm.resources).forEach((res) =>
+      res.tick(tick / timeDilation, rm.get),
+    );
     dt -= tick;
   }
 
@@ -204,7 +225,7 @@ function getPurchaseCost(
     if (style === "partial") {
       partialCost = combineResources(
         partialCost,
-        resolveAll(rm, resource.cost(partialCount + 1)),
+        resolveAll(rm, resource.cost(partialCount + 1, rm.get)),
       );
       if (!canAfford(rm, partialCost)) {
         break;
@@ -212,7 +233,10 @@ function getPurchaseCost(
     }
 
     partialCount++;
-    cost = combineResources(cost, resolveAll(rm, resource.cost(partialCount)));
+    cost = combineResources(
+      cost,
+      resolveAll(rm, resource.cost(partialCount, rm.get)),
+    );
   }
 
   if (

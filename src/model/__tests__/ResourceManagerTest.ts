@@ -75,14 +75,14 @@ describe("Updating resources", () => {
     const rm = genResourceManager();
     rm.lastUpdate = 0;
 
-    const R1 = rm.upsert({ name: "test1" });
-    R1.tick = (dt) => {
-      R1.count += dt;
-    };
-    const R2 = rm.upsert({ name: "test2" });
-    R2.tick = () => {
-      R2.count++;
-    };
+    rm.upsert({
+      name: "test1",
+      tick: (dt, resolve) => (resolve("test1").count += dt),
+    });
+    rm.upsert({
+      name: "test2",
+      tick: (_, resolve) => resolve("test2").count++,
+    });
 
     rm.update(500);
     expect(rm.lastUpdate).to.be.equal(500);
@@ -133,14 +133,14 @@ describe("Updating resources", () => {
     const rm = genResourceManager();
     rm.lastUpdate = 0;
 
-    const R1 = rm.upsert({ name: "test1" });
-    R1.tick = (dt) => {
-      R1.count += dt;
-    };
-    const R2 = rm.upsert({ name: "test2" });
-    R2.tick = () => {
-      R2.count++;
-    };
+    rm.upsert({
+      name: "test1",
+      tick: (dt, resolve) => (resolve("test1").count += dt),
+    });
+    rm.upsert({
+      name: "test2",
+      tick: (_, resolve) => resolve("test2").count++,
+    });
 
     rm.update(500);
     expect(rm.lastUpdate).to.be.equal(500);
@@ -157,14 +157,14 @@ describe("Updating resources", () => {
     const rm = genResourceManager();
     rm.lastUpdate = 0;
 
-    const R1 = rm.upsert({ name: "test1" });
-    R1.tick = (dt) => {
-      R1.count += dt;
-    };
-    const R2 = rm.upsert({ name: "test2" });
-    R2.tick = () => {
-      R2.count += R1.count;
-    };
+    rm.upsert({
+      name: "test1",
+      tick: (dt) => (rm.get("test1").count += dt),
+    });
+    rm.upsert({
+      name: "test2",
+      tick: () => (rm.get("test2").count += rm.valueOf("test1")),
+    });
 
     rm.update(1000);
     expect(rm.resources["test1"].count).to.be.equal(1);

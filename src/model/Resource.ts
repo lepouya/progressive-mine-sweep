@@ -4,6 +4,8 @@ export type ResourceCount = {
   kind?: string;
 };
 
+type ResourceResolver = (resource: Resource | string) => Resource;
+
 export type Resource = {
   name: string;
   description?: string;
@@ -13,9 +15,9 @@ export type Resource = {
   maxCount?: number;
   extra: Record<string, number>;
 
-  value: () => number;
-  cost: (n: number) => ResourceCount[];
-  tick: (dt: number) => void;
+  value: (resolver: ResourceResolver) => number;
+  cost: (n: number, resolver: ResourceResolver) => ResourceCount[];
+  tick: (dt: number, resolver: ResourceResolver) => void;
 
   rate: number;
   _rate: {
