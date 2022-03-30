@@ -9,6 +9,7 @@ import {
   Resource,
   ResourceCount,
 } from "./Resource";
+import { Settings } from "./Settings";
 
 export type PurchaseStyle = "full" | "partial" | "free" | "dry";
 
@@ -22,7 +23,7 @@ export type ResourceManager = {
   upsert: (props: Optional<Resource>) => Resource;
   purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => ResourceCount[];
 
-  update: (now?: number) => void;
+  update: (now?: number, settings?: Optional<Settings>) => void;
 };
 
 export function genResourceManager(): ResourceManager {
@@ -36,7 +37,7 @@ export function genResourceManager(): ResourceManager {
     upsert: (props) => upsert(rm, props),
     purchase: (toBuy, style) => purchase(rm, toBuy, style),
 
-    update: (now) => update(rm, now),
+    update: (now, settings) => update(rm, now, settings ?? {}),
   };
 
   return rm;
@@ -91,26 +92,33 @@ function upsert(rm: ResourceManager, props: Optional<Resource>): Resource {
   return res;
 }
 
-function update(rm: ResourceManager, now?: number) {
-  // TODO: move to settings
-  const minUpdate = 0.001; // 1 ms
-  const maxUpdate = 86400.0; // 1 day
-  const maxTickDelta = 1; // Max granularity 1s per tick
-  const timeDilation = 1; // Regular speed
-  const rateUpdateWindow = 1; // Update the rates every 1s
-
+function update(
+  rm: ResourceManager,
+  now: number | undefined,
+  {
+    rateUpdateSecs = 1.0,
+    minResourceUpdateSecs = 0.001,
+    maxResourceUpdateSecs = 86400.0,
+    maxResourceTickSecs = 1.0,
+    timeDilation = 1.0,
+  },
+) {
   if (!now) {
     now = Date.now();
   }
 
-  let dt = clamp((now - (rm.lastUpdate ?? now)) / 1000.0, 0, maxUpdate);
-  if (dt < minUpdate) {
+  let dt = clamp(
+    (now - (rm.lastUpdate ?? now)) / 1000.0,
+    0,
+    maxResourceUpdateSecs,
+  );
+  if (dt < minResourceUpdateSecs) {
     return;
   }
   rm.lastUpdate = now;
 
   while (dt > 0) {
-    const tick = clamp(dt, minUpdate, maxTickDelta);
+    const tick = clamp(dt, minResourceUpdateSecs, maxResourceTickSecs);
     Object.values(rm.resources).forEach((res) =>
       res.tick(tick / timeDilation, rm.get),
     );
@@ -119,7 +127,7 @@ function update(rm: ResourceManager, now?: number) {
 
   Object.values(rm.resources).forEach((res) => {
     const rateDt = (rm.lastUpdate - (res._rate.lastCheck ?? 0)) / 1000.0;
-    if (rateDt >= rateUpdateWindow) {
+    if (rateDt >= rateUpdateSecs) {
       if (res._rate.lastCount !== undefined) {
         res.rate = (res.count - res._rate.lastCount) / rateDt;
       } else {
@@ -130,7 +138,7 @@ function update(rm: ResourceManager, now?: number) {
     if (
       res._rate.lastCheck === undefined ||
       res._rate.lastCount === undefined ||
-      rateDt >= rateUpdateWindow
+      rateDt >= rateUpdateSecs
     ) {
       res._rate.lastCheck = rm.lastUpdate;
       res._rate.lastCount = res.count;

@@ -26,7 +26,7 @@ const Game: React.FC = () => {
     const now = Date.now();
 
     settings.lastUpdate = now;
-    resources.update(now);
+    resources.update(now, settings);
 
     if (
       now - settings.lastSaved >= settings.saveFrequencySecs * 1000 &&

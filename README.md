@@ -76,4 +76,4 @@ Perhaps I could do prestige/reset options once this is ready
 
 - After full reset, game gets stuck in saving on every tick
 - Resource purchasing should honor the `unlocked` flag
-- Move ResourceManager's updating params to Settings
+- unify settings.lastUpdated and resources.lastUpdated

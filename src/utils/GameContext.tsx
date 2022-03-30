@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react";
-import { Settings, emptySettings } from "../model/Settings";
+import { Settings, defaultSettings } from "../model/Settings";
 import { Board, emptyBoard } from "../model/Board";
 import * as Store from "./store";
 import {
@@ -7,6 +7,7 @@ import {
   mergeResourceManagers,
   ResourceManager,
 } from "../model/ResourceManager";
+import assign from "./assign";
 
 type GameContext = {
   settings: Settings;
@@ -15,7 +16,7 @@ type GameContext = {
 };
 
 const emptyGameContext = {
-  settings: { ...emptySettings },
+  settings: { ...defaultSettings },
   board: { ...emptyBoard },
   resources: genResourceManager(),
 };
@@ -30,6 +31,35 @@ export const GameContextProvider: React.FC = (props) => {
   );
 };
 
+function loadWrapper(
+  context: GameContext,
+  loadFunction: () => boolean,
+): boolean {
+  const oldContext = { ...context };
+  const loaded = loadFunction();
+
+  if (loaded) {
+    context.settings = {
+      ...oldContext.settings,
+      ...context.settings,
+      lastLoaded: Date.now(),
+    };
+
+    context.resources = mergeResourceManagers(
+      oldContext.resources,
+      context.resources,
+    );
+    context.resources.update(context.settings.lastLoaded);
+  } else {
+    let k: keyof GameContext;
+    for (k in oldContext) {
+      assign(context, k, oldContext[k]);
+    }
+  }
+
+  return loaded;
+}
+
 const _saveStoreName = "GameContext";
 
 export const useGameContext = () => {
@@ -37,68 +67,35 @@ export const useGameContext = () => {
 
   const setBoard = (board: Board) => (context.board = board);
 
-  const save = useCallback(() => {
+  const save = () => {
     const saved = Store.save(_saveStoreName, context);
     if (saved) {
       context.settings.lastSaved = Date.now();
     }
     return saved;
-  }, [context]);
+  };
 
-  const load = useCallback(() => {
-    const oldResources = context.resources;
-    const loaded = Store.load(_saveStoreName, context);
+  const saveAs = () => {
+    context.settings.lastSaved = Date.now();
+    return Store.saveAs(context);
+  };
 
-    if (loaded) {
-      context.settings.lastLoaded = Date.now();
-      context.resources = mergeResourceManagers(
-        oldResources,
-        context.resources,
-      );
-      context.resources.update(context.settings.lastLoaded);
-    } else {
-      context.resources = oldResources;
-    }
+  const load = () =>
+    loadWrapper(context, () => Store.load(_saveStoreName, context));
 
-    return loaded;
-  }, [context]);
+  const loadAs = (str: string) =>
+    loadWrapper(context, () => Store.loadAs(context, str));
 
   const reset = useCallback(() => {
     Store.reset(_saveStoreName);
     context.settings = {
-      ...emptySettings,
+      ...defaultSettings,
       lastReset: Date.now(),
       lastLoaded: Date.now(),
     };
     context.board = { ...emptyBoard };
     context.resources = genResourceManager();
   }, [context]);
-
-  const saveAs = useCallback(() => {
-    context.settings.lastSaved = Date.now();
-    return Store.saveAs(context);
-  }, [context]);
-
-  const loadAs = useCallback(
-    (str: string) => {
-      const oldResources = context.resources;
-      const loaded = Store.loadAs(context, str);
-
-      if (loaded) {
-        context.settings.lastLoaded = Date.now();
-        context.resources = mergeResourceManagers(
-          oldResources,
-          context.resources,
-        );
-        context.resources.update(context.settings.lastLoaded);
-      } else {
-        context.resources = oldResources;
-      }
-
-      return loaded;
-    },
-    [context],
-  );
 
   return {
     ...context,
