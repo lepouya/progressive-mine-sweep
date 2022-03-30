@@ -12,13 +12,13 @@ import assign from "./assign";
 type GameContext = {
   settings: Settings;
   board: Board;
-  resources: ResourceManager;
+  resourceManager: ResourceManager;
 };
 
-const emptyGameContext = {
+const emptyGameContext: GameContext = {
   settings: { ...defaultSettings },
   board: { ...emptyBoard },
-  resources: genResourceManager(),
+  resourceManager: genResourceManager(),
 };
 
 const GameReactContext = React.createContext<GameContext>(emptyGameContext);
@@ -45,11 +45,11 @@ function loadWrapper(
       lastLoaded: Date.now(),
     };
 
-    context.resources = mergeResourceManagers(
-      oldContext.resources,
-      context.resources,
+    context.resourceManager = mergeResourceManagers(
+      oldContext.resourceManager,
+      context.resourceManager,
     );
-    context.resources.update(context.settings.lastLoaded);
+    context.resourceManager.update(context.settings.lastLoaded);
   } else {
     let k: keyof GameContext;
     for (k in oldContext) {
@@ -66,6 +66,8 @@ export const useGameContext = () => {
   const context = useContext(GameReactContext);
 
   const setBoard = (board: Board) => (context.board = board);
+
+  const resource = (res: string) => context.resourceManager.get(res);
 
   const save = () => {
     const saved = Store.save(_saveStoreName, context);
@@ -94,12 +96,13 @@ export const useGameContext = () => {
       lastLoaded: Date.now(),
     };
     context.board = { ...emptyBoard };
-    context.resources = genResourceManager();
+    context.resourceManager = genResourceManager();
   }, [context]);
 
   return {
     ...context,
     setBoard,
+    resource,
     save,
     load,
     reset,

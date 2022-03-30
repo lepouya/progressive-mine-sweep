@@ -11,19 +11,27 @@ import {
 } from "./Resource";
 import { Settings } from "./Settings";
 
-export type PurchaseStyle = "full" | "partial" | "free" | "dry";
-
 export type ResourceManager = {
-  resources: Record<string, Resource>;
+  resources: Record<string, Resource & ResourceHelper>;
   lastUpdate: number;
 
-  get: (resource: Resource | string) => Resource;
+  get: (resource: Resource | string) => Resource & ResourceHelper;
   valueOf: (resource: Resource | string, kind?: string) => number;
 
-  upsert: (props: Optional<Resource>) => Resource;
+  upsert: (props: Optional<Resource>) => Resource & ResourceHelper;
   purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => ResourceCount[];
 
   update: (now?: number, settings?: Optional<Settings>) => void;
+};
+
+export type PurchaseStyle = "full" | "partial" | "free" | "dry";
+
+export type ResourceHelper = {
+  get: (kind?: string) => number;
+  buy: (count?: number, style?: PurchaseStyle, kind?: string) => number;
+
+  add: (count?: number, kind?: string) => number;
+  canBuy: (count?: number, kind?: string) => number;
 };
 
 export function genResourceManager(): ResourceManager {
@@ -59,8 +67,11 @@ export function mergeResourceManagers(
   return rm;
 }
 
-function resolve(rm: ResourceManager, resource: Resource | string): Resource {
-  return typeof resource === "string" ? rm.resources[resource] : resource;
+function resolve(
+  rm: ResourceManager,
+  resource: Resource | string,
+): Resource & ResourceHelper {
+  return rm.resources[typeof resource === "string" ? resource : resource.name];
 }
 
 function getValueOf(
@@ -76,14 +87,27 @@ function getValueOf(
   }
 }
 
-function upsert(rm: ResourceManager, props: Optional<Resource>): Resource {
+function upsert(
+  rm: ResourceManager,
+  props: Optional<Resource>,
+): Resource & ResourceHelper {
   const name = props.name ?? "";
-  const res = rm.resources[name] ?? genEmptyResource(name);
+  let res = rm.resources[name] ?? genEmptyResource(name);
 
   let k: keyof Resource;
   for (k in props) {
     assign(res, k, props[k]);
   }
+
+  res.get = (kind = "") => (kind === "" ? res.value(rm.get) : res.extra[kind]);
+  res.buy = (count = 1, style = "partial", kind = "") =>
+    getCountOf(
+      purchase(rm, [{ resource: res, count, kind }], style),
+      res.name,
+      kind,
+    );
+  res.add = (count, kind) => res.buy(count, "free", kind);
+  res.canBuy = (count, kind) => res.buy(count, "dry", kind);
 
   if (name) {
     rm.resources[name] = res;
@@ -192,6 +216,23 @@ function resolveAll(
       kind: kind ?? "",
     }))
     .filter(({ resource, count }) => resource !== undefined && count !== 0);
+}
+
+function getCountOf(
+  rcs: ResourceCount[],
+  resName: string,
+  resKind?: string,
+): number {
+  return (
+    rcs
+      .filter(
+        ({ resource, kind }) =>
+          (resKind ?? "") === (kind ?? "") &&
+          resName === (typeof resource === "string" ? resource : resource.name),
+      )
+      .map(({ count }) => count)
+      .pop() ?? 0
+  );
 }
 
 function canAfford(rm: ResourceManager, cost: ResourceCount[]): boolean {

@@ -5,34 +5,34 @@ import TimeDuration from "../utils/TimeDuration";
 import useGameContext from "../utils/GameContext";
 
 const Options: React.FC = () => {
-  const { settings, resources, board, load, loadAs, save, saveAs, reset } =
-    useGameContext();
+  const context = useGameContext();
   const [textContents, setTextContents] = useState("");
   const [resetAcknowledged, setResetAcknowledged] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
+  const settings = context.settings;
   const showDebug =
     (location.pathname + location.search + location.hash + location.key)
       .toLowerCase()
       .indexOf("debug") >= 0;
 
   function saveGame() {
-    save();
+    context.save();
   }
 
   function loadGame() {
-    if (load()) {
+    if (context.load()) {
       navigate("/");
     }
   }
 
   function exportGame() {
-    setTextContents(saveAs());
+    setTextContents(context.saveAs());
   }
 
   function importGame() {
-    if (loadAs(textContents)) {
+    if (context.loadAs(textContents)) {
       navigate("/");
     }
   }
@@ -54,7 +54,7 @@ const Options: React.FC = () => {
   function resetGame() {
     if (resetAcknowledged) {
       if (confirm("Are you sure you want to reset? This cannot be undone.")) {
-        reset();
+        context.reset();
         navigate("/");
       } else {
         setResetAcknowledged(false);
@@ -196,10 +196,12 @@ const Options: React.FC = () => {
           <div className="full">{JSON.stringify(settings, null, 2)}</div>
           <div className="title-bar" />
           <div className="half">Resources:</div>
-          <div className="full">{JSON.stringify(resources, null, 2)}</div>
+          <div className="full">
+            {JSON.stringify(context.resourceManager, null, 2)}
+          </div>
           <div className="title-bar" />
           <div className="half">Board:</div>
-          <div className="full">{JSON.stringify(board, null, 2)}</div>
+          <div className="full">{JSON.stringify(context.board, null, 2)}</div>
         </div>
       )}
     </div>

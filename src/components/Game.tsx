@@ -7,7 +7,7 @@ import Options from "../pages/Options";
 import useGameContext from "../utils/GameContext";
 
 const Game: React.FC = () => {
-  const { settings, resources, save } = useGameContext();
+  const { settings, resourceManager, save } = useGameContext();
   const [timerId, setTimerId] = useState<NodeJS.Timer | null>(null);
   const [_, setLastUpdate] = useState(0);
 
@@ -26,7 +26,7 @@ const Game: React.FC = () => {
     const now = Date.now();
 
     settings.lastUpdate = now;
-    resources.update(now, settings);
+    resourceManager.update(now, settings);
 
     if (
       now - settings.lastSaved >= settings.saveFrequencySecs * 1000 &&

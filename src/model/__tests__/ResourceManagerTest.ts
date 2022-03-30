@@ -367,3 +367,62 @@ describe("Purchasing", () => {
     ]);
   });
 });
+
+describe("ResourceHelper", () => {
+  it("Helper methods", () => {
+    const rm = genResourceManager();
+    const r1 = rm.upsert({ name: "r1", count: 100, extra: { auto: 10 } });
+    const r2 = rm.upsert({ name: "r2", count: 20 });
+    const r3 = rm.upsert({ name: "r3", count: 0 });
+    r2.cost = (n) => [
+      { resource: "r1", count: r2.count + n, kind: "" },
+      { resource: "r1", count: 1, kind: "auto" },
+    ];
+    r3.cost = (n) => [
+      { resource: "r1", count: (r3.count + n) ** 2 },
+      { resource: "r2", count: r3.count + n },
+    ];
+
+    expect(rm.get(r1).get()).to.equal(110);
+    expect(rm.get("r1").get("auto")).to.equal(10);
+    expect(rm.get("r2").get()).to.equal(20);
+    expect(rm.get(r3).get()).to.equal(0);
+
+    expect(rm.get("r3").canBuy()).to.equal(1);
+    expect(rm.get("r2").canBuy(1)).to.equal(1);
+    expect(rm.get(r3).canBuy(10)).to.equal(5);
+    expect(rm.get(r2).canBuy(10)).to.equal(4);
+
+    expect(rm.get(r1).add(3)).to.equal(3);
+    expect(rm.get(r1).get()).to.equal(113);
+    expect(rm.get(r1).count).to.equal(103);
+    expect(rm.get(r1).get("auto")).to.equal(10);
+
+    expect(rm.get(r3).add(10)).to.equal(10);
+    expect(rm.get(r1).get()).to.equal(113);
+    expect(rm.get(r2).get()).to.equal(20);
+    expect(rm.get(r3).get()).to.equal(10);
+
+    r1.count = 100;
+    r3.count = 0;
+
+    expect(rm.get(r3).buy()).to.equal(1);
+    expect(r1.count).to.equal(99);
+    expect(r1.extra["auto"]).to.equal(10);
+    expect(r2.count).to.equal(19);
+    expect(r3.count).to.equal(1);
+
+    expect(rm.get(r2).buy(1)).to.equal(1);
+    expect(r1.count).to.equal(79);
+    expect(r1.extra["auto"]).to.equal(9);
+    expect(r2.count).to.equal(20);
+    expect(r3.count).to.equal(1);
+
+    expect(rm.get(r3).buy(2)).to.equal(2);
+    expect(rm.get(r2).buy(2)).to.equal(2);
+    expect(r1.count).to.equal(33);
+    expect(r1.extra["auto"]).to.equal(7);
+    expect(r2.count).to.equal(17);
+    expect(r3.count).to.equal(3);
+  });
+});
