@@ -10,7 +10,7 @@ import {
   ResourceCount,
 } from "./Resource";
 
-export type PurchaseStyle = "full" | "partial" | "free";
+export type PurchaseStyle = "full" | "partial" | "free" | "dry";
 
 export type ResourceManager = {
   resources: Record<string, Resource>;
@@ -154,13 +154,14 @@ function purchase(
           style ?? (rc.kind === "" ? "partial" : "free"),
         );
 
-        applyToResource(rc.resource, [gain]);
-        cost.forEach(({ resource, count, kind }) =>
-          applyToResource(
-            typeof resource === "string" ? rm.resources[resource] : resource,
-            [{ resource, count: -count, kind }],
-          ),
-        );
+        if (style !== "dry") {
+          applyToResource(rc.resource, [gain]);
+          cost.forEach(({ resource, count, kind }) =>
+            applyToResource(resolve(rm, resource), [
+              { resource, count: -count, kind },
+            ]),
+          );
+        }
 
         return [gain];
       })
@@ -222,7 +223,7 @@ function getPurchaseCost(
   let partialCost = cost;
   let partialCount = 0;
   for (let i = start; i < target; i++) {
-    if (style === "partial") {
+    if (style !== "full") {
       partialCost = combineResources(
         partialCost,
         resolveAll(rm, resource.cost(partialCount + 1, rm.get)),

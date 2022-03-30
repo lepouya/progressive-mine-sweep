@@ -325,4 +325,45 @@ describe("Purchasing", () => {
     expect(r2.count).to.equal(17);
     expect(r3.count).to.equal(3);
   });
+
+  it("Dry purchases", () => {
+    const rm = genResourceManager();
+    const r1 = rm.upsert({ name: "r1", count: 100, extra: { auto: 10 } });
+    const r2 = rm.upsert({ name: "r2", count: 20 });
+    const r3 = rm.upsert({ name: "r3", count: 0 });
+    r2.cost = (n) => [
+      { resource: "r1", count: r2.count + n, kind: "" },
+      { resource: "r1", count: 1, kind: "auto" },
+    ];
+    r3.cost = (n) => [
+      { resource: "r1", count: (r3.count + n) ** 2 },
+      { resource: "r2", count: r3.count + n },
+    ];
+
+    let canBuy = rm.purchase([{ resource: "r3", count: 1 }], "dry");
+    expect(r1.count).to.equal(100);
+    expect(r1.extra["auto"]).to.equal(10);
+    expect(r2.count).to.equal(20);
+    expect(r3.count).to.equal(0);
+    expect(canBuy).to.deep.equal([{ resource: r3, count: 1, kind: "" }]);
+
+    canBuy = rm.purchase([{ resource: "r2", count: 1 }], "dry");
+    expect(r1.count).to.equal(100);
+    expect(r1.extra["auto"]).to.equal(10);
+    expect(r2.count).to.equal(20);
+    expect(r3.count).to.equal(0);
+    expect(canBuy).to.deep.equal([{ resource: r2, count: 1, kind: "" }]);
+
+    canBuy = rm.purchase(
+      [
+        { resource: r3, count: 10 },
+        { resource: "r2", count: 10 },
+      ],
+      "dry",
+    );
+    expect(canBuy).to.deep.equal([
+      { resource: r3, count: 5, kind: "" },
+      { resource: r2, count: 4, kind: "" },
+    ]);
+  });
 });
