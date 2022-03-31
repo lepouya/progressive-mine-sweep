@@ -13,7 +13,7 @@ export type Resource = {
   maxCount?: number;
   extra: Record<string, number>;
 
-  value: () => number;
+  value: (kind?: string) => number;
   cost: (n: number) => ResourceCount[];
   tick: (dt: number, source: string) => void;
 
@@ -29,7 +29,7 @@ export function genEmptyResource(name: string): Resource {
     name,
     count: 0,
     extra: {},
-    value: () => res.count,
+    value: (kind) => (!kind || kind === "" ? res.count : res.extra[kind] ?? 0),
     cost: () => [],
     tick: () => {},
     rate: 0,

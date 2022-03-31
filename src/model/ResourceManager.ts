@@ -14,10 +14,8 @@ import { Settings } from "./Settings";
 export type ResourceManager = {
   resources: Record<string, Resource & ResourceHelper>;
 
-  get: (resource: Resource | string) => Resource & ResourceHelper;
-  valueOf: (resource: Resource | string, kind?: string) => number;
-
   upsert: (props: Optional<Resource> | string) => Resource & ResourceHelper;
+  get: (resource: Resource | string) => Resource & ResourceHelper;
   purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => ResourceCount[];
 
   update: (
@@ -30,9 +28,7 @@ export type ResourceManager = {
 export type PurchaseStyle = "full" | "partial" | "free" | "dry";
 
 export type ResourceHelper = {
-  get: (kind?: string) => number;
   buy: (count?: number, style?: PurchaseStyle, kind?: string) => number;
-
   add: (count?: number, kind?: string) => number;
   canBuy: (count?: number, kind?: string) => number;
 };
@@ -40,13 +36,9 @@ export type ResourceHelper = {
 export function genResourceManager(): ResourceManager {
   const rm: ResourceManager = {
     resources: {},
-
-    get: (resource) => resolve(rm, resource),
-    valueOf: (resource, kind) => getValueOf(rm, resource, kind),
-
     upsert: (props) => upsert(rm, props),
+    get: (resource) => resolve(rm, resource),
     purchase: (toBuy, style) => purchase(rm, toBuy, style),
-
     update: (now, settings, source) =>
       update(rm, now, settings ?? {}, source ?? "unknown"),
   };
@@ -77,19 +69,6 @@ function resolve(
   return rm.resources[typeof resource === "string" ? resource : resource.name];
 }
 
-function getValueOf(
-  rm: ResourceManager,
-  resource: Resource | string,
-  kind?: string,
-): number {
-  resource = resolve(rm, resource);
-  if (!kind || kind === "") {
-    return resource.value();
-  } else {
-    return resource.extra[kind];
-  }
-}
-
 function upsert(
   rm: ResourceManager,
   props: Optional<Resource> | string,
@@ -104,7 +83,6 @@ function upsert(
     }
   }
 
-  res.get = (kind = "") => (kind === "" ? res.value() : res.extra[kind]);
   res.buy = (count = 1, style = "partial", kind = "") =>
     getCountOf(
       purchase(rm, [{ resource: res, count, kind }], style),
