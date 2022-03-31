@@ -103,6 +103,7 @@ export function checkHasResources(
   rcs: ResourceCount[],
 ): boolean {
   return (
+    (res.unlocked ?? true) &&
     subtractResources(
       getResourceCounts(res),
       rcs.filter(
@@ -122,8 +123,9 @@ export function applyToResource(
     rcs
       .filter(
         ({ resource }) =>
+          (res.unlocked ?? true) &&
           res.name ===
-          (typeof resource === "string" ? resource : resource.name),
+            (typeof resource === "string" ? resource : resource.name),
       )
       .map(({ count, kind }) => {
         if (!kind || kind === "") {

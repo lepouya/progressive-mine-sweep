@@ -258,6 +258,21 @@ describe("applyToResource", () => {
     expect(rc[2].count).to.equal(9);
     expect(rc[2].kind ?? "").to.equal("bonus");
   });
+
+  it("Locked resources", () => {
+    const R1 = genEmptyResource("test1");
+    R1.count = 5;
+    R1.unlocked = false;
+
+    const rc = applyToResource(R1, [
+      { resource: R1, count: 1 },
+      { resource: R1, count: 2, kind: "bonus" },
+    ]);
+
+    expect(rc).to.have.length(0);
+    expect(R1.count).to.equal(5);
+    expect(R1.extra["bonus"]).to.be.undefined;
+  });
 });
 
 describe("checkHasResources", () => {
@@ -282,6 +297,15 @@ describe("checkHasResources", () => {
     ).to.be.false;
     expect(checkHasResources(R1, [{ resource: R1, count: 1, kind: "auto" }])).to
       .be.false;
+  });
+
+  it("Locked Resource", () => {
+    const R1 = genEmptyResource("test1");
+    R1.count = 5;
+    R1.unlocked = false;
+
+    expect(checkHasResources(R1, [])).to.be.false;
+    expect(checkHasResources(R1, [{ resource: R1, count: 1 }])).to.be.false;
   });
 
   it("Multiple kinds", () => {

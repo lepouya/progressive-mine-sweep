@@ -248,6 +248,31 @@ describe("Purchasing", () => {
     expect(r2.count).to.equal(3);
   });
 
+  it("Locked purchases", () => {
+    const rm = genResourceManager();
+    const r1 = rm.upsert({ name: "r1", count: 10 });
+    const r2 = rm.upsert({ name: "r2", count: 0 });
+    r2.cost = () => [{ resource: "r1", count: 1 }];
+    r2.unlocked = false;
+
+    rm.purchase([{ resource: "r2", count: 3 }]);
+    expect(r1.count).to.equal(10);
+    expect(r2.count).to.equal(0);
+
+    r1.unlocked = false;
+    r2.unlocked = true;
+
+    rm.purchase([{ resource: "r2", count: 3 }]);
+    expect(r1.count).to.equal(10);
+    expect(r2.count).to.equal(0);
+
+    r1.unlocked = true;
+
+    rm.purchase([{ resource: "r2", count: 3 }]);
+    expect(r1.count).to.equal(7);
+    expect(r2.count).to.equal(3);
+  });
+
   it("Complex purchases", () => {
     const rm = genResourceManager();
     const r1 = rm.upsert({ name: "r1", count: 100 });

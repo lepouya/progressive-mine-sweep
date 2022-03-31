@@ -187,16 +187,16 @@ function purchase(
           style ?? (rc.kind === "" ? "partial" : "free"),
         );
 
-        if (style !== "dry") {
-          applyToResource(rc.resource, [gain]);
+        if (style === "dry") {
+          return [gain];
+        } else {
           cost.forEach(({ resource, count, kind }) =>
             applyToResource(resolve(rm, resource), [
               { resource, count: -count, kind },
             ]),
           );
+          return applyToResource(rc.resource, [gain]);
         }
-
-        return [gain];
       })
       .flat(),
   );
@@ -249,7 +249,7 @@ function getPurchaseCost(
   kind: string,
   style: PurchaseStyle,
 ): [ResourceCount, ResourceCount[]] {
-  if (!resource || count <= 0) {
+  if (!resource || count <= 0 || !(resource.unlocked ?? true)) {
     return [{ resource, count: 0, kind }, []];
   }
 
