@@ -129,8 +129,8 @@ function update(
 
   while (dt > 0) {
     const tick = clamp(dt, minResourceUpdateSecs, maxResourceTickSecs);
-    Object.values(rm.resources).forEach((res) =>
-      res.tick(tick / timeDilation, source),
+    Object.values(rm.resources).forEach(
+      (res) => res.tick && res.tick(tick / timeDilation, source),
     );
     dt -= tick;
   }
