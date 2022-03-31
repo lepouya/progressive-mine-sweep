@@ -70,11 +70,8 @@ export const useGameContext = () => {
   const resource = (res: string) => context.resourceManager.get(res);
 
   const save = () => {
-    const saved = Store.save(_saveStoreName, context);
-    if (saved) {
-      context.settings.lastSaved = Date.now();
-    }
-    return saved;
+    context.settings.lastSaved = Date.now();
+    return Store.save(_saveStoreName, context);
   };
 
   const saveAs = () => {

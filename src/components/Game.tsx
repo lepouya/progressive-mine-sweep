@@ -8,16 +8,19 @@ import useGameContext from "../utils/GameContext";
 
 const Game: React.FC = () => {
   const { settings, resourceManager, save } = useGameContext();
-  const [timerId, setTimerId] = useState<NodeJS.Timer | null>(null);
+  const [timerId, setTimerId] = useState<NodeJS.Timer | undefined>();
   const [_, setLastUpdate] = useState(0);
 
   useEffect(() => {
+    if (timerId) {
+      clearInterval(timerId);
+    }
     setTimerId(setInterval(tick, 1000 / settings.ticksPerSecond));
 
     return () => {
       if (timerId) {
         clearInterval(timerId);
-        setTimerId(null);
+        setTimerId(undefined);
       }
     };
   }, [settings, settings.ticksPerSecond]);
