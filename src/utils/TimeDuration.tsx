@@ -14,17 +14,17 @@ type TimeProperties = {
   negatives?: boolean;
 };
 
-const TimeDuration: React.FC<TimeProperties> = (props) => {
-  let start = props.start ?? 0;
-  let end = props.end ?? 0;
-  let prefix = props.prefix ?? "";
-  let suffix = props.suffix ?? "";
-  let separator = props.separator ?? ", ";
-  let never = props.never ?? "never";
-  let now = props.now ?? "now";
-  let millis = props.millis ?? false;
-  let negatives = props.negatives ?? false;
-
+const TimeDuration: React.FC<TimeProperties> = ({
+  start = 0,
+  end = 0,
+  prefix = "",
+  suffix = "",
+  separator = ", ",
+  never = "never",
+  now = "now",
+  millis = false,
+  negatives = false,
+}) => {
   if (never.length > 0 && (start <= 0 || end <= 0)) {
     return (
       <div className="time-duration">
