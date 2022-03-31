@@ -13,7 +13,6 @@ import { Settings } from "./Settings";
 
 export type ResourceManager = {
   resources: Record<string, Resource & ResourceHelper>;
-  lastUpdate: number;
 
   get: (resource: Resource | string) => Resource & ResourceHelper;
   valueOf: (resource: Resource | string, kind?: string) => number;
@@ -37,7 +36,6 @@ export type ResourceHelper = {
 export function genResourceManager(): ResourceManager {
   const rm: ResourceManager = {
     resources: {},
-    lastUpdate: Date.now(),
 
     get: (resource) => resolve(rm, resource),
     valueOf: (resource, kind) => getValueOf(rm, resource, kind),
@@ -119,27 +117,29 @@ function upsert(
 function update(
   rm: ResourceManager,
   now: number | undefined,
-  {
+  settings: Optional<Settings>,
+) {
+  const {
     rateUpdateSecs = 1.0,
     minResourceUpdateSecs = 0.001,
     maxResourceUpdateSecs = 86400.0,
     maxResourceTickSecs = 1.0,
     timeDilation = 1.0,
-  },
-) {
+  } = settings;
+
   if (!now) {
     now = Date.now();
   }
 
   let dt = clamp(
-    (now - (rm.lastUpdate ?? now)) / 1000.0,
+    (now - (settings.lastUpdate ?? now)) / 1000.0,
     0,
     maxResourceUpdateSecs,
   );
   if (dt < minResourceUpdateSecs) {
     return;
   }
-  rm.lastUpdate = now;
+  settings.lastUpdate = now;
 
   while (dt > 0) {
     const tick = clamp(dt, minResourceUpdateSecs, maxResourceTickSecs);
@@ -150,7 +150,8 @@ function update(
   }
 
   Object.values(rm.resources).forEach((res) => {
-    const rateDt = (rm.lastUpdate - (res._rate.lastCheck ?? 0)) / 1000.0;
+    const rateDt =
+      ((settings.lastUpdate ?? 0) - (res._rate.lastCheck ?? 0)) / 1000.0;
     if (rateDt >= rateUpdateSecs) {
       if (res._rate.lastCount !== undefined) {
         res.rate = (res.count - res._rate.lastCount) / rateDt;
@@ -164,7 +165,7 @@ function update(
       res._rate.lastCount === undefined ||
       rateDt >= rateUpdateSecs
     ) {
-      res._rate.lastCheck = rm.lastUpdate;
+      res._rate.lastCheck = settings.lastUpdate;
       res._rate.lastCount = res.count;
     }
   });

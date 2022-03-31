@@ -27,8 +27,6 @@ const Game: React.FC = () => {
 
   function tick() {
     const now = Date.now();
-
-    settings.lastUpdate = now;
     resourceManager.update(now, settings);
 
     if (
