@@ -19,20 +19,14 @@ export default function initGameResources(
     name: "rows",
     count: 3,
     value: () => Math.max(3, rm.get("rows").count),
-    cost: (n) => {
-      const target = rm.valueOf("rows") + n;
-      return [{ resource: "cells", count: target ** 2 }];
-    },
+    cost: (n) => [{ resource: "cells", count: n ** 2 }],
   });
 
   rm.upsert({
     name: "cols",
     count: 3,
     value: () => Math.max(3, rm.get("cols").count),
-    cost: (n) => {
-      const target = rm.valueOf("cols") + n;
-      return [{ resource: "cells", count: target ** 2 }];
-    },
+    cost: (n) => [{ resource: "cells", count: n ** 2 }],
   });
 
   rm.upsert({

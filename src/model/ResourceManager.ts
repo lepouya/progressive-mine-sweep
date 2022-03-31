@@ -284,7 +284,7 @@ function getPurchaseCost(
     if (style !== "full") {
       partialCost = combineResources(
         partialCost,
-        resolveAll(rm, resource.cost(partialCount + 1)),
+        resolveAll(rm, resource.cost(i + 1)),
       );
       if (!canAfford(rm, partialCost)) {
         break;
@@ -292,7 +292,7 @@ function getPurchaseCost(
     }
 
     partialCount++;
-    cost = combineResources(cost, resolveAll(rm, resource.cost(partialCount)));
+    cost = combineResources(cost, resolveAll(rm, resource.cost(i + 1)));
   }
 
   if (

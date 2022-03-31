@@ -279,8 +279,8 @@ describe("Purchasing", () => {
     const r2 = rm.upsert({ name: "r2", count: 20 });
     const r3 = rm.upsert({ name: "r3", count: 0 });
     r3.cost = (n) => [
-      { resource: "r1", count: (r3.count + n) ** 2 },
-      { resource: "r2", count: r3.count + n },
+      { resource: "r1", count: n ** 2 },
+      { resource: "r2", count: n },
     ];
 
     rm.purchase([{ resource: "r3", count: 1 }]);
@@ -320,12 +320,12 @@ describe("Purchasing", () => {
     const r2 = rm.upsert({ name: "r2", count: 20 });
     const r3 = rm.upsert({ name: "r3", count: 0 });
     r2.cost = (n) => [
-      { resource: "r1", count: r2.count + n, kind: "" },
+      { resource: "r1", count: n, kind: "" },
       { resource: "r1", count: 1, kind: "auto" },
     ];
     r3.cost = (n) => [
-      { resource: "r1", count: (r3.count + n) ** 2 },
-      { resource: "r2", count: r3.count + n },
+      { resource: "r1", count: n ** 2 },
+      { resource: "r2", count: n },
     ];
 
     rm.purchase([{ resource: "r3", count: 1 }]);
@@ -356,12 +356,12 @@ describe("Purchasing", () => {
     const r2 = rm.upsert({ name: "r2", count: 20 });
     const r3 = rm.upsert({ name: "r3", count: 0 });
     r2.cost = (n) => [
-      { resource: "r1", count: r2.count + n, kind: "" },
+      { resource: "r1", count: n, kind: "" },
       { resource: "r1", count: 1, kind: "auto" },
     ];
     r3.cost = (n) => [
-      { resource: "r1", count: (r3.count + n) ** 2 },
-      { resource: "r2", count: r3.count + n },
+      { resource: "r1", count: n ** 2 },
+      { resource: "r2", count: n },
     ];
 
     let canBuy = rm.purchase([{ resource: "r3", count: 1 }], "dry");
@@ -401,12 +401,12 @@ describe("ResourceHelper", () => {
     r1.value = () =>
       r1.count + Object.values(r1.extra).reduce((s, c) => s + c, 0);
     r2.cost = (n) => [
-      { resource: "r1", count: r2.count + n, kind: "" },
+      { resource: "r1", count: n, kind: "" },
       { resource: "r1", count: 1, kind: "auto" },
     ];
     r3.cost = (n) => [
-      { resource: "r1", count: (r3.count + n) ** 2 },
-      { resource: "r2", count: r3.count + n },
+      { resource: "r1", count: n ** 2 },
+      { resource: "r2", count: n },
     ];
 
     expect(rm.get(r1).get()).to.equal(110);
