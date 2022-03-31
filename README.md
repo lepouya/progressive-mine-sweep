@@ -77,3 +77,6 @@ Perhaps I could do prestige/reset options once this is ready
 
 - move board state out of Main.tsx
 - merging resource extras works wrong
+- make update function optional
+- add `kind` to `value` and `cost` functions. Drop `get` from helpers
+- cost of `n` should be for the nth purchase, not for `count+n`
