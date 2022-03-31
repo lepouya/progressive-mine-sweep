@@ -8,6 +8,7 @@ import {
   ResourceManager,
 } from "../model/ResourceManager";
 import assign from "./assign";
+import initGameResources from "../model/GameResources";
 
 type GameContext = {
   settings: Settings;
@@ -18,7 +19,7 @@ type GameContext = {
 const emptyGameContext: GameContext = {
   settings: { ...defaultSettings },
   board: { ...emptyBoard },
-  resourceManager: genResourceManager(),
+  resourceManager: initGameResources(genResourceManager()),
 };
 
 const GameReactContext = React.createContext<GameContext>(emptyGameContext);
@@ -94,10 +95,11 @@ export const useGameContext = () => {
     context.settings = {
       ...defaultSettings,
       lastReset: Date.now(),
+      lastUpdate: Date.now(),
       lastLoaded: Date.now(),
     };
     context.board = { ...emptyBoard };
-    context.resourceManager = genResourceManager();
+    context.resourceManager = initGameResources(genResourceManager());
   }, [context]);
 
   return {

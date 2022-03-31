@@ -4,19 +4,13 @@ import BoardControls from "../components/BoardControls";
 import MineField from "../components/MineField";
 import Scoreboard from "../components/Scoreboard";
 import { actOnCell } from "../model/Cell";
-import { BoardState, countCells, genBoard } from "../model/Board";
+import { BoardState, countCells } from "../model/Board";
 import useGameContext from "../utils/GameContext";
 
 const Main: React.FC = () => {
-  const { settings, board, setBoard } = useGameContext();
+  const { settings, resource, board, setBoard } = useGameContext();
   const [gameState, setGameState] = useState<BoardState>("inactive");
   const [cellCounts, setCellCounts] = useState(() => countCells(board));
-
-  useEffect(() => {
-    if (board.rows === 0 || board.cols === 0) {
-      setBoard(genBoard(10, 10, 10));
-    }
-  }, []);
 
   useEffect(() => {
     const counts = countCells(board);
@@ -26,6 +20,9 @@ const Main: React.FC = () => {
       setGameState("inactive");
     } else if (counts["blown"] >= settings.maxErrors) {
       setGameState("lost");
+      resource("losses").count++;
+      resource("losses").extra.manual++;
+
       board.cells.forEach((cells) =>
         cells.forEach((cell) => actOnCell(cell, "reveal")),
       );
@@ -35,6 +32,8 @@ const Main: React.FC = () => {
       counts["revealed"] === board.cols * board.rows - board.numMines
     ) {
       setGameState("won");
+      resource("wins").count++;
+      resource("wins").extra.manual++;
     } else {
       setGameState("active");
     }

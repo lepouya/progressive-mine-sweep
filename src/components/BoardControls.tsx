@@ -1,20 +1,24 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { genHints, genBoard, Board } from "../model/Board";
 import clamp from "../utils/clamp";
+import useGameContext from "../utils/GameContext";
 
 const BoardControls: React.FC<{
   board: Board;
   setBoard: (board: Board) => void;
 }> = ({ board, setBoard }) => {
+  const { resource } = useGameContext();
   const [rows, setRows] = useState(0);
   const [cols, setCols] = useState(0);
-  const [mines, setMines] = useState(0);
+  const [difficulty, setDifficulty] = useState(0);
 
   useEffect(() => {
     if (board.rows > 0 && board.cols > 0) {
-      setRows(board.rows);
-      setCols(board.cols);
-      setMines(Math.floor((100 * board.numMines) / (board.rows * board.cols)));
+      setRows(resource("rows").value());
+      setCols(resource("cols").value());
+      setDifficulty(Math.floor(100 * resource("difficulty").value()));
+    } else {
+      resetBoard();
     }
   }, [board]);
 
@@ -29,23 +33,35 @@ const BoardControls: React.FC<{
 
       if (target.name === "rows") {
         setRows(num);
+        resource(target.name).count = clamp(num, 3, 40);
       } else if (target.name === "cols") {
         setCols(num);
-      } else if (target.name === "mines") {
-        setMines(num);
+        resource(target.name).count = clamp(num, 3, 40);
+      } else if (target.name === "difficulty") {
+        setDifficulty(num);
+        resource(target.name).count = clamp(num / 100);
       }
     }
   }
 
   function resetBoard() {
-    const r = clamp(rows, 3, 40);
-    const c = clamp(cols, 3, 40);
-    const m = (r * c * clamp(mines, 0, 100)) / 100;
+    resource("resets").count++;
+    if (board.rows === 0 || board.cols === 0) {
+      resource("resets").extra.auto++;
+    } else {
+      resource("resets").extra.manual++;
+    }
+
+    const r = resource("rows").value();
+    const c = resource("cols").value();
+    const m = r * c * resource("difficulty").value();
     setBoard(genBoard(r, c, Math.floor(m), Math.ceil(m)));
   }
 
   function getHint() {
-    if (genHints(board, 1, 0, 8, 1) > 0) {
+    if (genHints(board, 1, 0, 8, resource("hintQuality").value()) > 0) {
+      resource("hints").count++;
+      resource("hints").extra.manual++;
       setBoard({ ...board });
     }
   }
@@ -90,14 +106,14 @@ const BoardControls: React.FC<{
         </div>
       </div>
       <div className="half">
-        <div className="half">Mines density:</div>
+        <div className="half">Game difficulty:</div>
         <div className="half">
           <input
             type="range"
-            name="mines"
+            name="difficulty"
             min={1}
             max={99}
-            value={mines}
+            value={difficulty}
             onInput={changeInput}
           />
         </div>

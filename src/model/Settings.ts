@@ -27,7 +27,7 @@ export const defaultSettings: Settings = {
   maxResourceTickSecs: 1.0,
 
   lastReset: Date.now(),
-  lastUpdate: 0,
+  lastUpdate: Date.now(),
   lastSaved: 0,
   lastLoaded: Date.now(),
 

@@ -39,7 +39,7 @@ Perhaps I could do prestige/reset options once this is ready
 ### M2: Make it incremental
 
 - ~~Set up resource management~~
-- Track and use game resources
+- ~~Track and use game resources~~
 - Report game currencies on screen
 - Delay before starting a new game
 - Add options for increasing grid size
@@ -74,3 +74,6 @@ Perhaps I could do prestige/reset options once this is ready
 - Brainstorm on what can be done here
 
 ### Bugs to fix
+
+- move board state out of Main.tsx
+- merging resource extras works wrong
