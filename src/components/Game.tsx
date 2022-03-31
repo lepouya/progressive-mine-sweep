@@ -26,18 +26,17 @@ const Game: React.FC = () => {
   }, [settings, settings.ticksPerSecond]);
 
   function tick() {
-    const now = Date.now();
-    resourceManager.update(now, settings);
+    resourceManager.update(undefined, settings, "tick");
+    setLastUpdate(settings.lastUpdate);
 
     if (
-      now - settings.lastSaved >= settings.saveFrequencySecs * 1000 &&
-      now - settings.lastLoaded >= settings.saveFrequencySecs * 1000
+      settings.lastUpdate - settings.lastSaved >=
+        settings.saveFrequencySecs * 1000 &&
+      settings.lastUpdate - settings.lastLoaded >=
+        settings.saveFrequencySecs * 1000
     ) {
       save();
     }
-
-    // Signal the update down to child elements
-    setLastUpdate(now);
   }
 
   function activeClass(props: { isActive: boolean }): string {

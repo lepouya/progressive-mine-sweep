@@ -76,11 +76,11 @@ describe("Updating resources", () => {
 
     rm.upsert({
       name: "test1",
-      tick: (dt, resolve) => (resolve("test1").count += dt),
+      tick: (dt) => (rm.get("test1").count += dt),
     });
     rm.upsert({
       name: "test2",
-      tick: (_, resolve) => resolve("test2").count++,
+      tick: () => rm.get("test2").count++,
     });
 
     rm.update(500, settings);
@@ -134,11 +134,11 @@ describe("Updating resources", () => {
 
     rm.upsert({
       name: "test1",
-      tick: (dt, resolve) => (resolve("test1").count += dt),
+      tick: (dt) => (rm.get("test1").count += dt),
     });
     rm.upsert({
       name: "test2",
-      tick: (_, resolve) => resolve("test2").count++,
+      tick: () => rm.get("test2").count++,
     });
 
     rm.update(500, settings);
@@ -398,6 +398,8 @@ describe("ResourceHelper", () => {
     const r1 = rm.upsert({ name: "r1", count: 100, extra: { auto: 10 } });
     const r2 = rm.upsert({ name: "r2", count: 20 });
     const r3 = rm.upsert({ name: "r3", count: 0 });
+    r1.value = () =>
+      r1.count + Object.values(r1.extra).reduce((s, c) => s + c, 0);
     r2.cost = (n) => [
       { resource: "r1", count: r2.count + n, kind: "" },
       { resource: "r1", count: 1, kind: "auto" },

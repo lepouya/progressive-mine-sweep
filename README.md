@@ -39,7 +39,8 @@ Perhaps I could do prestige/reset options once this is ready
 ### M2: Make it incremental
 
 - ~~Set up resource management~~
-- Track and report game currencies
+- Track and use game resources
+- Report game currencies on screen
 - Delay before starting a new game
 - Add options for increasing grid size
 - Add options for increasing mine % and #

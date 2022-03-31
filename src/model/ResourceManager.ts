@@ -17,10 +17,14 @@ export type ResourceManager = {
   get: (resource: Resource | string) => Resource & ResourceHelper;
   valueOf: (resource: Resource | string, kind?: string) => number;
 
-  upsert: (props: Optional<Resource>) => Resource & ResourceHelper;
+  upsert: (props: Optional<Resource> | string) => Resource & ResourceHelper;
   purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => ResourceCount[];
 
-  update: (now?: number, settings?: Optional<Settings>) => void;
+  update: (
+    now?: number,
+    settings?: Optional<Settings>,
+    source?: string,
+  ) => void;
 };
 
 export type PurchaseStyle = "full" | "partial" | "free" | "dry";
@@ -43,7 +47,8 @@ export function genResourceManager(): ResourceManager {
     upsert: (props) => upsert(rm, props),
     purchase: (toBuy, style) => purchase(rm, toBuy, style),
 
-    update: (now, settings) => update(rm, now, settings ?? {}),
+    update: (now, settings, source) =>
+      update(rm, now, settings ?? {}, source ?? "unknown"),
   };
 
   return rm;
@@ -79,7 +84,7 @@ function getValueOf(
 ): number {
   resource = resolve(rm, resource);
   if (!kind || kind === "") {
-    return resource.value(rm.get);
+    return resource.value();
   } else {
     return resource.extra[kind];
   }
@@ -87,17 +92,19 @@ function getValueOf(
 
 function upsert(
   rm: ResourceManager,
-  props: Optional<Resource>,
+  props: Optional<Resource> | string,
 ): Resource & ResourceHelper {
-  const name = props.name ?? "";
-  let res = rm.resources[name] ?? genEmptyResource(name);
+  const name = typeof props === "string" ? props : props.name ?? "";
+  const res = rm.resources[name] ?? genEmptyResource(name);
 
-  let k: keyof Resource;
-  for (k in props) {
-    assign(res, k, props[k]);
+  if (typeof props !== "string") {
+    let k: keyof Resource;
+    for (k in props) {
+      assign(res, k, props[k]);
+    }
   }
 
-  res.get = (kind = "") => (kind === "" ? res.value(rm.get) : res.extra[kind]);
+  res.get = (kind = "") => (kind === "" ? res.value() : res.extra[kind]);
   res.buy = (count = 1, style = "partial", kind = "") =>
     getCountOf(
       purchase(rm, [{ resource: res, count, kind }], style),
@@ -107,8 +114,8 @@ function upsert(
   res.add = (count, kind) => res.buy(count, "free", kind);
   res.canBuy = (count, kind) => res.buy(count, "dry", kind);
 
-  if (name) {
-    rm.resources[name] = res;
+  if (res.name) {
+    rm.resources[res.name] = res;
   }
 
   return res;
@@ -118,6 +125,7 @@ function update(
   rm: ResourceManager,
   now: number | undefined,
   settings: Optional<Settings>,
+  source: string,
 ) {
   const {
     rateUpdateSecs = 1.0,
@@ -144,7 +152,7 @@ function update(
   while (dt > 0) {
     const tick = clamp(dt, minResourceUpdateSecs, maxResourceTickSecs);
     Object.values(rm.resources).forEach((res) =>
-      res.tick(tick / timeDilation, rm.get),
+      res.tick(tick / timeDilation, source),
     );
     dt -= tick;
   }
@@ -276,7 +284,7 @@ function getPurchaseCost(
     if (style !== "full") {
       partialCost = combineResources(
         partialCost,
-        resolveAll(rm, resource.cost(partialCount + 1, rm.get)),
+        resolveAll(rm, resource.cost(partialCount + 1)),
       );
       if (!canAfford(rm, partialCost)) {
         break;
@@ -284,10 +292,7 @@ function getPurchaseCost(
     }
 
     partialCount++;
-    cost = combineResources(
-      cost,
-      resolveAll(rm, resource.cost(partialCount, rm.get)),
-    );
+    cost = combineResources(cost, resolveAll(rm, resource.cost(partialCount)));
   }
 
   if (

@@ -49,7 +49,11 @@ function loadWrapper(
       oldContext.resourceManager,
       context.resourceManager,
     );
-    context.resourceManager.update(context.settings.lastLoaded);
+    context.resourceManager.update(
+      context.settings.lastLoaded,
+      context.settings,
+      "load",
+    );
   } else {
     let k: keyof GameContext;
     for (k in oldContext) {

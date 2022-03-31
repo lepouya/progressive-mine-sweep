@@ -4,8 +4,6 @@ export type ResourceCount = {
   kind?: string;
 };
 
-type ResourceResolver = (resource: Resource | string) => Resource;
-
 export type Resource = {
   name: string;
   description?: string;
@@ -15,9 +13,9 @@ export type Resource = {
   maxCount?: number;
   extra: Record<string, number>;
 
-  value: (resolver: ResourceResolver) => number;
-  cost: (n: number, resolver: ResourceResolver) => ResourceCount[];
-  tick: (dt: number, resolver: ResourceResolver) => void;
+  value: () => number;
+  cost: (n: number) => ResourceCount[];
+  tick: (dt: number, source: string) => void;
 
   rate: number;
   _rate: {
@@ -29,15 +27,11 @@ export type Resource = {
 export function genEmptyResource(name: string): Resource {
   const res: Resource = {
     name,
-
     count: 0,
     extra: {},
-
-    value: () =>
-      res.count + Object.values(res.extra).reduce((s, c) => s + c, 0),
+    value: () => res.count,
     cost: () => [],
     tick: () => {},
-
     rate: 0,
     _rate: {},
   };
