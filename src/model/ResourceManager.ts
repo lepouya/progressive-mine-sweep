@@ -170,7 +170,7 @@ function purchase(
           rc.resource,
           rc.count,
           rc.kind,
-          style ?? (rc.kind === "" ? "partial" : "free"),
+          style ?? "partial",
         );
 
         if (style === "dry") {
@@ -202,7 +202,7 @@ function resolveAll(
       count,
       kind: kind ?? "",
     }))
-    .filter(({ resource, count }) => resource !== undefined && count !== 0);
+    .filter(({ resource, count }) => resource && count);
 }
 
 function getCountOf(
@@ -239,16 +239,10 @@ function getPurchaseCost(
     return [{ resource, count: 0, kind }, []];
   }
 
-  let [start, target] = [0, 0];
-  if (!kind || kind === "") {
-    start = resource.count;
-    target = Math.max(0, start + count);
-    if (resource.maxCount !== undefined && target > resource.maxCount) {
-      target = resource.maxCount;
-    }
-  } else {
-    start = resource.extra[kind] ?? 0;
-    target = Math.max(0, start + count);
+  const start = kind ? resource.extra[kind] ?? 0 : resource.count;
+  let target = Math.max(0, start + count);
+  if (!kind && resource.maxCount && target > resource.maxCount) {
+    target = resource.maxCount;
   }
 
   if (style === "free") {
@@ -262,7 +256,7 @@ function getPurchaseCost(
     if (style !== "full") {
       partialCost = combineResources(
         partialCost,
-        resolveAll(rm, resource.cost(i + 1)),
+        resolveAll(rm, resource.cost(i + 1, kind)),
       );
       if (!canAfford(rm, partialCost)) {
         break;
@@ -270,7 +264,7 @@ function getPurchaseCost(
     }
 
     partialCount++;
-    cost = combineResources(cost, resolveAll(rm, resource.cost(i + 1)));
+    cost = combineResources(cost, resolveAll(rm, resource.cost(i + 1, kind)));
   }
 
   if (

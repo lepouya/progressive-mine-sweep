@@ -14,7 +14,7 @@ export type Resource = {
   extra: Record<string, number>;
 
   value: (kind?: string) => number;
-  cost: (n: number) => ResourceCount[];
+  cost: (n: number, kind?: string) => ResourceCount[];
   tick: (dt: number, source: string) => void;
 
   rate: number;
@@ -29,7 +29,7 @@ export function genEmptyResource(name: string): Resource {
     name,
     count: 0,
     extra: {},
-    value: (kind) => (!kind || kind === "" ? res.count : res.extra[kind] ?? 0),
+    value: (kind) => (!kind ? res.count : res.extra[kind] ?? 0),
     cost: () => [],
     tick: () => {},
     rate: 0,
@@ -122,18 +122,19 @@ export function applyToResource(
             (typeof resource === "string" ? resource : resource.name),
       )
       .map(({ count, kind }) => {
-        if (!kind || kind === "") {
-          const prev = res.count;
-          res.count = Math.max(0, prev + count);
-          if (res.maxCount !== undefined && res.count > res.maxCount) {
-            res.count = res.maxCount;
-          }
-          return [{ resource: res, count: res.count - prev }];
-        } else {
-          const prev = res.extra[kind] ?? 0;
-          res.extra[kind] = Math.max(0, prev + count);
-          return [{ resource: res, count: res.extra[kind] - prev, kind }];
+        const prev = kind ? res.extra[kind] ?? 0 : res.count;
+        let next = Math.max(0, prev + count);
+        if (!kind && res.maxCount && next > res.maxCount) {
+          next = res.maxCount;
         }
+
+        if (kind) {
+          res.extra[kind] = next;
+        } else {
+          res.count = next;
+        }
+
+        return [{ resource: res, count: next - prev, kind }];
       })
       .flat(),
   );
