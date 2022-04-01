@@ -76,4 +76,3 @@ Perhaps I could do prestige/reset options once this is ready
 ### Bugs to fix
 
 - move board state out of Main.tsx
-- merging resource extras works wrong
