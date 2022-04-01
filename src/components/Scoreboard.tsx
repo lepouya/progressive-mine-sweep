@@ -1,14 +1,12 @@
 import React from "react";
 
-import { BoardState, Board, BoardCellCounts } from "../model/Board";
+import { Board } from "../model/Board";
 
 const Scoreboard: React.FC<{
   board: Board;
-  cellCounts: BoardCellCounts;
-  gameState: BoardState;
-}> = ({ board, cellCounts, gameState }) => {
+}> = ({ board }) => {
   return (
-    <div className={"panel scoreboard-" + gameState}>
+    <div className={"panel scoreboard-" + board.state}>
       <div className="left">
         <div>
           Board: {board.rows}x{board.cols}
@@ -16,14 +14,14 @@ const Scoreboard: React.FC<{
       </div>
       <div className="center">
         <div>
-          {gameState === "won"
+          {board.state === "won"
             ? "Minefield won!"
-            : gameState === "lost"
+            : board.state === "lost"
             ? "Minefield lost!!"
-            : gameState === "active"
+            : board.state === "active"
             ? "Progress: " +
               Math.floor(
-                (100 * cellCounts.revealed) /
+                (100 * board.cellCounts.revealed) /
                   (board.rows * board.cols - board.numMines),
               ) +
               "%"
@@ -32,7 +30,7 @@ const Scoreboard: React.FC<{
       </div>
       <div className="right">
         <div>
-          Mines: {cellCounts.flagged}/{board.numMines}
+          Mines: {board.cellCounts.flagged}/{board.numMines}
         </div>
       </div>
     </div>

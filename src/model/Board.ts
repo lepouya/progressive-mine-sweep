@@ -1,7 +1,5 @@
 import clamp from "../utils/clamp";
-import { Cell } from "./Cell";
-
-export type BoardState = "inactive" | "active" | "won" | "lost";
+import { actOnCell, Cell } from "./Cell";
 
 export type Board = {
   rows: number;
@@ -9,6 +7,27 @@ export type Board = {
 
   cells: Cell[][];
   numMines: number;
+
+  state: BoardState;
+  cellCounts: BoardCellCounts;
+};
+
+export type BoardState = "inactive" | "active" | "won" | "lost";
+
+export type BoardCellCounts = {
+  hidden: number;
+  hinted: number;
+  flagged: number;
+  revealed: number;
+  blown: number;
+};
+
+export const emptyCellCounts: BoardCellCounts = {
+  hidden: 0,
+  hinted: 0,
+  flagged: 0,
+  revealed: 0,
+  blown: 0,
 };
 
 export const emptyBoard: Board = {
@@ -16,6 +35,8 @@ export const emptyBoard: Board = {
   cols: 0,
   cells: [],
   numMines: 0,
+  state: "inactive",
+  cellCounts: { ...emptyCellCounts },
 };
 
 export function makeClearBoard(rows: number, cols: number): Board {
@@ -33,7 +54,14 @@ export function makeClearBoard(rows: number, cols: number): Board {
     }
   }
 
-  return { rows, cols, cells, numMines: 0 };
+  return {
+    rows,
+    cols,
+    cells,
+    numMines: 0,
+    state: "active",
+    cellCounts: { ...emptyCellCounts, hidden: rows * cols },
+  };
 }
 
 export function populateRandomMines(
@@ -87,6 +115,36 @@ export function populateNeighboringCells(board: Board): Board {
   return board;
 }
 
+export function genBoardState(board: Board): Board {
+  board.cellCounts = { ...emptyCellCounts };
+  board.cells.forEach((cells) =>
+    cells.forEach((cell) => board.cellCounts[cell.state]++),
+  );
+
+  if (board.state === "lost") {
+    board.cells.forEach((cells) =>
+      cells.forEach((cell) => {
+        board.cellCounts[cell.state]--;
+        actOnCell(cell, "reveal");
+        board.cellCounts[cell.state]++;
+      }),
+    );
+  } else if (board.cols * board.rows === 0) {
+    board.state = "inactive";
+  } else if (
+    board.cellCounts["blown"] + board.cellCounts["flagged"] ===
+      board.numMines &&
+    board.cellCounts["hidden"] === 0 &&
+    board.cellCounts["revealed"] === board.cols * board.rows - board.numMines
+  ) {
+    board.state = "won";
+  } else {
+    board.state = "active";
+  }
+
+  return board;
+}
+
 export function genBoard(
   rows: number,
   cols: number,
@@ -96,6 +154,7 @@ export function genBoard(
   let board = makeClearBoard(rows, cols);
   board = populateRandomMines(board, minMines, maxMines);
   board = populateNeighboringCells(board);
+  board = genBoardState(board);
 
   return board;
 }
@@ -128,7 +187,11 @@ export function genHints(
     )
     .sort((cell1, cell2) => cell1.neighbors - cell2.neighbors);
   if (rankedHints.length <= numHints) {
-    rankedHints.forEach((cell) => (cell.state = "hinted"));
+    rankedHints.forEach((cell) => {
+      actOnCell(cell, "hint");
+      board.cellCounts.hinted++;
+      board.cellCounts.hidden--;
+    });
     return rankedHints.length;
   }
 
@@ -158,30 +221,12 @@ export function genHints(
     }
 
     x = Math.floor(x * rankedHints.length);
-    rankedHints.splice(x, 1).map((cell) => (cell.state = "hinted"));
+    rankedHints.splice(x, 1).map((cell) => {
+      actOnCell(cell, "hint");
+      board.cellCounts.hinted++;
+      board.cellCounts.hidden--;
+    });
   }
 
   return numHints;
-}
-
-export type BoardCellCounts = {
-  hidden: number;
-  hinted: number;
-  flagged: number;
-  revealed: number;
-  blown: number;
-};
-
-export function countCells(board: Board): BoardCellCounts {
-  const counts = {
-    hidden: 0,
-    hinted: 0,
-    flagged: 0,
-    revealed: 0,
-    blown: 0,
-  };
-
-  board.cells.forEach((cells) => cells.forEach((cell) => counts[cell.state]++));
-
-  return counts;
 }

@@ -1,18 +1,37 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { CellAction } from "../model/Cell";
-import { BoardState, Board } from "../model/Board";
+import { Board, genBoardState } from "../model/Board";
 import MineCell from "./MineCell";
 import cellIcons from "../utils/cellIcons";
 import clamp from "../utils/clamp";
+import useGameContext from "../utils/GameContext";
 
 const MineField: React.FC<{
   board: Board;
   setBoard: (board: Board) => void;
-  gameState: BoardState;
   showToggleTap?: boolean;
-}> = ({ board, setBoard, gameState, showToggleTap }) => {
+}> = ({ board, setBoard, showToggleTap }) => {
+  const { settings, resource } = useGameContext();
   const [tapMode, setTapMode] = useState<CellAction>("reveal");
+
+  const onAction = useCallback(() => {
+    if (board.state !== "active") {
+      return;
+    }
+
+    board = genBoardState({ ...board });
+    setBoard(board);
+    if (board.cellCounts["blown"] >= settings.maxErrors) {
+      board.state = "lost";
+      setBoard(genBoardState(board));
+      resource("losses").count++;
+      resource("losses").extra.manual++;
+    } else if (board.state === "won") {
+      resource("wins").count++;
+      resource("wins").extra.manual++;
+    }
+  }, [board]);
 
   const estSize = Math.floor(95 / Math.max(board.rows, board.cols));
   const cellSize = clamp(estSize, 2, 30);
@@ -53,9 +72,9 @@ const MineField: React.FC<{
                   key={"cell:" + r + ":" + c}
                   cell={cell}
                   size={cellSize}
-                  enabled={gameState === "active"}
+                  enabled={board.state === "active"}
                   tapMode={tapMode}
-                  onAction={() => setBoard({ ...board })}
+                  onAction={onAction}
                 />
               ))}
             </tr>

@@ -1,6 +1,6 @@
 import React, { useCallback, useContext } from "react";
 import { Settings, defaultSettings } from "../model/Settings";
-import { Board, emptyBoard } from "../model/Board";
+import { Board, emptyBoard, genBoardState } from "../model/Board";
 import * as Store from "./store";
 import {
   genResourceManager,
@@ -45,6 +45,8 @@ function loadWrapper(
       ...context.settings,
       lastLoaded: Date.now(),
     };
+
+    context.board = genBoardState({ ...oldContext.board, ...context.board });
 
     context.resourceManager = mergeResourceManagers(
       oldContext.resourceManager,
