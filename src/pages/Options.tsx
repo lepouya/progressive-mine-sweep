@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router";
 
 import TimeDuration from "../utils/TimeDuration";
 import useGameContext from "../utils/GameContext";
+import ResourceRender from "../utils/ResourceRender";
 
 const Options: React.FC = () => {
   const context = useGameContext();
@@ -196,6 +197,26 @@ const Options: React.FC = () => {
           <div className="full">{JSON.stringify(settings, null, 2)}</div>
           <div className="title-bar" />
           <div className="half">Resources:</div>
+          <div className="half"></div>
+          {Object.values(context.resourceManager.resources).map((resource) => (
+            <div className="half left" key={"debug-resource-" + resource.name}>
+              <ResourceRender
+                resource={resource}
+                key={resource.name}
+                length={"compact"}
+                display={
+                  resource.name === "difficulty" ||
+                  resource.name === "hintQuality"
+                    ? "percentage"
+                    : undefined
+                }
+                showName={true}
+                showValue={true}
+                showRate={true}
+                showExtras={true}
+              />
+            </div>
+          ))}
           <div className="full">
             {JSON.stringify(context.resourceManager, null, 2)}
           </div>

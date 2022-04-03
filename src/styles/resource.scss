@@ -1,0 +1,64 @@
+.resource {
+  width: 100%;
+  margin: auto;
+  padding: 2px;
+
+  display: inline-flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+
+  .zero {
+    color: #444444 !important;
+  }
+  .positive {
+    color: #447744 !important;
+  }
+  .negative {
+    color: #774444 !important;
+  }
+
+  > div {
+    display: inline-flex;
+    align-items: center;
+
+    + div {
+      padding-inline-start: 1ex;
+    }
+  }
+
+  > .break {
+    flex: 0 9 100%;
+  }
+
+  > .name,
+  > .extra-name {
+    justify-content: flex-end;
+    flex: 0 1 25%;
+    padding-inline-start: 0;
+  }
+
+  > .value,
+  > .extra-value {
+    justify-content: flex-start;
+    flex: 3 0 auto;
+  }
+
+  > .raw-value,
+  > .raw-extra-value {
+    justify-content: flex-start;
+    flex: 2 0 auto;
+  }
+
+  > .rate {
+    justify-content: flex-end;
+    flex: 2 0 auto;
+  }
+
+  > .extra-name,
+  > .extra-value,
+  > .raw-extra-value {
+    color: #333333;
+  }
+}

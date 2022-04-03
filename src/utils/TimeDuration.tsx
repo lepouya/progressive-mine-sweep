@@ -1,8 +1,9 @@
 import React from "react";
 
-type TimeProperties = {
+const TimeDuration: React.FC<{
   start?: number;
   end?: number;
+  length?: "tiny" | "compact" | "expanded";
 
   prefix?: string;
   suffix?: string;
@@ -12,35 +13,59 @@ type TimeProperties = {
 
   millis?: boolean;
   negatives?: boolean;
-};
-
-const TimeDuration: React.FC<TimeProperties> = ({
+}> = ({
   start = 0,
   end = 0,
+  length = "expanded",
   prefix = "",
   suffix = "",
-  separator = ", ",
+  separator = length === "expanded" ? ", " : ":",
   never = "never",
   now = "now",
   millis = false,
   negatives = false,
 }) => {
-  if (never.length > 0 && (start <= 0 || end <= 0)) {
-    return (
-      <div className="time-duration">
-        {prefix}
-        {never}
-      </div>
-    );
-  }
-
   let duration = end - start;
-  if (!negatives && duration < 0) {
+  if (never.length > 0 && (start <= 0 || end <= 0)) {
+    duration = -1;
+  } else if (!negatives && duration < 0) {
     duration = 0;
   }
 
-  let secs = Math.floor(duration / 1000);
-  let msec = Math.floor(duration - secs * 1000);
+  const wording = formatDuration(
+    duration,
+    length,
+    millis,
+    separator,
+    now,
+    never,
+  );
+
+  return (
+    <div className="time-duration">
+      {prefix}
+      {wording}
+      {wording !== now && wording !== never ? suffix : ""}
+    </div>
+  );
+};
+
+export function formatDuration(
+  time: number,
+  len: "tiny" | "compact" | "expanded" = "expanded",
+  millis = false,
+  sep = len === "expanded" ? ", " : ":",
+  now = "",
+  never = "",
+): string {
+  if (never.length > 0 && time < 0) {
+    return never;
+  } else if (now.length > 0 && time === 0) {
+    return now;
+  }
+
+  let secs = Math.floor(time / 1000);
+  let msec = Math.floor(time - secs * 1000);
 
   let mins = Math.floor(secs / 60);
   secs -= mins * 60;
@@ -56,44 +81,41 @@ const TimeDuration: React.FC<TimeProperties> = ({
   }
 
   if (now.length > 0 && days + hours + mins + secs + msec === 0) {
-    return (
-      <div className="time-duration">
-        {prefix}
-        {now}
-      </div>
-    );
+    return now;
   }
 
-  let words: string[] = [];
-  function addWord(
-    num: number,
-    word: string,
-    allowZeros = false,
-    fraction = 0,
-  ): void {
-    if (num > 0 || fraction > 0 || (allowZeros && num === 0)) {
-      words.push(
-        num.toString() +
+  let words = [];
+  if (len !== "expanded") {
+    words = [
+      days > 0 ? days.toFixed(0) : "",
+      hours > 0 || len === "compact" ? hours.toFixed(0) : "",
+      mins > 0 || len === "compact" ? mins.toFixed(0) : "",
+      (secs + msec / 1000).toFixed(
+        !millis || (len === "tiny" && msec === 0) ? 0 : 3,
+      ),
+    ].map((num) =>
+      len === "compact" && (num.length === 1 || num.indexOf(".") === 1)
+        ? "0" + num
+        : num,
+    );
+  } else {
+    words = [
+      [days, "day"],
+      [hours, "hour"],
+      [mins, "minute"],
+      [secs, "second", days + hours + mins === 0, msec],
+    ].map(([num, word, allowZeros = false, fraction = 0]) =>
+      num > 0 || fraction > 0 || (allowZeros && num === 0)
+        ? num.toString() +
           (fraction > 0 ? "." + fraction.toString() : "") +
           " " +
           word +
-          (num === 1 ? "" : "s"),
-      );
-    }
+          (num === 1 ? "" : "s")
+        : "",
+    );
   }
 
-  addWord(days, "day");
-  addWord(hours, "hour");
-  addWord(mins, "minute");
-  addWord(secs, "second", days + hours + mins === 0, msec);
-
-  return (
-    <div className="time-duration">
-      {prefix}
-      {words.join(separator)}
-      {suffix}
-    </div>
-  );
-};
+  return words.filter((word) => word.length > 0).join(sep);
+}
 
 export default TimeDuration;
