@@ -20,32 +20,18 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### ~~M0: Framework and project config~~
 
-- ~~Set up project and repository~~
-- ~~Import web skeleton from ssba~~
-- ~~Get builds and packaging working~~
-
 ### ~~M1: Get classic minesweeper working~~
-
-- ~~Make flexible game grids~~
-- ~~Populate with mines and %/# choices~~
-- ~~Make a playable game~~
-- ~~Implement winning and losing~~
-- ~~Track scores~~
-- ~~Add temporary UI to modify the game parameters~~
-- ~~Implement saving and loading the current state~~
-- ~~Make everything mobile-friendly~~
-- ~~Add help page~~
 
 ### M2: Make it incremental
 
 - ~~Set up resource management~~
 - ~~Track and use game resources~~
 - Report game currencies on screen
-- Delay before starting a new game
 - Add options for increasing grid size
-- Add options for increasing mine % and #
+- Add options for increasing difficulty and multiplier
 - Hint purchase, and options to increase hint quality
 - Score multipliers
+- Delay before starting a new game, option to decrese it
 
 ### M2: Automation
 
@@ -77,3 +63,4 @@ Perhaps I could do prestige/reset options once this is ready
 
 - favicon
 - persist debug mode across pages?
+- icons for resources!
