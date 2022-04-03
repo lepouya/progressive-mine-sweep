@@ -76,6 +76,9 @@ export function formatDuration(
   let days = Math.floor(hours / 24);
   hours -= days * 24;
 
+  let years = Math.floor(days / 365);
+  days -= years * 365;
+
   if (!millis) {
     msec = 0;
   }
@@ -87,6 +90,7 @@ export function formatDuration(
   let words = [];
   if (len !== "expanded") {
     words = [
+      years > 0 ? years.toFixed(0) : "",
       days > 0 ? days.toFixed(0) : "",
       hours > 0 || len === "compact" ? hours.toFixed(0) : "",
       mins > 0 || len === "compact" ? mins.toFixed(0) : "",
@@ -100,10 +104,11 @@ export function formatDuration(
     );
   } else {
     words = [
+      [years, "years"],
       [days, "day"],
       [hours, "hour"],
       [mins, "minute"],
-      [secs, "second", days + hours + mins === 0, msec],
+      [secs, "second", years + days + hours + mins === 0, msec],
     ].map(([num, word, allowZeros = false, fraction = 0]) =>
       num > 0 || fraction > 0 || (allowZeros && num === 0)
         ? num.toString() +
