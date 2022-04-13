@@ -1,6 +1,5 @@
 import assign from "../utils/assign";
 import clamp from "../utils/clamp";
-import Optional from "../utils/Optional";
 import {
   applyToResource,
   checkHasResources,
@@ -14,15 +13,11 @@ import { Settings } from "./Settings";
 export type ResourceManager = {
   resources: Record<string, Resource & ResourceHelper>;
 
-  upsert: (props: Optional<Resource> | string) => Resource & ResourceHelper;
+  upsert: (props: Partial<Resource> | string) => Resource & ResourceHelper;
   get: (resource: Resource | string) => Resource & ResourceHelper;
   purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => ResourceCount[];
 
-  update: (
-    now?: number,
-    settings?: Optional<Settings>,
-    source?: string,
-  ) => void;
+  update: (now?: number, settings?: Partial<Settings>, source?: string) => void;
 };
 
 export type PurchaseStyle = "full" | "partial" | "free" | "dry";
@@ -48,7 +43,7 @@ export function genResourceManager(): ResourceManager {
 
 export function mergeResourceManagers(
   rm: ResourceManager,
-  toLoad: Optional<ResourceManager>,
+  toLoad: Partial<ResourceManager>,
 ): ResourceManager {
   let k: keyof ResourceManager;
   for (k in toLoad) {
@@ -71,7 +66,7 @@ function resolve(
 
 function upsert(
   rm: ResourceManager,
-  props: Optional<Resource> | string,
+  props: Partial<Resource> | string,
 ): Resource & ResourceHelper {
   const name = typeof props === "string" ? props : props.name ?? "";
   const res = rm.resources[name] ?? genEmptyResource(name);
@@ -102,7 +97,7 @@ function upsert(
 function update(
   rm: ResourceManager,
   now: number | undefined,
-  settings: Optional<Settings>,
+  settings: Partial<Settings>,
   source: string,
 ) {
   const {
