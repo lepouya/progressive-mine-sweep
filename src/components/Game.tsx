@@ -5,7 +5,7 @@ import Main from "../pages/Main";
 import Help from "../pages/Help";
 import Options from "../pages/Options";
 import useGameContext from "../utils/GameContext";
-import GameLink from "../utils/GameLink";
+import Link from "../utils/Link";
 
 const Game: React.FC = () => {
   const { settings, resourceManager, save } = useGameContext();
@@ -52,11 +52,11 @@ const Game: React.FC = () => {
     <HashRouter>
       <nav className="navbar">
         <div className="left">
-          <GameLink to="/">Mine Sweep</GameLink>
-          <GameLink to="/help">Help</GameLink>
+          <Link to="/">Mine Sweep</Link>
+          <Link to="/help">Help</Link>
         </div>
         <div className="right">
-          <GameLink to="/options">Settings</GameLink>
+          <Link to="/options">Settings</Link>
         </div>
       </nav>
       <div className="main">
