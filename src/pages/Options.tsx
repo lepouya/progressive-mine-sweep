@@ -38,17 +38,20 @@ const Options: React.FC = () => {
     }
   }
 
-  function changeTickSpeed(event: ChangeEvent<HTMLInputElement>) {
-    let tickSpeed = parseInt(event.target.value);
-    if (tickSpeed >= 1 && tickSpeed <= 60) {
-      settings.ticksPerSecond = tickSpeed;
-    }
-  }
-
-  function changeSaveFrequency(event: ChangeEvent<HTMLInputElement>) {
-    let saveFreq = parseInt(event.target.value);
-    if (saveFreq >= 1 && saveFreq <= 600) {
-      settings.saveFrequencySecs = 600 / saveFreq;
+  function changeFrequency(timer: string, value: string) {
+    let freq = parseInt(value);
+    if (freq >= 1 && freq <= 1000) {
+      switch (timer) {
+        case "tick":
+          settings.ticksPerSecond = freq;
+          break;
+        case "render":
+          settings.framesPerSecond = freq;
+          break;
+        case "save":
+          settings.saveFrequencySecs = 600 / freq;
+          break;
+      }
     }
   }
 
@@ -124,18 +127,40 @@ const Options: React.FC = () => {
         </div>
         <div className="half">Updating frequency:</div>
         <div className="half center">
-          {Math.floor(1000 / settings.ticksPerSecond)}ms
+          {Math.floor(1000.0 / settings.ticksPerSecond)}ms
         </div>
         <div className="half"></div>
         <div className="half center">
           <input
             type="range"
-            min={4}
-            max={30}
+            min={1}
+            max={1000}
             value={settings.ticksPerSecond}
-            onInput={changeTickSpeed}
+            onInput={(e: ChangeEvent<HTMLInputElement>) =>
+              changeFrequency("tick", e.target.value)
+            }
           />
         </div>
+
+        <div className="title-bar"></div>
+        <div className="full"></div>
+        <div className="half">Rendering frequency:</div>
+        <div className="half center">
+          {Math.floor(1000.0 / settings.framesPerSecond)}ms
+        </div>
+        <div className="half"></div>
+        <div className="half center">
+          <input
+            type="range"
+            min={1}
+            max={60}
+            value={settings.framesPerSecond}
+            onInput={(e: ChangeEvent<HTMLInputElement>) =>
+              changeFrequency("render", e.target.value)
+            }
+          />
+        </div>
+
         <div className="title-bar"></div>
         <div className="full">
           Change how often the game is saved in the background. More frequent
@@ -157,7 +182,9 @@ const Options: React.FC = () => {
             min={1}
             max={60}
             value={600 / settings.saveFrequencySecs}
-            onInput={changeSaveFrequency}
+            onInput={(e: ChangeEvent<HTMLInputElement>) =>
+              changeFrequency("save", e.target.value)
+            }
           />
         </div>
       </div>

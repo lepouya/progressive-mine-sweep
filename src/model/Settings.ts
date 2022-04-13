@@ -1,7 +1,10 @@
 export type Settings = {
   // Clock settings
   ticksPerSecond: number;
+  framesPerSecond: number;
   saveFrequencySecs: number;
+
+  // Resource updates
   rateUpdateSecs: number;
   minResourceUpdateSecs: number;
   maxResourceUpdateSecs: number;
@@ -19,8 +22,10 @@ export type Settings = {
 };
 
 export const defaultSettings: Settings = {
-  ticksPerSecond: 20.0,
+  ticksPerSecond: 60.0,
+  framesPerSecond: 10.0,
   saveFrequencySecs: 60.0,
+
   rateUpdateSecs: 1.0,
   minResourceUpdateSecs: 0.001,
   maxResourceUpdateSecs: 86400.0,
