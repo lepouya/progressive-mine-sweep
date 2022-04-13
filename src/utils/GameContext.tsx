@@ -24,13 +24,11 @@ const emptyGameContext: GameContext = {
 
 const GameReactContext = React.createContext<GameContext>(emptyGameContext);
 
-export const GameContextProvider: React.FC = (props) => {
-  return (
-    <GameReactContext.Provider value={{ ...emptyGameContext }}>
-      {props.children}
-    </GameReactContext.Provider>
-  );
-};
+export const GameContextProvider: React.FC = (props) => (
+  <GameReactContext.Provider value={{ ...emptyGameContext }}>
+    {props.children}
+  </GameReactContext.Provider>
+);
 
 function loadWrapper(
   context: GameContext,

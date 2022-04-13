@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { HashRouter, NavLink, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 
 import Main from "../pages/Main";
 import Help from "../pages/Help";
 import Options from "../pages/Options";
 import useGameContext from "../utils/GameContext";
+import GameLink from "../utils/GameLink";
 
 const Game: React.FC = () => {
   const { settings, resourceManager, save } = useGameContext();
@@ -47,25 +48,15 @@ const Game: React.FC = () => {
     );
   }
 
-  function activeClass(props: { isActive: boolean }): string {
-    return props.isActive ? "active" : "";
-  }
-
   return (
     <HashRouter>
       <nav className="navbar">
         <div className="left">
-          <NavLink className={activeClass} to="/">
-            Mine Sweep
-          </NavLink>
-          <NavLink className={activeClass} to="/help">
-            Help
-          </NavLink>
+          <GameLink to="/">Mine Sweep</GameLink>
+          <GameLink to="/help">Help</GameLink>
         </div>
         <div className="right">
-          <NavLink className={activeClass} to="/options">
-            Settings
-          </NavLink>
+          <GameLink to="/options">Settings</GameLink>
         </div>
       </nav>
       <div className="main">

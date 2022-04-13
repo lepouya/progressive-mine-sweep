@@ -62,5 +62,4 @@ Perhaps I could do prestige/reset options once this is ready
 ### Bugs to fix
 
 - favicon
-- persist debug mode across pages?
 - icons for resources!
