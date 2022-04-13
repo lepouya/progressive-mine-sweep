@@ -1,7 +1,7 @@
 import React, { MouseEvent, useCallback } from "react";
 
 import { actOnCell, Cell, CellAction } from "../model/Cell";
-import cellIcons from "../utils/cellIcons";
+import { CellIcon } from "../utils/Icon";
 import useGameContext from "../utils/GameContext";
 
 const MineCell: React.FC<{
@@ -88,12 +88,6 @@ const MineCell: React.FC<{
   const minPx = Math.floor((640 * size) / 100);
   const cellSize = `min(${size}vmin, ${minPx}px)`;
 
-  const color = cellIcons[cell.state].color;
-  let icon = cellIcons[cell.state].icon;
-  if (icon instanceof Array) {
-    icon = icon[cell.neighbors];
-  }
-
   return (
     <td
       className={"cell cell-" + cell.state}
@@ -101,7 +95,7 @@ const MineCell: React.FC<{
       onContextMenu={handleClick}
     >
       <div style={{ width: cellSize, height: cellSize }}>
-        {icon ? icon({ color, size: "80%" }) : null}
+        <CellIcon cell={cell} size="80%" />
       </div>
     </td>
   );

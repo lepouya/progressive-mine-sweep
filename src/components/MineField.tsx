@@ -3,7 +3,7 @@ import React, { useCallback, useState } from "react";
 import { CellAction } from "../model/Cell";
 import { Board, genBoardState } from "../model/Board";
 import MineCell from "./MineCell";
-import cellIcons from "../utils/cellIcons";
+import { CellIcon } from "../utils/Icon";
 import clamp from "../utils/clamp";
 import useGameContext from "../utils/GameContext";
 
@@ -40,14 +40,6 @@ const MineField: React.FC<{
     setTapMode(tapMode === "reveal" ? "flag" : "reveal");
   }
 
-  const tapText = tapMode === "reveal" ? "Revealing" : "Flagging";
-  const tapCell = cellIcons[tapMode === "reveal" ? "revealed" : "flagged"];
-  const tapColor = tapCell.color;
-  let tapIcon = tapCell.icon;
-  if (tapIcon instanceof Array) {
-    tapIcon = tapIcon[9];
-  }
-
   return (
     <div className="minefield">
       <table>
@@ -56,9 +48,13 @@ const MineField: React.FC<{
             <tr>
               <th colSpan={board.cols} className="cell">
                 <button type="button" value={tapMode} onClick={toggleTapMode}>
-                  {"Tap mode: "}
-                  {tapIcon ? tapIcon({ color: tapColor, size: "1em" }) : null}
-                  {" " + tapText}
+                  Tap mode:
+                  <CellIcon
+                    state={tapMode === "reveal" ? "revealed" : "flagged"}
+                    neighbors={9}
+                    size="1em"
+                  />
+                  {tapMode === "reveal" ? "Revealing" : "Flagging"}
                 </button>
               </th>
             </tr>
