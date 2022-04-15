@@ -1,6 +1,7 @@
 import React from "react";
 import { Resource } from "../model/Resource";
 import clamp from "./clamp";
+import Icon from "./Icon";
 import { formatDuration } from "./TimeDuration";
 
 const ResourceRender: React.FC<{
@@ -18,6 +19,7 @@ const ResourceRender: React.FC<{
   showPlusSign?: boolean;
   showGrouping?: boolean;
 
+  showIcon?: boolean;
   showName?: boolean;
   showValue?: boolean;
   showRawValue?: boolean;
@@ -59,6 +61,7 @@ const ResourceRender: React.FC<{
   showPlusSign = false,
   showGrouping = display === "number",
 
+  showIcon = true,
   showName = false,
   showValue = true,
   showRawValue = false,
@@ -159,10 +162,13 @@ const ResourceRender: React.FC<{
     locked = true;
   }
 
-  if (!locked && showName && resource.name.length > 0) {
+  if (!locked && ((showIcon && resource.icon) || showName)) {
     output.push(
       <div className="name" key="name">
-        {resource.name}
+        {showIcon && resource.icon && resource.icon.length > 0 ? (
+          <Icon icon={resource.icon} size="1em" />
+        ) : null}
+        {showName && resource.name.length > 0 ? resource.name : null}
         {infix}
       </div>,
     );

@@ -34,15 +34,16 @@ export const CellIcon: React.FC<
   return Icon({ ...props, icon });
 };
 
+const iconRegex = /(^icon)|([^0-9a-zA-Z]+)/gi;
 export const getIcon = (name: string) =>
   icons[name] ??
   icons[name.toLowerCase()] ??
-  icons[name.toLowerCase().replace("icon", "")];
+  icons[name.toLowerCase().replaceAll(iconRegex, "")];
 
 const icons: Record<string, TablerIcons.TablerIcon> = {};
 for (const [name, icon] of Object.entries(TablerIcons)) {
   icons[name] = icon;
-  icons[name.toLowerCase().replace("icon", "")] = icon;
+  icons[name.toLowerCase().replaceAll(iconRegex, "")] = icon;
 }
 
 const cellIcons = {

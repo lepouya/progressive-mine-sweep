@@ -5,8 +5,9 @@ export type ResourceCount = {
 };
 
 export type Resource = {
-  name: string;
+  readonly name: string;
   description?: string;
+  icon?: string;
   unlocked?: boolean;
 
   count: number;

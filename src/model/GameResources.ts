@@ -6,17 +6,50 @@ export default function initGameResources(
 ): ResourceManager {
   const rm = resourceManager ?? genResourceManager();
 
-  rm.upsert({ name: "clicks", extra: { left: 0, right: 0, useless: 0 } });
-  rm.upsert({ name: "cells", extra: { auto: 0, manual: 0, hidden: 0 } });
-  rm.upsert({ name: "hints", extra: { auto: 0, manual: 0 } });
-  rm.upsert({ name: "flags", extra: { auto: 0, manual: 0, unflags: 0 } });
-  rm.upsert({ name: "explosions", extra: { auto: 0, manual: 0 } });
-  rm.upsert({ name: "wins", extra: { auto: 0, manual: 0 } });
-  rm.upsert({ name: "losses", extra: { auto: 0, manual: 0 } });
-  rm.upsert({ name: "resets", extra: { auto: 0, manual: 0 } });
+  rm.upsert({
+    name: "clicks",
+    icon: "hand-click",
+    extra: { left: 0, right: 0, useless: 0 },
+  });
+  rm.upsert({
+    name: "cells",
+    icon: "darkgreen square",
+    extra: { auto: 0, manual: 0, hidden: 0 },
+  });
+  rm.upsert({
+    name: "hints",
+    icon: "green eye",
+    extra: { auto: 0, manual: 0 },
+  });
+  rm.upsert({
+    name: "flags",
+    icon: "darkblue flag-2",
+    extra: { auto: 0, manual: 0, unflags: 0 },
+  });
+  rm.upsert({
+    name: "explosions",
+    icon: "red alert-triangle",
+    extra: { auto: 0, manual: 0 },
+  });
+  rm.upsert({
+    name: "wins",
+    icon: "darkgreen square-check",
+    extra: { auto: 0, manual: 0 },
+  });
+  rm.upsert({
+    name: "losses",
+    icon: "darkred square-x",
+    extra: { auto: 0, manual: 0 },
+  });
+  rm.upsert({
+    name: "resets",
+    icon: "refresh-dot",
+    extra: { auto: 0, manual: 0 },
+  });
 
   rm.upsert({
     name: "rows",
+    icon: "arrows-vertical",
     count: 3,
     value: () => Math.max(3, rm.get("rows").count),
     cost: (n) => [{ resource: "cells", count: n ** 2 }],
@@ -24,6 +57,7 @@ export default function initGameResources(
 
   rm.upsert({
     name: "cols",
+    icon: "arrows-horizontal",
     count: 3,
     value: () => Math.max(3, rm.get("cols").count),
     cost: (n) => [{ resource: "cells", count: n ** 2 }],
@@ -31,20 +65,26 @@ export default function initGameResources(
 
   rm.upsert({
     name: "difficulty",
+    icon: "adjustments-horizontal",
     count: 0.15,
     value: () => clamp(rm.get("difficulty").count),
   });
 
   rm.upsert({
     name: "hintQuality",
+    icon: "bulb",
     count: 0,
     value: () => clamp(rm.get("hintQuality").count),
   });
 
-  const tt = rm.upsert("totalTime");
+  const tt = rm.upsert({ name: "totalTime", icon: "clock" });
   tt.tick = (dt) => (tt.count += dt);
 
-  const at = rm.upsert({ name: "activeTime", extra: { current: 0, max: 0 } });
+  const at = rm.upsert({
+    name: "activeTime",
+    icon: "alarm",
+    extra: { current: 0, max: 0 },
+  });
   at.tick = (dt, src) => {
     if (src === "tick") {
       // Count online time and max session
@@ -59,7 +99,11 @@ export default function initGameResources(
     }
   };
 
-  const ot = rm.upsert({ name: "offlineTime", extra: { current: 0, max: 0 } });
+  const ot = rm.upsert({
+    name: "offlineTime",
+    icon: "user-off",
+    extra: { current: 0, max: 0 },
+  });
   ot.tick = (dt, src) => {
     if (src === "load") {
       // Count offline time and max session
