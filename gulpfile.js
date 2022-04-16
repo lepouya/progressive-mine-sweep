@@ -1,22 +1,13 @@
 const babelify = require('babelify');
 const browserify = require('browserify');
 const buffer = require('vinyl-buffer');
-const cleanCss = require('gulp-clean-css');
-const concat = require('gulp-concat');
-const connect = require('gulp-connect');
 const fs = require('fs');
 const gulp = require('gulp');
-const htmlmin = require('gulp-htmlmin');
-const htmlPretty = require('gulp-pretty-html');
 const log = require('fancy-log');
-const realFavicon = require('gulp-real-favicon');
-const rename = require('gulp-rename');
-const replace = require('gulp-replace');
-const sass = require('gulp-sass')(require('sass'));
+const plugins = require('gulp-load-plugins')();
+const sass = require('sass');
 const source = require('vinyl-source-stream');
-const sourcemaps = require('gulp-sourcemaps');
 const tsify = require('tsify');
-const uglify = require('gulp-uglify');
 const watchify = require('watchify');
 
 const package = 'progressive-mine-sweep';
@@ -67,32 +58,32 @@ gulp.task('html', function () {
 
   let stream = gulp
     .src(htmlEntries)
-    .pipe(replace('{jsSource}', jsName))
-    .pipe(replace('{cssSource}', cssName))
-    .pipe(replace('{vendorSource}', vendorName))
-    .pipe(replace('{favIconCode}', favIconData.favicon.html_code))
-    .pipe(realFavicon.injectFaviconMarkups(favIconData.favicon.html_code));
+    .pipe(plugins.replace('{jsSource}', jsName))
+    .pipe(plugins.replace('{cssSource}', cssName))
+    .pipe(plugins.replace('{vendorSource}', vendorName))
+    .pipe(plugins.replace('{favIconCode}', favIconData.favicon.html_code))
+    .pipe(plugins.realFavicon.injectFaviconMarkups(favIconData.favicon.html_code));
 
   if (debug) {
     stream = stream
-      .pipe(htmlPretty({
+      .pipe(plugins.prettyHtml({
         indent_inner_html: true
       }))
   } else {
     stream = stream
-      .pipe(htmlmin({
+      .pipe(plugins.htmlmin({
         collapseWhitespace: true,
         removeComments: true
       }));
   }
 
   stream = stream
-    .pipe(rename(htmlName))
+    .pipe(plugins.rename(htmlName))
     .pipe(gulp.dest(outDir));
 
   if (process.env.watching) {
     stream = stream
-      .pipe(connect.reload());
+      .pipe(plugins.connect.reload());
 
     const watcher = gulp.watch(htmlEntries, gulp.series('html'));
     watchStreams.push(watcher);
@@ -107,20 +98,20 @@ gulp.task('sass', function () {
 
   let stream = gulp
     .src(cssEntries)
-    .pipe(sourcemaps.init())
-    .pipe(sass({
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.sass(sass)({
       outputStyle: (debug ? 'expanded' : 'compressed'),
       outFile: cssName,
     }))
-    .pipe(concat('style.css'))
-    .pipe(rename(cssName));
+    .pipe(plugins.concat('style.css'))
+    .pipe(plugins.rename(cssName));
 
   if (debug) {
     stream = stream
-      .pipe(sourcemaps.write('./'))
+      .pipe(plugins.sourcemaps.write('./'))
   } else {
     stream = stream
-      .pipe(cleanCss());
+      .pipe(plugins.cleanCss());
   }
 
   stream = stream
@@ -128,7 +119,7 @@ gulp.task('sass', function () {
 
   if (process.env.watching) {
     stream = stream
-      .pipe(connect.reload());
+      .pipe(plugins.connect.reload());
 
     const watcher = gulp.watch(cssEntries, gulp.series('sass'));
     watchStreams.push(watcher);
@@ -155,13 +146,13 @@ gulp.task('vendor', function () {
 
   if (debug) {
     stream = stream
-      .pipe(sourcemaps.init({
+      .pipe(plugins.sourcemaps.init({
         loadMaps: true
       }))
-      .pipe(sourcemaps.write('./'))
+      .pipe(plugins.sourcemaps.write('./'))
   } else {
     stream = stream
-      .pipe(uglify());
+      .pipe(plugins.uglify());
   }
 
   return stream
@@ -173,7 +164,7 @@ gulp.task('ts', function () {
 });
 
 gulp.task('server', function (done) {
-  connect.server({
+  plugins.connect.server({
     name: package,
     root: outDir,
     port: 8080,
@@ -182,7 +173,7 @@ gulp.task('server', function (done) {
       return [function (req, res, next) {
         if (/_kill_\/?/.test(req.url)) {
           res.end();
-          connect.serverClose();
+          plugins.connect.serverClose();
           watchStreams.forEach(stream => stream.close());
           done();
         }
@@ -193,7 +184,7 @@ gulp.task('server', function (done) {
 });
 
 gulp.task('generate-favicon', function (done) {
-  realFavicon.generateFavicon({
+  plugins.realFavicon.generateFavicon({
     masterPicture: favIconsDir + '/' + favIconMasterPicture,
     dest: favIconsDir,
     iconsPath: favIconsDir + '/',
@@ -260,7 +251,7 @@ gulp.task('generate-favicon', function (done) {
 
 gulp.task('favicon', function (done) {
   var currentVersion = JSON.parse(fs.readFileSync(favIconDataFile)).version;
-  realFavicon.checkForUpdates(currentVersion, function (err) {
+  plugins.realFavicon.checkForUpdates(currentVersion, function (err) {
     if (err) {
       gulp.start('generate-favicon');
     }
@@ -280,7 +271,7 @@ gulp.task('copy-dist', function () {
       [htmlName, jsName, cssName, vendorName]
         .concat(assetEntries)
         .map(f => outDir + '/' + f))
-    .pipe(rename(path => {
+    .pipe(plugins.rename(path => {
       if (path.basename == 'index.min') {
         path.basename = 'index';
       }
@@ -346,13 +337,13 @@ function bundle() {
 
   if (debug) {
     stream = stream
-      .pipe(sourcemaps.init({
+      .pipe(plugins.sourcemaps.init({
         loadMaps: true
       }))
-      .pipe(sourcemaps.write('./'))
+      .pipe(plugins.sourcemaps.write('./'))
   } else {
     stream = stream
-      .pipe(uglify());
+      .pipe(plugins.uglify());
   }
 
   stream = stream
@@ -360,7 +351,7 @@ function bundle() {
 
   if (process.env.watching) {
     stream = stream
-      .pipe(connect.reload());
+      .pipe(plugins.connect.reload());
   }
 
   return stream;
