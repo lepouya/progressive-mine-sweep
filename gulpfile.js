@@ -313,7 +313,7 @@ function favicon(done) {
   var currentVersion = JSON.parse(fs.readFileSync(favIconDataFile)).version;
   plugins.realFavicon.checkForUpdates(currentVersion, function (err) {
     if (err) {
-      generateFavicon();
+      return generateFavicon(done);
     }
     done();
   });
