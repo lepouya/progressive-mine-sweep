@@ -5,14 +5,13 @@
   "main": "./dist/progressive-mine-sweep.js",
   "scripts": {
     "start": "gulp start",
-    "watch": "gulp watch",
     "debug": "gulp debug",
     "release": "gulp release",
     "test": "mocha -r ts-node/register --reporter spec src/**/*Test.ts",
     "update": "ncu -u",
     "reset:packages": "rm -rf node_modules && npm update --save-dev && npm update --save",
-    "release:github": "gulp github-release",
-    "generate:favicon": "gulp generate-favicon"
+    "release:github": "gulp githubRelease",
+    "generate:favicon": "gulp generateFavicon"
   },
   "repository": {
     "type": "git",

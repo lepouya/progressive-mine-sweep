@@ -12,7 +12,7 @@ const watchify = require('watchify');
 
 const package = 'progressive-mine-sweep';
 const outDir = 'dist';
-const vendor = 'vendor';
+const vendorFile = 'vendor';
 const githubPagesDir = '../lepouya.github.io';
 const favIconDataFile = 'faviconData.json';
 const favIconsDir = 'assets/icons';
@@ -23,37 +23,37 @@ const cssEntries = ['src/**/*.scss'];
 const jsEntries = ['src/index.tsx'];
 const externalLibs = ['react', 'react-dom', 'react-router', 'react-router-dom', '@tabler/icons'];
 const extensions = ['.js', '.ts', '.jsx', '.tsx', '.json'];
-const watchStreams = [];
+const watchStreams = {};
 
-gulp.task('prod', function (done) {
+function prod(done) {
   process.env.NODE_ENV = 'production';
   done();
-});
+}
 
-gulp.task('dev', function (done) {
+function dev(done) {
   process.env.NODE_ENV = 'development';
   done();
-});
+}
 
-gulp.task('watching', function (done) {
+function watching(done) {
   process.env.watching = true;
   done();
-});
+}
 
-gulp.task('assets', function () {
+function assets() {
   return gulp
     .src(assetEntries, {
       base: '.',
     })
     .pipe(gulp.dest(outDir));
-});
+}
 
-gulp.task('html', function () {
+function html() {
   const debug = (process.env.NODE_ENV !== 'production');
   const htmlName = 'index' + (debug ? '.html' : '.min.html');
   const jsName = package + (debug ? '.js' : '.min.js');
   const cssName = package + (debug ? '.css' : '.min.css');
-  const vendorName = vendor + (debug ? '.js' : '.min.js');
+  const vendorName = vendorFile + (debug ? '.js' : '.min.js');
   const favIconData = JSON.parse(fs.readFileSync(favIconDataFile));
 
   let stream = gulp
@@ -85,14 +85,16 @@ gulp.task('html', function () {
     stream = stream
       .pipe(plugins.connect.reload());
 
-    const watcher = gulp.watch(htmlEntries, gulp.series('html'));
-    watchStreams.push(watcher);
+    if (!watchStreams['html']) {
+      const watcher = gulp.watch(htmlEntries, html);
+      watchStreams['html'] = watcher;
+    }
   }
 
   return stream;
-});
+}
 
-gulp.task('sass', function () {
+function css() {
   const debug = (process.env.NODE_ENV !== 'production');
   const cssName = package + (debug ? '.css' : '.min.css');
 
@@ -121,16 +123,18 @@ gulp.task('sass', function () {
     stream = stream
       .pipe(plugins.connect.reload());
 
-    const watcher = gulp.watch(cssEntries, gulp.series('sass'));
-    watchStreams.push(watcher);
+    if (!watchStreams['sass']) {
+      const watcher = gulp.watch(cssEntries, css);
+      watchStreams['sass'] = watcher;
+    }
   }
 
   return stream;
-});
+}
 
-gulp.task('vendor', function () {
+function vendor() {
   const debug = (process.env.NODE_ENV !== 'production');
-  const bundleName = vendor + (debug ? '.js' : '.min.js');
+  const bundleName = vendorFile + (debug ? '.js' : '.min.js');
 
   let bundler = browserify({
     basedir: '.',
@@ -157,13 +161,68 @@ gulp.task('vendor', function () {
 
   return stream
     .pipe(gulp.dest(outDir));
-});
+}
 
-gulp.task('ts', function () {
-  return bundle();
-});
+function ts() {
+  const debug = (process.env.NODE_ENV !== 'production');
+  const bundleName = package + (debug ? '.js' : '.min.js');
 
-gulp.task('server', function (done) {
+  let bundler = watchStreams['ts'];
+  if (!bundler) {
+    bundler = browserify({
+      basedir: '.',
+      debug: debug,
+      entries: jsEntries,
+      extensions: extensions,
+    })
+      .external(externalLibs)
+      .plugin(tsify, {
+        target: 'ES6',
+        module: 'ESNext',
+        lib: ['DOM', 'ESNext', 'ScriptHost'],
+        allowSyntheticDefaultImports: true,
+      })
+      .transform(babelify.configure({
+        presets: ['@babel/preset-env', '@babel/preset-react'],
+        extensions: extensions,
+      }));
+
+    if (process.env.watching) {
+      bundler = watchify(bundler);
+      bundler.on("update", ts);
+      bundler.on("log", log);
+      watchStreams['ts'] = bundler;
+    }
+  }
+
+  let stream = bundler
+    .bundle()
+    .pipe(source(bundleName))
+    .pipe(buffer());
+
+  if (debug) {
+    stream = stream
+      .pipe(plugins.sourcemaps.init({
+        loadMaps: true
+      }))
+      .pipe(plugins.sourcemaps.write('./'))
+  } else {
+    stream = stream
+      .pipe(plugins.uglify());
+  }
+
+  stream = stream
+    .pipe(gulp.dest(outDir));
+
+  if (process.env.watching) {
+    stream = stream
+      .pipe(plugins.connect.reload());
+  }
+
+  return stream;
+}
+
+function server(done) {
   plugins.connect.server({
     name: package,
     root: outDir,
@@ -172,18 +231,19 @@ gulp.task('server', function (done) {
     middleware: function () {
       return [function (req, res, next) {
         if (/_kill_\/?/.test(req.url)) {
-          res.end();
+          watchStreams.values().forEach(stream => stream.close());
+          watchStreams = {};
           plugins.connect.serverClose();
-          watchStreams.forEach(stream => stream.close());
+          res.end();
           done();
         }
         next();
       }];
     }
   });
-});
+}
 
-gulp.task('generate-favicon', function (done) {
+function generateFavicon(done) {
   plugins.realFavicon.generateFavicon({
     masterPicture: favIconsDir + '/' + favIconMasterPicture,
     dest: favIconsDir,
@@ -247,24 +307,24 @@ gulp.task('generate-favicon', function (done) {
   }, function () {
     done();
   });
-});
+}
 
-gulp.task('favicon', function (done) {
+function favicon(done) {
   var currentVersion = JSON.parse(fs.readFileSync(favIconDataFile)).version;
   plugins.realFavicon.checkForUpdates(currentVersion, function (err) {
     if (err) {
-      gulp.start('generate-favicon');
+      generateFavicon();
     }
     done();
   });
-});
+}
 
-gulp.task('copy-dist', function () {
+function copyDist() {
   const debug = (process.env.NODE_ENV !== 'production');
   const htmlName = 'index' + (debug ? '.html' : '.min.html');
   const jsName = package + (debug ? '.js' : '.min.js');
   const cssName = package + (debug ? '.css' : '.min.css');
-  const vendorName = vendor + (debug ? '.js' : '.min.js');
+  const vendorName = vendorFile + (debug ? '.js' : '.min.js');
 
   return gulp
     .src(
@@ -277,82 +337,13 @@ gulp.task('copy-dist', function () {
       }
     }))
     .pipe(gulp.dest(githubPagesDir + '/' + package));
-});
-
-gulp.task('compile',
-  gulp.series(
-    'favicon',
-    gulp.parallel(
-      'assets',
-      'html',
-      'sass',
-      'vendor',
-      'ts'
-    )
-  )
-);
-
-gulp.task('release', gulp.series('prod', 'compile'));
-gulp.task('debug', gulp.series('dev', 'compile'));
-gulp.task('watch', gulp.series('dev', 'watching', 'compile'));
-gulp.task('start', gulp.series('watch', 'server'));
-gulp.task('github-release', gulp.series('release', 'copy-dist'));
-
-let bundler = null;
-function bundle() {
-  const debug = (process.env.NODE_ENV !== 'production');
-  const bundleName = package + (debug ? '.js' : '.min.js');
-
-  if (!bundler) {
-    bundler = browserify({
-      basedir: '.',
-      debug: debug,
-      entries: jsEntries,
-      extensions: extensions,
-    })
-      .external(externalLibs)
-      .plugin(tsify, {
-        target: 'ES6',
-        module: 'ESNext',
-        lib: ['DOM', 'ESNext', 'ScriptHost'],
-        allowSyntheticDefaultImports: true,
-      })
-      .transform(babelify.configure({
-        presets: ['@babel/preset-env', '@babel/preset-react'],
-        extensions: extensions,
-      }));
-
-    if (process.env.watching) {
-      bundler = watchify(bundler);
-      bundler.on("update", bundle);
-      bundler.on("log", log);
-      watchStreams.push(bundler);
-    }
-  }
-
-  let stream = bundler
-    .bundle()
-    .pipe(source(bundleName))
-    .pipe(buffer());
-
-  if (debug) {
-    stream = stream
-      .pipe(plugins.sourcemaps.init({
-        loadMaps: true
-      }))
-      .pipe(plugins.sourcemaps.write('./'))
-  } else {
-    stream = stream
-      .pipe(plugins.uglify());
-  }
-
-  stream = stream
-    .pipe(gulp.dest(outDir));
-
-  if (process.env.watching) {
-    stream = stream
-      .pipe(plugins.connect.reload());
-  }
-
-  return stream;
 }
+
+const compile = gulp.series(favicon, gulp.parallel(assets, html, css, vendor, ts));
+const watch = gulp.series(dev, watching, compile);
+
+exports.release = gulp.series(prod, compile);
+exports.debug = gulp.series(dev, compile);
+exports.start = gulp.series(watch, server);
+exports.githubRelease = gulp.series(exports.release, copyDist);
+exports.generateFavicon = gulp.series(prod, generateFavicon, favicon);
