@@ -24,7 +24,7 @@ const Options: React.FC = () => {
 
   function loadGame() {
     if (context.load()) {
-      navigate("/");
+      navigate({ pathname: "/", search: location.search });
     }
   }
 
@@ -34,7 +34,7 @@ const Options: React.FC = () => {
 
   function importGame() {
     if (context.loadAs(textContents)) {
-      navigate("/");
+      navigate({ pathname: "/", search: location.search });
     }
   }
 
@@ -59,7 +59,7 @@ const Options: React.FC = () => {
     if (resetAcknowledged) {
       if (confirm("Are you sure you want to reset? This cannot be undone.")) {
         context.reset();
-        navigate("/");
+        navigate({ pathname: "/", search: location.search });
       } else {
         setResetAcknowledged(false);
       }
