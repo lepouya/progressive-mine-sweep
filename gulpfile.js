@@ -31,6 +31,22 @@ const externalLibs = [
 const extensions = [".js", ".ts", ".jsx", ".tsx", ".json"];
 const watchStreams = {};
 
+function injectHtmlDep(dep) {
+  const injectStr = (s) => plugins.replace("</head>", s + "\n</head>");
+  const formatDep = (s) =>
+    s.endsWith(".css")
+      ? `<link href="${s}" rel="stylesheet" type="text/css"/>`
+      : s.endsWith(".js")
+      ? `<script src="${s}" type="text/javascript"></script>`
+      : `${s}`;
+
+  if (typeof dep == "string") {
+    return injectStr(formatDep(dep));
+  } else if (typeof dep == "object") {
+    return injectStr(Object.values(dep).map(formatDep).join("\n"));
+  }
+}
+
 function prod(done) {
   process.env.NODE_ENV = "production";
   done();
@@ -56,36 +72,23 @@ function html() {
   const jsName = package + (debug ? ".js" : ".min.js");
   const cssName = package + (debug ? ".css" : ".min.css");
   const vendorName = vendorFile + (debug ? ".js" : ".min.js");
-  const favIconData = JSON.parse(fs.readFileSync(favIconDataFile));
+  const favIconData = JSON.parse(fs.readFileSync(favIconDataFile)).favicon;
 
   let stream = gulp
     .src(htmlEntries)
-    .pipe(plugins.replace("{jsSource}", jsName))
-    .pipe(plugins.replace("{cssSource}", cssName))
-    .pipe(plugins.replace("{vendorSource}", vendorName))
-    .pipe(plugins.replace("{favIconCode}", favIconData.favicon.html_code))
-    .pipe(
-      plugins.realFavicon.injectFaviconMarkups(favIconData.favicon.html_code),
-    );
+    .pipe(injectHtmlDep([favIconData.html_code, cssName, vendorName, jsName]))
+    .pipe(plugins.prettyHtml({ indent_inner_html: true }))
+    .pipe(plugins.connect.reload());
 
-  if (debug) {
-    stream = stream.pipe(plugins.prettyHtml({ indent_inner_html: true }));
-  } else {
-    stream = stream.pipe(
-      plugins.htmlmin({ collapseWhitespace: true, removeComments: true }),
-    );
-  }
-
-  stream = stream.pipe(plugins.rename(htmlName)).pipe(gulp.dest(outDir));
-
-  if (process.env.watching) {
-    stream = stream.pipe(plugins.connect.reload());
+  if (!debug) {
+    stream = stream.pipe(plugins.htmlmin({ collapseWhitespace: true }));
+  } else if (process.env.watching) {
     if (!watchStreams["html"]) {
       watchStreams["html"] = gulp.watch(htmlEntries, html);
     }
   }
 
-  return stream;
+  return stream.pipe(plugins.rename(htmlName)).pipe(gulp.dest(outDir));
 }
 
 function css() {
@@ -94,7 +97,6 @@ function css() {
 
   let stream = gulp
     .src(cssEntries)
-    .pipe(plugins.sourcemaps.init())
     .pipe(
       plugins.sass(sass)({
         outputStyle: debug ? "expanded" : "compressed",
@@ -102,43 +104,37 @@ function css() {
       }),
     )
     .pipe(plugins.concat("style.css"))
-    .pipe(plugins.rename(cssName));
+    .pipe(plugins.rename(cssName))
+    .pipe(plugins.sourcemaps.init({ loadMaps: debug }))
+    .pipe(plugins.connect.reload());
 
-  if (debug) {
-    stream = stream.pipe(plugins.sourcemaps.write("./"));
-  } else {
+  if (!debug) {
     stream = stream.pipe(plugins.cleanCss());
-  }
-
-  stream = stream.pipe(gulp.dest(outDir));
-
-  if (process.env.watching) {
-    stream = stream.pipe(plugins.connect.reload());
+  } else if (process.env.watching) {
     if (!watchStreams["sass"]) {
       watchStreams["sass"] = gulp.watch(cssEntries, css);
     }
   }
 
-  return stream;
+  return stream.pipe(plugins.sourcemaps.write("./")).pipe(gulp.dest(outDir));
 }
 
 function vendor() {
   const debug = process.env.NODE_ENV !== "production";
   const bundleName = vendorFile + (debug ? ".js" : ".min.js");
 
-  let bundler = browserify({ basedir: ".", debug: debug });
+  let bundler = browserify({ basedir: ".", debug });
   externalLibs.forEach((lib) => bundler.require(lib));
-  let stream = bundler.bundle().pipe(source(bundleName)).pipe(buffer());
-
-  if (debug) {
-    stream = stream
-      .pipe(plugins.sourcemaps.init({ loadMaps: true }))
-      .pipe(plugins.sourcemaps.write("./"));
-  } else {
+  let stream = bundler
+    .bundle()
+    .pipe(source(bundleName))
+    .pipe(buffer())
+    .pipe(plugins.sourcemaps.init({ loadMaps: debug }));
+  if (!debug) {
     stream = stream.pipe(plugins.uglify());
   }
 
-  return stream.pipe(gulp.dest(outDir));
+  return stream.pipe(plugins.sourcemaps.write("./")).pipe(gulp.dest(outDir));
 }
 
 function ts() {
@@ -149,9 +145,9 @@ function ts() {
   if (!bundler) {
     bundler = browserify({
       basedir: ".",
-      debug: debug,
       entries: jsEntries,
-      extensions: extensions,
+      debug,
+      extensions,
     })
       .external(externalLibs)
       .plugin(tsify, {
@@ -163,34 +159,31 @@ function ts() {
       .transform(
         babelify.configure({
           presets: ["@babel/preset-env", "@babel/preset-react"],
-          extensions: extensions,
+          extensions,
         }),
       );
 
     if (process.env.watching) {
-      bundler = watchify(bundler);
-      bundler.on("update", ts);
-      bundler.on("log", log);
+      bundler = watchify(bundler)
+        .on("update", ts)
+        .on("log", log)
+        .on("error", log.error);
       watchStreams["ts"] = bundler;
     }
   }
 
-  let stream = bundler.bundle().pipe(source(bundleName)).pipe(buffer());
+  let stream = bundler
+    .bundle()
+    .pipe(source(bundleName))
+    .pipe(buffer())
+    .pipe(plugins.sourcemaps.init({ loadMaps: true }))
+    .pipe(plugins.connect.reload());
 
-  if (debug) {
-    stream = stream
-      .pipe(plugins.sourcemaps.init({ loadMaps: true }))
-      .pipe(plugins.sourcemaps.write("./"));
-  } else {
+  if (!debug) {
     stream = stream.pipe(plugins.uglify());
   }
 
-  stream = stream.pipe(gulp.dest(outDir));
-  if (process.env.watching) {
-    stream = stream.pipe(plugins.connect.reload());
-  }
-
-  return stream;
+  return stream.pipe(plugins.sourcemaps.write("./")).pipe(gulp.dest(outDir));
 }
 
 function server(done) {
