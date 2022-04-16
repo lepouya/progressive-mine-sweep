@@ -11,7 +11,8 @@
     "test": "mocha -r ts-node/register --reporter spec src/**/*Test.ts",
     "update": "ncu -u",
     "reset:packages": "rm -rf node_modules && npm update --save-dev && npm update --save",
-    "github:release": "gulp github-release"
+    "release:github": "gulp github-release",
+    "generate:favicon": "gulp 'generate-favicon'"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
   "homepage": "https://github.com/lepouya/progressive-mine-sweep#readme",
   "dependencies": {
     "@tabler/icons": "^1.64.0",
+    "gulp-htmlmin": "^5.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router": "^6.3.0",
@@ -48,8 +50,10 @@
     "gulp-cli": "^2.3.0",
     "gulp-concat": "^2.6.1",
     "gulp-connect": "^5.7.0",
-    "gulp-pug": "^5.0.0",
+    "gulp-pretty-html": "^2.0.10",
+    "gulp-real-favicon": "^0.3.2",
     "gulp-rename": "^2.0.0",
+    "gulp-replace": "^1.1.3",
     "gulp-sass": "^5.1.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",

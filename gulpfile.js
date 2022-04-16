@@ -1,26 +1,33 @@
-var babelify = require('babelify');
-var browserify = require('browserify');
-var buffer = require('vinyl-buffer');
-var cleanCss = require('gulp-clean-css');
-var concat = require('gulp-concat');
-var connect = require('gulp-connect');
-var gulp = require('gulp');
-var log = require('fancy-log');
-var pug = require('gulp-pug');
-var rename = require('gulp-rename');
-var sass = require('gulp-sass')(require('sass'));
-var source = require('vinyl-source-stream');
-var sourcemaps = require('gulp-sourcemaps');
-var tsify = require('tsify');
-var uglify = require('gulp-uglify');
-var watchify = require('watchify');
+const babelify = require('babelify');
+const browserify = require('browserify');
+const buffer = require('vinyl-buffer');
+const cleanCss = require('gulp-clean-css');
+const concat = require('gulp-concat');
+const connect = require('gulp-connect');
+const fs = require('fs');
+const gulp = require('gulp');
+const htmlmin = require('gulp-htmlmin');
+const htmlPretty = require('gulp-pretty-html');
+const log = require('fancy-log');
+const realFavicon = require('gulp-real-favicon');
+const rename = require('gulp-rename');
+const replace = require('gulp-replace');
+const sass = require('gulp-sass')(require('sass'));
+const source = require('vinyl-source-stream');
+const sourcemaps = require('gulp-sourcemaps');
+const tsify = require('tsify');
+const uglify = require('gulp-uglify');
+const watchify = require('watchify');
 
 const package = 'progressive-mine-sweep';
 const outDir = 'dist';
 const vendor = 'vendor';
 const githubPagesDir = '../lepouya.github.io';
+const favIconDataFile = 'faviconData.json';
+const favIconsDir = 'assets/icons';
+const favIconMasterPicture = 'land-mine.png';
 const assetEntries = ['assets/**/*'];
-const htmlEntries = ['src/index.pug'];
+const htmlEntries = ['src/index.html'];
 const cssEntries = ['src/**/*.scss'];
 const jsEntries = ['src/index.tsx'];
 const externalLibs = ['react', 'react-dom', 'react-router', 'react-router-dom', '@tabler/icons'];
@@ -56,36 +63,49 @@ gulp.task('html', function () {
   const jsName = package + (debug ? '.js' : '.min.js');
   const cssName = package + (debug ? '.css' : '.min.css');
   const vendorName = vendor + (debug ? '.js' : '.min.js');
+  const favIconData = JSON.parse(fs.readFileSync(favIconDataFile));
 
-  let fs = gulp
+  let stream = gulp
     .src(htmlEntries)
-    .pipe(pug({
-      pretty: debug,
-      locals: {
-        jsSource: jsName,
-        cssSource: cssName,
-        vendorSource: vendorName,
-      }
-    }))
+    .pipe(replace('{jsSource}', jsName))
+    .pipe(replace('{cssSource}', cssName))
+    .pipe(replace('{vendorSource}', vendorName))
+    .pipe(replace('{favIconCode}', favIconData.favicon.html_code))
+    .pipe(realFavicon.injectFaviconMarkups(favIconData.favicon.html_code));
+
+  if (debug) {
+    stream = stream
+      .pipe(htmlPretty({
+        indent_inner_html: true
+      }))
+  } else {
+    stream = stream
+      .pipe(htmlmin({
+        collapseWhitespace: true,
+        removeComments: true
+      }));
+  }
+
+  stream = stream
     .pipe(rename(htmlName))
     .pipe(gulp.dest(outDir));
 
   if (process.env.watching) {
-    fs = fs
+    stream = stream
       .pipe(connect.reload());
 
     const watcher = gulp.watch(htmlEntries, gulp.series('html'));
     watchStreams.push(watcher);
   }
 
-  return fs;
+  return stream;
 });
 
 gulp.task('sass', function () {
   const debug = (process.env.NODE_ENV !== 'production');
   const cssName = package + (debug ? '.css' : '.min.css');
 
-  let fs = gulp
+  let stream = gulp
     .src(cssEntries)
     .pipe(sourcemaps.init())
     .pipe(sass({
@@ -96,25 +116,25 @@ gulp.task('sass', function () {
     .pipe(rename(cssName));
 
   if (debug) {
-    fs = fs
+    stream = stream
       .pipe(sourcemaps.write('./'))
   } else {
-    fs = fs
+    stream = stream
       .pipe(cleanCss());
   }
 
-  fs = fs
+  stream = stream
     .pipe(gulp.dest(outDir));
 
   if (process.env.watching) {
-    fs = fs
+    stream = stream
       .pipe(connect.reload());
 
     const watcher = gulp.watch(cssEntries, gulp.series('sass'));
     watchStreams.push(watcher);
   }
 
-  return fs;
+  return stream;
 });
 
 gulp.task('vendor', function () {
@@ -128,23 +148,23 @@ gulp.task('vendor', function () {
 
   externalLibs.forEach(lib => bundler.require(lib));
 
-  let fs = bundler
+  let stream = bundler
     .bundle()
     .pipe(source(bundleName))
     .pipe(buffer());
 
   if (debug) {
-    fs = fs
+    stream = stream
       .pipe(sourcemaps.init({
         loadMaps: true
       }))
       .pipe(sourcemaps.write('./'))
   } else {
-    fs = fs
+    stream = stream
       .pipe(uglify());
   }
 
-  return fs
+  return stream
     .pipe(gulp.dest(outDir));
 });
 
@@ -172,6 +192,82 @@ gulp.task('server', function (done) {
   });
 });
 
+gulp.task('generate-favicon', function (done) {
+  realFavicon.generateFavicon({
+    masterPicture: favIconsDir + '/' + favIconMasterPicture,
+    dest: favIconsDir,
+    iconsPath: favIconsDir + '/',
+    design: {
+      ios: {
+        pictureAspect: 'backgroundAndMargin',
+        backgroundColor: '#ffffff',
+        margin: '14%',
+        assets: {
+          ios6AndPriorIcons: false,
+          ios7AndLaterIcons: false,
+          precomposedIcons: false,
+          declareOnlyDefaultIcon: true
+        }
+      },
+      desktopBrowser: {
+        design: 'raw'
+      },
+      windows: {
+        pictureAspect: 'noChange',
+        backgroundColor: '#da532c',
+        onConflict: 'override',
+        assets: {
+          windows80Ie10Tile: false,
+          windows10Ie11EdgeTiles: {
+            small: false,
+            medium: true,
+            big: false,
+            rectangle: false
+          }
+        }
+      },
+      androidChrome: {
+        pictureAspect: 'noChange',
+        themeColor: '#ffffff',
+        manifest: {
+          display: 'standalone',
+          orientation: 'notSet',
+          onConflict: 'override',
+          declared: true
+        },
+        assets: {
+          legacyIcon: false,
+          lowResolutionIcons: false
+        }
+      },
+      safariPinnedTab: {
+        pictureAspect: 'silhouette',
+        themeColor: '#990000'
+      }
+    },
+    settings: {
+      scalingAlgorithm: 'Mitchell',
+      errorOnImageTooSmall: false,
+      readmeFile: false,
+      htmlCodeFile: false,
+      usePathAsIs: false
+    },
+    markupFile: favIconDataFile
+  }, function () {
+    done();
+  });
+});
+
+gulp.task('favicon', function (done) {
+  var currentVersion = JSON.parse(fs.readFileSync(favIconDataFile)).version;
+  realFavicon.checkForUpdates(currentVersion, function (err) {
+    if (err) {
+      gulp.start('generate-favicon');
+    }
+    done();
+  });
+});
+
 gulp.task('copy-dist', function () {
   const debug = (process.env.NODE_ENV !== 'production');
   const htmlName = 'index' + (debug ? '.html' : '.min.html');
@@ -192,15 +288,26 @@ gulp.task('copy-dist', function () {
     .pipe(gulp.dest(githubPagesDir + '/' + package));
 });
 
-gulp.task('compile', gulp.parallel('assets', 'html', 'sass', 'vendor', 'ts'));
+gulp.task('compile',
+  gulp.series(
+    'favicon',
+    gulp.parallel(
+      'assets',
+      'html',
+      'sass',
+      'vendor',
+      'ts'
+    )
+  )
+);
+
 gulp.task('release', gulp.series('prod', 'compile'));
 gulp.task('debug', gulp.series('dev', 'compile'));
 gulp.task('watch', gulp.series('dev', 'watching', 'compile'));
 gulp.task('start', gulp.series('watch', 'server'));
 gulp.task('github-release', gulp.series('release', 'copy-dist'));
 
-var bundler = null;
-
+let bundler = null;
 function bundle() {
   const debug = (process.env.NODE_ENV !== 'production');
   const bundleName = package + (debug ? '.js' : '.min.js');
@@ -232,29 +339,29 @@ function bundle() {
     }
   }
 
-  let fs = bundler
+  let stream = bundler
     .bundle()
     .pipe(source(bundleName))
     .pipe(buffer());
 
   if (debug) {
-    fs = fs
+    stream = stream
       .pipe(sourcemaps.init({
         loadMaps: true
       }))
       .pipe(sourcemaps.write('./'))
   } else {
-    fs = fs
+    stream = stream
       .pipe(uglify());
   }
 
-  fs = fs
+  stream = stream
     .pipe(gulp.dest(outDir));
 
   if (process.env.watching) {
-    fs = fs
+    stream = stream
       .pipe(connect.reload());
   }
 
-  return fs;
+  return stream;
 }
