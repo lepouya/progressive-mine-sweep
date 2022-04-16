@@ -24,9 +24,11 @@ const emptyGameContext: GameContext = {
 
 const GameReactContext = React.createContext<GameContext>(emptyGameContext);
 
-export const GameContextProvider: React.FC = (props) => (
+export const GameContextProvider: React.FC<React.PropsWithChildren<{}>> = ({
+  children,
+}) => (
   <GameReactContext.Provider value={{ ...emptyGameContext }}>
-    {props.children}
+    {children}
   </GameReactContext.Provider>
 );
 

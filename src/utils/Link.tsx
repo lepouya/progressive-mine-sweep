@@ -2,7 +2,10 @@ import React from "react";
 import { useLocation } from "react-router";
 import { NavLink } from "react-router-dom";
 
-const Link: React.FC<{ to: string }> = ({ to, children }) => {
+const Link: React.FC<React.PropsWithChildren<{ to: string }>> = ({
+  to,
+  children,
+}) => {
   const location = useLocation();
   return (
     <NavLink
