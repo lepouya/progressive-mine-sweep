@@ -1,6 +1,7 @@
 const babelify = require("babelify");
 const browserify = require("browserify");
 const buffer = require("vinyl-buffer");
+const envify = require("envify/custom");
 const fs = require("fs");
 const gulp = require("gulp");
 const log = require("fancy-log");
@@ -8,11 +9,11 @@ const plugins = require("gulp-load-plugins")();
 const sass = require("sass");
 const source = require("vinyl-source-stream");
 const tsify = require("tsify");
+const uglifyify = require("uglifyify");
 const watchify = require("watchify");
 
 const package = "progressive-mine-sweep";
 const outDir = "dist";
-const vendorFile = "vendor";
 const githubPagesDir = "../lepouya.github.io";
 const favIconDataFile = "faviconData.json";
 const favIconsDir = "assets/icons";
@@ -21,14 +22,11 @@ const assetEntries = ["assets/**/*"];
 const htmlEntries = ["src/index.html"];
 const cssEntries = ["src/**/*.scss"];
 const jsEntries = ["src/index.tsx"];
-const externalLibs = [
-  "react",
-  "react-dom",
-  "react-router",
-  "react-router-dom",
-  "@tabler/icons",
-];
 const extensions = [".js", ".ts", ".jsx", ".tsx", ".json"];
+const externalLibs = {
+  react: ["react", "react-dom", "react-router", "react-router-dom"],
+  tabler: ["@tabler/icons"],
+};
 const watchStreams = {};
 
 function injectHtmlDep(dep) {
@@ -47,19 +45,19 @@ function injectHtmlDep(dep) {
   }
 }
 
-function prod(done) {
-  process.env.NODE_ENV = "production";
-  done();
-}
-
-function dev(done) {
-  process.env.NODE_ENV = "development";
-  done();
-}
-
-function watching(done) {
-  process.env.watching = true;
-  done();
+function setEnv(debug, watching) {
+  const fn = (done) => {
+    process.env.NODE_ENV = debug ? "development" : "production";
+    process.env.watching = watching ? "watching" : undefined;
+    return done();
+  };
+  Object.assign(fn, {
+    displayName:
+      "env:" +
+      (debug ? "development" : "production") +
+      (!!watching ? "+watching" : ""),
+  });
+  return fn;
 }
 
 function assets() {
@@ -68,21 +66,27 @@ function assets() {
 
 function html() {
   const debug = process.env.NODE_ENV !== "production";
-  const htmlName = "index" + (debug ? ".html" : ".min.html");
-  const jsName = package + (debug ? ".js" : ".min.js");
-  const cssName = package + (debug ? ".css" : ".min.css");
-  const vendorName = vendorFile + (debug ? ".js" : ".min.js");
+  const min = debug ? "" : ".min";
+  const htmlName = "index" + min + ".html";
+  const jsName = package + min + ".js";
+  const cssName = package + min + ".css";
+  const vendors = Object.keys(externalLibs).map((s) => s + min + ".js");
   const favIconData = JSON.parse(fs.readFileSync(favIconDataFile)).favicon;
 
   let stream = gulp
     .src(htmlEntries)
-    .pipe(injectHtmlDep([favIconData.html_code, cssName, vendorName, jsName]))
-    .pipe(plugins.prettyHtml({ indent_inner_html: true }))
-    .pipe(plugins.connect.reload());
+    .pipe(injectHtmlDep(favIconData.html_code))
+    .pipe(injectHtmlDep(cssName))
+    .pipe(injectHtmlDep(vendors))
+    .pipe(injectHtmlDep(jsName));
 
-  if (!debug) {
+  if (debug) {
+    stream = stream.pipe(plugins.prettyHtml({ indent_inner_html: true }));
+  } else {
     stream = stream.pipe(plugins.htmlmin({ collapseWhitespace: true }));
-  } else if (process.env.watching) {
+  }
+  if (process.env.watching === "watching") {
+    stream = stream.pipe(plugins.connect.reload());
     if (!watchStreams["html"]) {
       watchStreams["html"] = gulp.watch(htmlEntries, html);
     }
@@ -104,37 +108,65 @@ function css() {
       }),
     )
     .pipe(plugins.concat("style.css"))
-    .pipe(plugins.rename(cssName))
-    .pipe(plugins.sourcemaps.init({ loadMaps: debug }))
-    .pipe(plugins.connect.reload());
+    .pipe(plugins.rename(cssName));
 
-  if (!debug) {
+  if (debug) {
+    stream = stream
+      .pipe(plugins.sourcemaps.init({ loadMaps: debug }))
+      .pipe(plugins.sourcemaps.write("./"));
+  } else {
     stream = stream.pipe(plugins.cleanCss());
-  } else if (process.env.watching) {
+  }
+  if (process.env.watching === "watching") {
+    stream = stream.pipe(plugins.connect.reload());
     if (!watchStreams["sass"]) {
       watchStreams["sass"] = gulp.watch(cssEntries, css);
     }
   }
 
-  return stream.pipe(plugins.sourcemaps.write("./")).pipe(gulp.dest(outDir));
+  return stream.pipe(gulp.dest(outDir));
 }
 
 function vendor() {
-  const debug = process.env.NODE_ENV !== "production";
-  const bundleName = vendorFile + (debug ? ".js" : ".min.js");
+  return Object.entries(externalLibs).map(([fileName, libraries]) => {
+    const vendorFile = () => {
+      const debug = process.env.NODE_ENV !== "production";
+      const outputName = fileName + (debug ? ".js" : ".min.js");
+      let bundler = browserify({ basedir: ".", debug });
+      libraries.forEach((lib) => bundler.require(lib));
 
-  let bundler = browserify({ basedir: ".", debug });
-  externalLibs.forEach((lib) => bundler.require(lib));
-  let stream = bundler
-    .bundle()
-    .pipe(source(bundleName))
-    .pipe(buffer())
-    .pipe(plugins.sourcemaps.init({ loadMaps: debug }));
-  if (!debug) {
-    stream = stream.pipe(plugins.uglify());
-  }
+      if (!debug) {
+        bundler = bundler
+          .transform(envify({ _: "purge", NODE_ENV: process.env.NODE_ENV }), {
+            global: true,
+          })
+          .transform(uglifyify, { global: true, sourceMap: debug });
+      }
 
-  return stream.pipe(plugins.sourcemaps.write("./")).pipe(gulp.dest(outDir));
+      let stream = bundler.bundle().pipe(source(outputName)).pipe(buffer());
+
+      if (debug) {
+        stream = stream
+          .pipe(plugins.sourcemaps.init({ loadMaps: debug }))
+          .pipe(plugins.sourcemaps.write("./"));
+      } else {
+        stream = stream.pipe(
+          plugins.terser({
+            compress: !debug,
+            mangle: !debug,
+            sourceMap: debug,
+          }),
+        );
+      }
+
+      return stream.pipe(gulp.dest(outDir));
+    };
+
+    Object.assign(vendorFile, {
+      displayName: "vendor-" + fileName,
+    });
+    return vendorFile;
+  });
 }
 
 function ts() {
@@ -149,7 +181,7 @@ function ts() {
       debug,
       extensions,
     })
-      .external(externalLibs)
+      .external(Object.values(externalLibs).flat())
       .plugin(tsify, {
         target: "ES6",
         module: "ESNext",
@@ -163,7 +195,15 @@ function ts() {
         }),
       );
 
-    if (process.env.watching) {
+    if (!debug) {
+      bundler = bundler
+        .transform(envify({ _: "purge", NODE_ENV: process.env.NODE_ENV }), {
+          global: true,
+        })
+        .transform(uglifyify, { global: true, sourceMap: debug });
+    }
+
+    if (process.env.watching === "watching") {
       bundler = watchify(bundler)
         .on("update", ts)
         .on("log", log)
@@ -172,18 +212,22 @@ function ts() {
     }
   }
 
-  let stream = bundler
-    .bundle()
-    .pipe(source(bundleName))
-    .pipe(buffer())
-    .pipe(plugins.sourcemaps.init({ loadMaps: true }))
-    .pipe(plugins.connect.reload());
+  let stream = bundler.bundle().pipe(source(bundleName)).pipe(buffer());
 
-  if (!debug) {
-    stream = stream.pipe(plugins.uglify());
+  if (debug) {
+    stream = stream
+      .pipe(plugins.sourcemaps.init({ loadMaps: true }))
+      .pipe(plugins.sourcemaps.write("./"));
+  } else {
+    stream = stream.pipe(
+      plugins.terser({ compress: !debug, mangle: !debug, sourceMap: debug }),
+    );
+  }
+  if (process.env.watching === "watching") {
+    stream = stream.pipe(plugins.connect.reload());
   }
 
-  return stream.pipe(plugins.sourcemaps.write("./")).pipe(gulp.dest(outDir));
+  return stream.pipe(gulp.dest(outDir));
 }
 
 function server(done) {
@@ -290,14 +334,16 @@ function favicon(done) {
 
 function copyDist() {
   const debug = process.env.NODE_ENV !== "production";
-  const htmlName = "index" + (debug ? ".html" : ".min.html");
-  const jsName = package + (debug ? ".js" : ".min.js");
-  const cssName = package + (debug ? ".css" : ".min.css");
-  const vendorName = vendorFile + (debug ? ".js" : ".min.js");
+  const min = debug ? "" : ".min";
+  const htmlName = "index" + min + ".html";
+  const jsName = package + min + ".js";
+  const cssName = package + min + ".css";
+  const vendors = Object.keys(externalLibs).map((s) => s + min + ".js");
 
   return gulp
     .src(
-      [htmlName, jsName, cssName, vendorName]
+      [htmlName, jsName, cssName]
+        .concat(vendors)
         .concat(assetEntries)
         .map((f) => outDir + "/" + f),
     )
@@ -311,14 +357,9 @@ function copyDist() {
     .pipe(gulp.dest(githubPagesDir + "/" + package));
 }
 
-const compile = gulp.series(
-  favicon,
-  gulp.parallel(assets, html, css, vendor, ts),
-);
-const watch = gulp.series(dev, watching, compile);
-
-exports.release = gulp.series(prod, compile);
-exports.debug = gulp.series(dev, compile);
-exports.start = gulp.series(watch, server);
+const compile = gulp.parallel(assets, html, css, ts, vendor());
+exports.release = gulp.series(setEnv(false), favicon, compile);
+exports.debug = gulp.series(setEnv(true), favicon, compile);
+exports.start = gulp.series(setEnv(true, true), favicon, compile, server);
 exports.githubRelease = gulp.series(exports.release, copyDist);
-exports.generateFavicon = gulp.series(prod, generateFavicon, favicon);
+exports.generateFavicon = gulp.series(setEnv(false), generateFavicon, favicon);
