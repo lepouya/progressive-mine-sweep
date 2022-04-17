@@ -132,7 +132,11 @@ function vendor() {
     const vendorFile = () => {
       const debug = process.env.NODE_ENV !== "production";
       const outputName = fileName + (debug ? ".js" : ".min.js");
-      let bundler = browserify({ basedir: ".", debug });
+      let bundler = browserify({ basedir: ".", debug }).external(
+        Object.values(externalLibs)
+          .flat()
+          .filter((lib) => !libraries.includes(lib)),
+      );
       libraries.forEach((lib) => bundler.require(lib));
 
       if (!debug) {
