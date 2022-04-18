@@ -1,10 +1,7 @@
-import React from "react";
-import * as TablerIcons from "@tabler/icons";
+import React, { SVGAttributes } from "react";
 import { Cell, CellState } from "../model/Cell";
 
-export const Icon: React.FC<TablerIcons.TablerIconProps & { icon: string }> = (
-  props,
-) => {
+export const Icon: React.FC<IconProps & { icon: string }> = (props) => {
   const parts = props.icon.split(/\s+/).filter((s) => s.trim().length > 0);
   const partProps: Record<string, any> = {};
   const getPart = (name: string, finder: (value: string) => boolean) => {
@@ -21,7 +18,7 @@ export const Icon: React.FC<TablerIcons.TablerIconProps & { icon: string }> = (
 };
 
 export const CellIcon: React.FC<
-  TablerIcons.TablerIconProps & {
+  IconProps & {
     cell?: Cell;
     state?: CellState;
     neighbors?: number;
@@ -34,17 +31,33 @@ export const CellIcon: React.FC<
   return Icon({ ...props, icon });
 };
 
-const iconRegex = /(^icon)|([^0-9a-zA-Z]+)/gi;
-export const getIcon = (name: string) =>
-  icons[name] ??
-  icons[name.toLowerCase()] ??
-  icons[name.toLowerCase().replaceAll(iconRegex, "")];
-
-const icons: Record<string, TablerIcons.TablerIcon> = {};
-for (const [name, icon] of Object.entries(TablerIcons)) {
-  icons[name] = icon;
-  icons[name.toLowerCase().replaceAll(iconRegex, "")] = icon;
+interface IconProps extends SVGAttributes<SVGElement> {
+  color?: string;
+  size?: string;
+  stroke?: string;
 }
+
+const iconRegex = /(^icon)|([^0-9a-zA-Z]+)/gi;
+declare global {
+  var tablerIcons: Record<string, React.FC<IconProps>>;
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+    for (const [name, icon] of Object.entries(global.tablerIcons)) {
+      if (name.startsWith("Icon")) {
+        global.tablerIcons[name.toLowerCase().replaceAll(iconRegex, "")] = icon;
+      }
+    }
+  },
+  false,
+);
+
+export const getIcon = (name: string) =>
+  global.tablerIcons[name] ??
+  global.tablerIcons[name.toLowerCase()] ??
+  global.tablerIcons[name.toLowerCase().replaceAll(iconRegex, "")];
 
 const cellIcons = {
   hidden: "transparent QuestionMark",

@@ -21,15 +21,27 @@ const favIconMasterPicture = "land-mine.png";
 const assetEntries = ["assets/**/*"];
 const htmlEntries = ["src/index.html"];
 const cssEntries = ["src/**/*.scss"];
-const jsEntries = ["src/index.tsx"];
+const tsEntries = ["src/index.tsx"];
 const extensions = [".js", ".ts", ".jsx", ".tsx", ".json"];
 const externalLibs = {
-  react: ["react", "react-dom", "react-router", "react-router-dom"],
-  tabler: ["@tabler/icons"],
+  react: [
+    "react",
+    "react-dom",
+    "react-dom/client",
+    "react-router",
+    "react-router-dom",
+  ],
+};
+const externalCdns = {
+  react: "https://unpkg.com/react@latest/umd/react.{env}{min}.js",
+  "@tabler/icons":
+    "https://unpkg.com/@tabler/icons@latest/icons-react/dist/index.umd{min}.js",
 };
 const watchStreams = {};
 
 function injectHtmlDep(dep) {
+  const debug = process.env.NODE_ENV !== "production";
+  const min = debug ? "" : ".min";
   const injectStr = (s) => plugins.replace("</head>", s + "\n</head>");
   const formatDep = (s) =>
     s.endsWith(".css")
@@ -37,11 +49,15 @@ function injectHtmlDep(dep) {
       : s.endsWith(".js")
       ? `<script src="${s}" type="text/javascript"></script>`
       : `${s}`;
+  const template = (s) =>
+    s.replace("{min}", min).replace("{env}", process.env.NODE_ENV);
 
   if (typeof dep == "string") {
-    return injectStr(formatDep(dep));
+    return injectStr(template(formatDep(dep)));
   } else if (typeof dep == "object") {
-    return injectStr(Object.values(dep).map(formatDep).join("\n"));
+    return injectStr(
+      Object.values(dep).map(formatDep).map(template).join("\n"),
+    );
   }
 }
 
@@ -70,14 +86,16 @@ function html() {
   const htmlName = "index" + min + ".html";
   const jsName = package + min + ".js";
   const cssName = package + min + ".css";
-  const vendors = Object.keys(externalLibs).map((s) => s + min + ".js");
+  const cdns = Object.values(externalCdns).flat();
+  const vendors = Object.keys(externalLibs).map((s) => `vendor-${s}{min}.js`);
   const favIconData = JSON.parse(fs.readFileSync(favIconDataFile)).favicon;
 
   let stream = gulp
     .src(htmlEntries)
     .pipe(injectHtmlDep(favIconData.html_code))
-    .pipe(injectHtmlDep(cssName))
+    .pipe(injectHtmlDep(cdns))
     .pipe(injectHtmlDep(vendors))
+    .pipe(injectHtmlDep(cssName))
     .pipe(injectHtmlDep(jsName));
 
   if (debug) {
@@ -131,10 +149,15 @@ function vendor() {
   return Object.entries(externalLibs).map(([fileName, libraries]) => {
     const vendorFile = () => {
       const debug = process.env.NODE_ENV !== "production";
-      const outputName = fileName + (debug ? ".js" : ".min.js");
-      let bundler = browserify({ basedir: ".", debug }).external(
+      const outputName = "vendor-" + fileName + (debug ? ".js" : ".min.js");
+      let bundler = browserify({
+        basedir: ".",
+        debug,
+        fullPaths: debug,
+      }).external(
         Object.values(externalLibs)
           .flat()
+          .concat(Object.keys(externalCdns))
           .filter((lib) => !libraries.includes(lib)),
       );
       libraries.forEach((lib) => bundler.require(lib));
@@ -181,11 +204,14 @@ function ts() {
   if (!bundler) {
     bundler = browserify({
       basedir: ".",
-      entries: jsEntries,
+      entries: tsEntries,
       debug,
       extensions,
+      fullPaths: debug,
     })
-      .external(Object.values(externalLibs).flat())
+      .external(
+        Object.values(externalLibs).flat().concat(Object.keys(externalCdns)),
+      )
       .plugin(tsify, {
         target: "ES6",
         module: "ESNext",
@@ -342,7 +368,9 @@ function copyDist() {
   const htmlName = "index" + min + ".html";
   const jsName = package + min + ".js";
   const cssName = package + min + ".css";
-  const vendors = Object.keys(externalLibs).map((s) => s + min + ".js");
+  const vendors = Object.keys(externalLibs).map(
+    (s) => "vendor-" + s + min + ".js",
+  );
 
   return gulp
     .src(

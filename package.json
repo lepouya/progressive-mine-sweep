@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/lepouya/progressive-mine-sweep#readme",
   "dependencies": {
-    "@tabler/icons": "^1.64.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router": "^6.3.0",
