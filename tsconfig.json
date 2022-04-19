@@ -1,32 +1,31 @@
 {
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
-  "exclude": [
-    "src/**/__tests__/*",
-    "node_modules",
-    "dist"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["src/**/__tests__/*", "node_modules", "dist"],
+
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
-    "lib": ["DOM", "ESNext", "ScriptHost"],
-    "allowJs": true,
-    "jsx": "react",
-    "sourceMap": true,
-    "outDir": "./dist",
     "rootDir": "./src",
+    "outDir": "./dist",
+
+    "jsx": "react",
+    "lib": ["DOM", "ESNext", "ScriptHost"],
+    "module": "commonjs",
     "moduleResolution": "node",
-    "strict": true,
+    "target": "ES6",
+
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "allowUmdGlobalAccess": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
+    "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "skipLibCheck": true
+    "sourceMap": true,
+    "strict": true
   }
 }

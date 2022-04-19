@@ -33,9 +33,10 @@ const externalLibs = {
   ],
 };
 const externalCdns = {
-  react: "https://unpkg.com/react@latest/umd/react.{env}{min}.js",
-  "@tabler/icons":
-    "https://unpkg.com/@tabler/icons@latest/icons-react/dist/index.umd{min}.js",
+  tablerIcons: [
+    "<script>var tablerIcons={},exports=tablerIcons;</script>",
+    "https://unpkg.com/@tabler/icons@latest/icons-react/dist/index.cjs{min}.js",
+  ],
 };
 const watchStreams = {};
 
@@ -43,12 +44,14 @@ function injectHtmlDep(dep) {
   const debug = process.env.NODE_ENV !== "production";
   const min = debug ? "" : ".min";
   const injectStr = (s) => plugins.replace("</head>", s + "\n</head>");
-  const formatDep = (s) =>
-    s.endsWith(".css")
-      ? `<link href="${s}" rel="stylesheet" type="text/css"/>`
+  const formatDep = (s) => {
+    const x = s.startsWith("http") ? `crossorigin="anonymous"` : "";
+    return s.endsWith(".css")
+      ? `<link href="${s}" rel="stylesheet" type="text/css" ${x}/>`
       : s.endsWith(".js")
-      ? `<script src="${s}" type="text/javascript"></script>`
+      ? `<script src="${s}" type="text/javascript" ${x}></script>`
       : `${s}`;
+  };
   const template = (s) =>
     s.replace("{min}", min).replace("{env}", process.env.NODE_ENV);
 
@@ -93,8 +96,8 @@ function html() {
   let stream = gulp
     .src(htmlEntries)
     .pipe(injectHtmlDep(favIconData.html_code))
-    .pipe(injectHtmlDep(cdns))
     .pipe(injectHtmlDep(vendors))
+    .pipe(injectHtmlDep(cdns))
     .pipe(injectHtmlDep(cssName))
     .pipe(injectHtmlDep(jsName));
 
@@ -212,25 +215,25 @@ function ts() {
       .external(
         Object.values(externalLibs).flat().concat(Object.keys(externalCdns)),
       )
-      .plugin(tsify, {
-        target: "ES6",
-        module: "ESNext",
-        lib: ["DOM", "ESNext", "ScriptHost"],
-        allowSyntheticDefaultImports: true,
-      })
+      .plugin(tsify)
       .transform(
         babelify.configure({
-          presets: ["@babel/preset-env", "@babel/preset-react"],
+          presets: [
+            ["@babel/preset-env", { bugfixes: true }],
+            "@babel/preset-react",
+          ],
           extensions,
+          comments: debug,
+          compact: !debug,
+          minified: !debug,
+          sourceMaps: debug,
         }),
       );
 
     if (!debug) {
       bundler = bundler
-        .transform(envify({ _: "purge", NODE_ENV: process.env.NODE_ENV }), {
-          global: true,
-        })
-        .transform(uglifyify, { global: true, sourceMap: debug });
+        .transform(envify({ _: "purge", NODE_ENV: process.env.NODE_ENV }))
+        .transform(uglifyify, { sourceMap: debug });
     }
 
     if (process.env.watching === "watching") {
@@ -368,9 +371,7 @@ function copyDist() {
   const htmlName = "index" + min + ".html";
   const jsName = package + min + ".js";
   const cssName = package + min + ".css";
-  const vendors = Object.keys(externalLibs).map(
-    (s) => "vendor-" + s + min + ".js",
-  );
+  const vendors = Object.keys(externalLibs).map((s) => `vendor-${s}{min}.js`);
 
   return gulp
     .src(

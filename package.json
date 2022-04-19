@@ -9,7 +9,7 @@
     "release": "gulp release",
     "test": "mocha -r ts-node/register --reporter spec src/**/*Test.ts",
     "update": "ncu -u",
-    "reset:packages": "rm -rf node_modules && npm update --save-dev --force && npm update --save --force",
+    "reset:packages": "rm -rf node_modules && npm update --save-dev && npm update --save",
     "release:github": "gulp githubRelease",
     "generate:favicon": "gulp generateFavicon"
   },
