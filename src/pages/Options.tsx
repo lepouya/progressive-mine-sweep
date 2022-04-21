@@ -14,7 +14,7 @@ const Options: React.FC = () => {
 
   const settings = context.settings;
   const showDebug =
-    (location.pathname + location.search + location.hash + location.key)
+    `${location.pathname} ${location.search} ${location.hash} ${location.key}`
       .toLowerCase()
       .indexOf("debug") >= 0;
 
@@ -226,7 +226,7 @@ const Options: React.FC = () => {
           <div className="half">Resources:</div>
           <div className="half"></div>
           {Object.values(context.resourceManager.resources).map((resource) => (
-            <div className="half left" key={"debug-resource-" + resource.name}>
+            <div className="half left" key={`debug-resource-${resource.name}`}>
               <ResourceRender
                 resource={resource}
                 key={resource.name}

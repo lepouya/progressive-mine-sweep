@@ -129,13 +129,13 @@ const ResourceRender: React.FC<{
       } else if (disp === "time") {
         res = formatDuration(value, len, prec > 0);
         if (plus && value >= 0) {
-          res = "+" + res;
+          res = `+${res}`;
         }
       }
 
       res = pre + res + post;
       if (paren) {
-        res = "(" + res + ")";
+        res = `(${res})`;
       }
 
       output.push(
@@ -226,10 +226,10 @@ const ResourceRender: React.FC<{
     for (let k in resource.extra) {
       if (k.length > 0) {
         if (output.length > 0) {
-          output.push(<div className="break" key={"break-" + k} />);
+          output.push(<div className="break" key={`break-${k}`} />);
         }
         output.push(
-          <div className="extra-name" key={"extra-name-" + k}>
+          <div className="extra-name" key={`extra-name-${k}`}>
             {k}
             {infix}
           </div>,
@@ -237,14 +237,14 @@ const ResourceRender: React.FC<{
       }
 
       if (showExtras) {
-        addValueDiv(resource.value(k), "extra-value-" + k, {
+        addValueDiv(resource.value(k), `extra-value-${k}`, {
           prec: extrasPrecision,
           cls: "extra-value",
         });
       }
 
       if (showRawExtras) {
-        addValueDiv(resource.extra[k], "extra-raw-" + k, {
+        addValueDiv(resource.extra[k], `extra-raw-${k}`, {
           disp: "number",
           prec: rawExtrasPrecision,
           paren: showExtras,

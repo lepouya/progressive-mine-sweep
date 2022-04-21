@@ -90,7 +90,7 @@ const MineCell: React.FC<{
 
   return (
     <td
-      className={"cell cell-" + cell.state}
+      className={`cell cell-${cell.state}`}
       onClick={handleClick}
       onContextMenu={handleClick}
     >

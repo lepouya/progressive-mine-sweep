@@ -62,10 +62,10 @@ const MineField: React.FC<{
         )}
         <tbody>
           {board.cells.flatMap((row, r) => (
-            <tr key={"row:" + r + ":*"}>
+            <tr key={`row:${r}:*`}>
               {row.map((cell, c) => (
                 <MineCell
-                  key={"cell:" + r + ":" + c}
+                  key={`cell:${r}:${c}`}
                   cell={cell}
                   size={cellSize}
                   enabled={board.state === "active"}

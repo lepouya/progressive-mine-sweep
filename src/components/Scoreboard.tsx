@@ -6,7 +6,7 @@ const Scoreboard: React.FC<{
   board: Board;
 }> = ({ board }) => {
   return (
-    <div className={"panel scoreboard-" + board.state}>
+    <div className={`panel scoreboard-${board.state}`}>
       <div className="left">
         <div>
           Board: {board.rows}x{board.cols}
