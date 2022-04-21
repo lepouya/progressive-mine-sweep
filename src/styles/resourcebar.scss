@@ -1,0 +1,26 @@
+.resourcebar {
+  display: flex;
+  position: relative;
+  max-width: 100%;
+
+  border: 0;
+  border-radius: 0;
+  background-color: #eeeeee;
+
+  > div {
+    flex: 1;
+
+    .resource {
+      flex-wrap: nowrap;
+      width: auto;
+    }
+
+    &:first-child:not(:last-child) .resource {
+      margin-left: 0;
+    }
+
+    &:last-child:not(:first-child) .resource {
+      margin-right: 0;
+    }
+  }
+}

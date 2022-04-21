@@ -12,22 +12,23 @@ const ResourceRender: React.FC<{
   rounding?: keyof typeof roundMethods;
 
   showLocked?: boolean;
+  showIcon?: boolean;
+  showName?: boolean;
+  showValue?: boolean;
+  showRawValue?: boolean;
+  showRate?: boolean;
+  showExtras?: boolean;
+  showRawExtras?: boolean;
+
   showColors?: boolean;
   showRateColors?: boolean;
   showNegatives?: boolean;
   showZeros?: boolean;
   showPlusSign?: boolean;
   showGrouping?: boolean;
-
-  showIcon?: boolean;
-  showName?: boolean;
-  showValue?: boolean;
-  showRawValue?: boolean;
-  showRate?: boolean;
   showZeroRates?: boolean;
   showRatePercentages?: boolean;
-  showExtras?: boolean;
-  showRawExtras?: boolean;
+  showCapitalized?: boolean;
 
   precision?: number;
   valuePrecision?: number;
@@ -36,14 +37,15 @@ const ResourceRender: React.FC<{
   extrasPrecision?: number;
   rawExtrasPrecision?: number;
 
+  reversedDirection?: boolean;
+
   prefix?: string;
   suffix?: string;
   infix?: string;
   placeholder?: string;
 
   className?: string;
-
-  reversedDirection?: boolean;
+  style?: React.CSSProperties;
 }> = ({
   resource,
   kind = "",
@@ -54,22 +56,23 @@ const ResourceRender: React.FC<{
   rounding = display === "number" ? "floor" : "round",
 
   showLocked = false,
+  showIcon = true,
+  showName = false,
+  showValue = true,
+  showRawValue = false,
+  showRate = false,
+  showExtras = false,
+  showRawExtras = showExtras && showRawValue,
+
   showColors = false,
   showRateColors = true,
   showNegatives = true,
   showZeros = true,
   showPlusSign = false,
   showGrouping = display === "number",
-
-  showIcon = true,
-  showName = false,
-  showValue = true,
-  showRawValue = false,
-  showRate = false,
   showZeroRates = false,
   showRatePercentages = display === "number",
-  showExtras = false,
-  showRawExtras = showExtras && showRawValue,
+  showCapitalized = true,
 
   precision = display === "time" ? 3 : display === "number" ? 2 : 0,
   valuePrecision = precision,
@@ -78,14 +81,15 @@ const ResourceRender: React.FC<{
   extrasPrecision = precision,
   rawExtrasPrecision = extrasPrecision,
 
+  reversedDirection = false,
+
   prefix = "",
   suffix = "",
   infix = ":",
   placeholder = "-",
 
   className = "",
-
-  reversedDirection = false,
+  style = undefined,
 }) => {
   const output: JSX.Element[] = [];
   function addValueDiv(
@@ -146,6 +150,21 @@ const ResourceRender: React.FC<{
     }
   }
 
+  const getWord = (
+    word: string,
+    { condition = true, empties = false, caps = showCapitalized } = {},
+  ) =>
+    condition && (empties || word.length > 0)
+      ? caps
+        ? word
+            .replace(
+              /(\p{Ll})(\p{Lu}|_\S)/gu,
+              (_, c1, c2) => `${c1} ${c2.slice(-1)}`,
+            )
+            .replace(/(?:^|\s)\S/g, (c) => c.toUpperCase())
+        : word
+      : null;
+
   const classNames = ["resource"];
   if (className) {
     classNames.push(className);
@@ -168,7 +187,7 @@ const ResourceRender: React.FC<{
         {showIcon && resource.icon && resource.icon.length > 0 ? (
           <Icon icon={resource.icon} size="1em" />
         ) : null}
-        {showName && resource.name.length > 0 ? resource.name : null}
+        {getWord(resource.name, { condition: showName })}
         {infix}
       </div>,
     );
@@ -230,7 +249,7 @@ const ResourceRender: React.FC<{
         }
         output.push(
           <div className="extra-name" key={`extra-name-${k}`}>
-            {k}
+            {getWord(k)}
             {infix}
           </div>,
         );
@@ -255,7 +274,7 @@ const ResourceRender: React.FC<{
   }
 
   return (
-    <div className={classNames.join(" ")}>
+    <div className={classNames.join(" ")} style={style}>
       {prefix && <div className="prefix">{prefix}</div>}
       {output}
       {suffix && <div className="suffix">{suffix}</div>}

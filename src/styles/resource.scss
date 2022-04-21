@@ -22,6 +22,7 @@
   > div {
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
 
     + div {
       padding-inline-start: 1ex;
