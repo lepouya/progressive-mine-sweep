@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router";
 
 import TimeDuration from "../utils/TimeDuration";
 import useGameContext from "../utils/GameContext";
-import ResourceRender from "../utils/ResourceRender";
 
 const Options: React.FC = () => {
   const context = useGameContext();
