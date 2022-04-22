@@ -13,7 +13,7 @@ const Main: React.FC = () => {
   );
   return (
     <div>
-      <ResourceBar board={board} />
+      <ResourceBar />
       {mineField}
       <BoardControls board={board} setBoard={setBoard} />
     </div>

@@ -6,6 +6,7 @@ import Help from "../pages/Help";
 import Options from "../pages/Options";
 import useGameContext from "../utils/GameContext";
 import Link from "../utils/Link";
+import Stats from "../pages/Stats";
 
 const Game: React.FC = () => {
   const { settings, resourceManager, save } = useGameContext();
@@ -53,15 +54,17 @@ const Game: React.FC = () => {
       <nav className="navbar">
         <div className="left">
           <Link to="/">Mine Sweep</Link>
-          <Link to="/help">Help</Link>
+          <Link to="/statistics">Statistics</Link>
         </div>
         <div className="right">
+          <Link to="/help">Help</Link>
           <Link to="/options">Settings</Link>
         </div>
       </nav>
       <div className="main">
         <Routes>
           <Route path="/" element={<Main />} />
+          <Route path="/statistics" element={<Stats />} />
           <Route path="/help" element={<Help />} />
           <Route path="/options" element={<Options />} />
         </Routes>

@@ -2,12 +2,8 @@ import React from "react";
 import useGameContext from "../utils/GameContext";
 import ResourceRender from "../utils/ResourceRender";
 
-import { Board } from "../model/Board";
-
-const ResourceBar: React.FC<{
-  board: Board;
-}> = ({ board }) => {
-  const { resource } = useGameContext();
+const ResourceBar: React.FC = () => {
+  const { board, resource } = useGameContext();
   function render(name: string) {
     const res = resource(name);
     return (
