@@ -1,26 +1,17 @@
-.resourcebar {
-  display: flex;
-  position: relative;
-  max-width: 100%;
+.scoreboard {
+  &-inactive {
+    background-color: #dddddd;
+  }
 
-  border: 0;
-  border-radius: 0;
-  background-color: #eeeeee;
+  &-active {
+    background-color: #ddddff;
+  }
 
-  > div {
-    flex: 1;
+  &-won {
+    background-color: #ddffdd;
+  }
 
-    .resource {
-      flex-wrap: nowrap;
-      width: auto;
-    }
-
-    &:first-child:not(:last-child) .resource {
-      margin-left: 0;
-    }
-
-    &:last-child:not(:first-child) .resource {
-      margin-right: 0;
-    }
+  &-lost {
+    background-color: #ffdddd;
   }
 }

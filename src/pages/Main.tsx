@@ -3,7 +3,6 @@ import React, { useMemo } from "react";
 import BoardControls from "../components/BoardControls";
 import MineField from "../components/MineField";
 import ResourceBar from "../components/ResourceBar";
-import Scoreboard from "../components/Scoreboard";
 import useGameContext from "../utils/GameContext";
 
 const Main: React.FC = () => {
@@ -14,8 +13,7 @@ const Main: React.FC = () => {
   );
   return (
     <div>
-      <ResourceBar />
-      <Scoreboard board={board} />
+      <ResourceBar board={board} />
       {mineField}
       <BoardControls board={board} setBoard={setBoard} />
     </div>
