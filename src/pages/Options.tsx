@@ -97,7 +97,7 @@ const Options: React.FC = () => {
           />
           .
         </div>
-        <div className="title-bar"></div>
+        <hr className="separator" />
         <div className="half center">
           <input type="button" value="Load" onClick={loadGame} />
         </div>
@@ -142,7 +142,6 @@ const Options: React.FC = () => {
           />
         </div>
 
-        <div className="title-bar"></div>
         <div className="full"></div>
         <div className="half">Rendering frequency:</div>
         <div className="half center">
@@ -161,7 +160,6 @@ const Options: React.FC = () => {
           />
         </div>
 
-        <div className="title-bar"></div>
         <div className="full">
           Change how often the game is saved in the background. More frequent
           saving leads to faster backups, but increases CPU and I/O usage
@@ -222,32 +220,12 @@ const Options: React.FC = () => {
           <div className="title-bar">Debug Context</div>
           <div className="half">Settings:</div>
           <div className="full">{JSON.stringify(settings, null, 2)}</div>
-          <div className="title-bar" />
+          <hr className="separator" />
           <div className="half">Resources:</div>
-          <div className="half"></div>
-          {Object.values(context.resourceManager.resources).map((resource) => (
-            <div className="half left" key={`debug-resource-${resource.name}`}>
-              <ResourceRender
-                resource={resource}
-                key={resource.name}
-                length={"compact"}
-                display={
-                  resource.name === "difficulty" ||
-                  resource.name === "hintQuality"
-                    ? "percentage"
-                    : undefined
-                }
-                showName={true}
-                showValue={true}
-                showRate={true}
-                showExtras={true}
-              />
-            </div>
-          ))}
           <div className="full">
             {JSON.stringify(context.resourceManager, null, 2)}
           </div>
-          <div className="title-bar" />
+          <hr className="separator" />
           <div className="half">Board:</div>
           <div className="full">{JSON.stringify(context.board, null, 2)}</div>
         </div>
