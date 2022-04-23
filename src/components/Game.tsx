@@ -4,8 +4,8 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import Main from "../pages/Main";
 import Help from "../pages/Help";
 import Options from "../pages/Options";
-import useGameContext from "../utils/GameContext";
-import Link from "../utils/Link";
+import useGameContext from "./GameContext";
+import Link from "./Link";
 import Stats from "../pages/Stats";
 
 const Game: React.FC = () => {

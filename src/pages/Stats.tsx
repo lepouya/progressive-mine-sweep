@@ -1,7 +1,7 @@
 import React from "react";
 
-import useGameContext from "../utils/GameContext";
-import ResourceRender from "../utils/ResourceRender";
+import useGameContext from "../components/GameContext";
+import ResourceRender from "../components/ResourceRender";
 
 const Stats: React.FC = () => {
   const { resource } = useGameContext();

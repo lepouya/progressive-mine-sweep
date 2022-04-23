@@ -1,7 +1,11 @@
 import React from "react";
 import Icon from "./Icon";
-import { formatNumber, formatDuration } from "./format";
 import { Resource } from "../model/Resource";
+import { formatNumber, formatTime } from "../utils/format";
+import round, { roundMethods } from "../utils/round";
+
+const maxLengths = { tiny: 4, compact: 9, expanded: 21 };
+const multipliers = { number: 1.0, percentage: 100.0, time: 1000.0 };
 
 const ResourceRender: React.FC<{
   resource?: Partial<Resource>;
@@ -131,7 +135,7 @@ const ResourceRender: React.FC<{
       dry = false,
     },
   ): string {
-    const value = roundNumber(
+    const value = round(
       (num - (ref && epoch ? epoch : 0)) * multipliers[disp],
       prec,
       rnd,
@@ -159,9 +163,9 @@ const ResourceRender: React.FC<{
       if (ref && never.length > 0 && (num <= 0 || (epoch ?? -Infinity) <= 0)) {
         res = never;
       } else if (ref && epoch != null) {
-        res = formatDuration(value, len, prec > 0, sep, now, never, ago);
+        res = formatTime(value, len, prec > 0, sep, now, never, ago);
       } else {
-        res = formatDuration(value, len, prec > 0);
+        res = formatTime(value, len, prec > 0);
       }
       if (plus && value >= 0 && len !== "expanded") {
         res = `+${res}`;
@@ -365,18 +369,6 @@ const ResourceRender: React.FC<{
   } else {
     return res;
   }
-};
-
-const maxLengths = { tiny: 4, compact: 9, expanded: 21 };
-const multipliers = { number: 1.0, percentage: 100.0, time: 1000.0 };
-const roundMethods = { floor: Math.floor, round: Math.round, ceil: Math.ceil };
-const roundNumber = (
-  val: number,
-  prec: number,
-  round: keyof typeof roundMethods,
-) => {
-  const exp = 10 ** prec;
-  return roundMethods[round](val * exp) / exp;
 };
 
 export default ResourceRender;

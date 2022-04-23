@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import BoardControls from "../components/BoardControls";
 import MineField from "../components/MineField";
 import ResourceBar from "../components/ResourceBar";
-import useGameContext from "../utils/GameContext";
+import useGameContext from "../components/GameContext";
 
 const Main: React.FC = () => {
   const { board, setBoard } = useGameContext();

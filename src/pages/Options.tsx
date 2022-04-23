@@ -1,8 +1,8 @@
 import React, { ChangeEvent, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
-import useGameContext from "../utils/GameContext";
-import ResourceRender from "../utils/ResourceRender";
+import useGameContext from "../components/GameContext";
+import ResourceRender from "../components/ResourceRender";
 
 const Options: React.FC = () => {
   const context = useGameContext();

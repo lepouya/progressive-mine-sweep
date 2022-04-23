@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-import Spinner from "../utils/Spinner";
+import Spinner from "./Spinner";
 import Game from "./Game";
-import useGameContext from "../utils/GameContext";
+import useGameContext from "./GameContext";
 
 const Loader: React.FC = () => {
   const { load } = useGameContext();

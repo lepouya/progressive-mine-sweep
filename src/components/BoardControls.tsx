@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { genHints, genBoard, Board } from "../model/Board";
 import clamp from "../utils/clamp";
-import useGameContext from "../utils/GameContext";
+import useGameContext from "./GameContext";
 
 const BoardControls: React.FC<{
   board: Board;

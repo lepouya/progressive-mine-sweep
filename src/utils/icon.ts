@@ -1,8 +1,7 @@
-import React, { SVGAttributes } from "react";
 import { Cell, CellState } from "../model/Cell";
 
-export const Icon: React.FC<IconProps & { icon: string }> = (props) => {
-  const parts = props.icon.split(/\s+/).filter((s) => s.trim().length > 0);
+export default function icon(name: string) {
+  const parts = name.split(/\s+/).filter((s) => s.trim().length > 0);
   const partProps: Record<string, any> = {};
   const getPart = (name: string, finder: (value: string) => boolean) => {
     const found = parts.findIndex(finder);
@@ -14,32 +13,34 @@ export const Icon: React.FC<IconProps & { icon: string }> = (props) => {
   getPart("color", (s) => s.startsWith("#") || isNaN(parseFloat(s)));
   getPart("stroke", (s) => !isNaN(parseFloat(s)));
 
-  return icon ? getIcon(icon)({ ...partProps, ...props }) : null;
-};
+  const resolved = icon ? getIcon(icon) : null;
+  return resolved
+    ? (props: Record<string, any>) => resolved({ ...partProps, ...props })
+    : () => null;
+}
 
-export const CellIcon: React.FC<
-  IconProps & {
-    cell?: Cell;
-    state?: CellState;
-    neighbors?: number;
+export function cellIcon(props: CellIconProps) {
+  let name = cellIcons[props.cell?.state ?? props.state ?? "hidden"];
+  if (name instanceof Array) {
+    name = name[props.cell?.neighbors ?? props.neighbors ?? 0];
   }
-> = (props) => {
-  let icon = cellIcons[props.cell?.state ?? props.state ?? "hidden"];
-  if (icon instanceof Array) {
-    icon = icon[props.cell?.neighbors ?? props.neighbors ?? 0];
-  }
-  return Icon({ ...props, icon });
-};
+  return icon(name)(props);
+}
 
-interface IconProps extends SVGAttributes<SVGElement> {
+export interface IconProps {
   color?: string;
   size?: string;
   stroke?: string;
 }
 
-const iconRegex = /(^icon)|([^0-9a-zA-Z]+)/gi;
+export type CellIconProps = IconProps & {
+  cell?: Cell;
+  state?: CellState;
+  neighbors?: number;
+};
+
 declare global {
-  var tablerIcons: Record<string, React.FC<IconProps>>;
+  var tablerIcons: Record<string, (props: IconProps) => any>;
 }
 
 document.addEventListener(
@@ -54,10 +55,12 @@ document.addEventListener(
   false,
 );
 
-export const getIcon = (name: string) =>
+const getIcon = (name: string) =>
   global.tablerIcons[name] ??
   global.tablerIcons[name.toLowerCase()] ??
   global.tablerIcons[name.toLowerCase().replaceAll(iconRegex, "")];
+
+const iconRegex = /(^icon)|([^0-9a-zA-Z]+)/gi;
 
 const cellIcons = {
   hidden: "transparent QuestionMark",
@@ -77,5 +80,3 @@ const cellIcons = {
     "darkgreen Square",
   ],
 };
-
-export default Icon;

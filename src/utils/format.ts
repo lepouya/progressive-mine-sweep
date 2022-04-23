@@ -28,7 +28,7 @@ export function formatNumber(
   }
 }
 
-export function formatDuration(
+export function formatTime(
   time: number,
   len: "tiny" | "compact" | "expanded" = "expanded",
   millis = false,

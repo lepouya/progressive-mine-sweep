@@ -1,7 +1,7 @@
 import clamp from "../utils/clamp";
 import { genResourceManager, ResourceManager } from "./ResourceManager";
 
-export default function initGameResources(
+export function initGameResources(
   resourceManager?: ResourceManager,
 ): ResourceManager {
   const rm = resourceManager ?? genResourceManager();

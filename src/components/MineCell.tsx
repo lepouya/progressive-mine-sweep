@@ -1,8 +1,8 @@
 import React, { MouseEvent, useCallback } from "react";
 
 import { actOnCell, Cell, CellAction } from "../model/Cell";
-import { CellIcon } from "../utils/Icon";
-import useGameContext from "../utils/GameContext";
+import { CellIcon } from "./Icon";
+import useGameContext from "./GameContext";
 
 const MineCell: React.FC<{
   cell: Cell;

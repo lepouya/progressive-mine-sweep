@@ -3,9 +3,9 @@ import React, { useCallback, useState } from "react";
 import { CellAction } from "../model/Cell";
 import { Board, genBoardState } from "../model/Board";
 import MineCell from "./MineCell";
-import { CellIcon } from "../utils/Icon";
+import { CellIcon } from "./Icon";
 import clamp from "../utils/clamp";
-import useGameContext from "../utils/GameContext";
+import useGameContext from "./GameContext";
 
 const MineField: React.FC<{
   board: Board;
