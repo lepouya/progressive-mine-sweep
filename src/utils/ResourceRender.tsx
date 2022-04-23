@@ -1,11 +1,12 @@
 import React from "react";
-import { Resource } from "../model/Resource";
-import clamp from "./clamp";
 import Icon from "./Icon";
-import { formatDuration } from "./TimeDuration";
+import { formatNumber, formatDuration } from "./format";
+import { Resource } from "../model/Resource";
 
 const ResourceRender: React.FC<{
-  resource: Resource;
+  resource?: Partial<Resource>;
+  value?: number;
+  epoch?: number;
   kind?: string;
   display?: keyof typeof multipliers;
   length?: keyof typeof maxLengths;
@@ -15,6 +16,7 @@ const ResourceRender: React.FC<{
   showIcon?: boolean;
   showName?: boolean;
   showValue?: boolean;
+  showMaxValue?: boolean;
   showRawValue?: boolean;
   showRate?: boolean;
   showExtras?: boolean;
@@ -43,13 +45,19 @@ const ResourceRender: React.FC<{
   suffix?: string;
   infix?: string;
   placeholder?: string;
+  timeSeparator?: string;
+  ago?: string;
+  now?: string;
+  never?: string;
 
   className?: string;
   style?: React.CSSProperties;
 }> = ({
-  resource,
+  value,
+  epoch,
+  resource = { count: value },
   kind = "",
-  display = resource.name.toLowerCase().indexOf("time") >= 0
+  display = (resource.name ?? "").toLowerCase().indexOf("time") >= 0
     ? "time"
     : "number",
   length = "expanded",
@@ -59,6 +67,7 @@ const ResourceRender: React.FC<{
   showIcon = true,
   showName = false,
   showValue = true,
+  showMaxValue = false,
   showRawValue = false,
   showRate = false,
   showExtras = false,
@@ -87,14 +96,18 @@ const ResourceRender: React.FC<{
   suffix = "",
   infix = ":",
   placeholder = "-",
+  timeSeparator = length === "expanded" ? ", " : ":",
+  ago = "ago",
+  now = "now",
+  never = "never",
 
   className = "",
-  style = undefined,
+  style,
 }) => {
   const output: JSX.Element[] = [];
   function addValueDiv(
-    num: number,
-    key: string,
+    num = NaN,
+    key = "",
     {
       prec = precision,
       rnd = rounding,
@@ -106,57 +119,74 @@ const ResourceRender: React.FC<{
       plus = showPlusSign,
       grp = showGrouping,
       color = showColors,
-      plh = placeholder,
-      rev = reversedDirection,
       paren = false,
+      sep = timeSeparator,
       pre = "",
       post = "",
+      ref = false,
+      dry = false,
     },
-  ): void {
-    const value = roundNumber(num * multipliers[disp], prec, rnd);
-    if (!isNaN(value) && (neg || value >= 0) && (zero || value !== 0)) {
-      const classes = [disp.toString()];
-      if (cls.length > 0) {
-        classes.push(cls);
-      }
-      if (color) {
-        const v = rev ? -value : +value;
-        classes.push(v > 0 ? "positive" : v < 0 ? "negative" : "zero");
-      }
+  ): string {
+    const value = roundNumber(
+      (num - (ref && epoch ? epoch : 0)) * multipliers[disp],
+      prec,
+      rnd,
+    );
+    if (isNaN(value) || (!neg && value < 0) || (!zero && value === 0)) {
+      return "";
+    }
 
-      let res = plh;
-      if (disp === "number" || disp === "percentage") {
-        res = formatNumber(value, maxLengths[len], prec, plus, grp);
-        if (disp === "percentage") {
-          res += "%";
-        }
-      } else if (disp === "time") {
+    const classes = [disp.toString()];
+    if (cls.length > 0) {
+      classes.push(cls);
+    }
+    if (color) {
+      const v = reversedDirection ? -value : +value;
+      classes.push(v > 0 ? "positive" : v < 0 ? "negative" : "zero");
+    }
+
+    let res = placeholder;
+    if (disp === "number" || disp === "percentage") {
+      res = formatNumber(value, maxLengths[len], prec, plus, grp);
+      if (disp === "percentage") {
+        res += "%";
+      }
+    } else if (disp === "time") {
+      if (ref && never.length > 0 && (num <= 0 || (epoch ?? -Infinity) <= 0)) {
+        res = never;
+      } else if (ref && epoch != null) {
+        res = formatDuration(value, len, prec > 0, sep, now, never, ago);
+      } else {
         res = formatDuration(value, len, prec > 0);
-        if (plus && value >= 0) {
-          res = `+${res}`;
-        }
       }
-
-      res = pre + res + post;
-      if (paren) {
-        res = `(${res})`;
+      if (plus && value >= 0 && len !== "expanded") {
+        res = `+${res}`;
       }
+    }
 
+    res = pre + res + post;
+    if (paren) {
+      res = `(${res})`;
+    }
+
+    if (!dry) {
       output.push(
         <div key={key} className={classes.join(" ")}>
           {res}
         </div>,
       );
     }
+
+    return res;
   }
 
   const getWord = (
-    word: string,
+    word?: string,
     { condition = true, empties = false, caps = showCapitalized } = {},
   ) =>
-    condition && (empties || word.length > 0)
+    condition && (empties || (word && word.length > 0))
       ? caps
-        ? word
+        ? (word ?? "")
             .replace(
               /(\p{Ll})(\p{Lu}|_\S)/gu,
               (_, c1, c2) => `${c1} ${c2.slice(-1)}`,
@@ -194,31 +224,56 @@ const ResourceRender: React.FC<{
   }
 
   if (!locked && showValue) {
-    addValueDiv(resource.value(kind), "value", {
-      prec: valuePrecision,
-      cls: "value",
-    });
+    const denom = showMaxValue
+      ? addValueDiv(resource.maxCount, "denominator", {
+          prec: valuePrecision,
+          pre: " / ",
+          dry: true,
+        })
+      : "";
+
+    addValueDiv(
+      resource.value
+        ? resource.value(kind)
+        : (resource.extra ?? {})[kind] ?? resource.count,
+      "value",
+      {
+        prec: valuePrecision,
+        ref: epoch != undefined && !isNaN(epoch),
+        post: denom,
+        cls: "value",
+      },
+    );
   }
 
   if (!locked && showRawValue) {
-    addValueDiv(kind ? resource.extra[kind] : resource.count, "raw-value", {
-      disp: "number",
-      prec: rawValuePrecision,
-      paren: showValue,
-      cls: "raw-value",
-    });
+    addValueDiv(
+      kind && resource.extra ? resource.extra[kind] : resource.count,
+      "raw-value",
+      {
+        disp: "number",
+        prec: rawValuePrecision,
+        paren: showValue,
+        cls: "raw-value",
+      },
+    );
   }
 
   if (
     !locked &&
     showRate &&
     kind === "" &&
-    (resource._rate.lastCheck ?? 0) > 0 &&
+    resource.rate != null &&
+    (resource._rate?.lastCheck ?? 0) > 0 &&
     (showZeroRates || resource.rate !== 0)
   ) {
     addValueDiv(
       resource.rate /
-        (showRatePercentages && resource.rate > 0 ? resource.value() : 1.0),
+        (showRatePercentages && resource.rate > 0
+          ? resource.value
+            ? resource.value()
+            : resource.count ?? 0
+          : 1.0),
       "rate",
       {
         disp: showRatePercentages && resource.rate > 0 ? "percentage" : display,
@@ -240,7 +295,7 @@ const ResourceRender: React.FC<{
     !locked &&
     (showExtras || showRawExtras) &&
     kind === "" &&
-    Object.keys(resource.extra).length > 0
+    Object.keys(resource.extra ?? {}).length > 0
   ) {
     for (let k in resource.extra) {
       if (k.length > 0) {
@@ -256,10 +311,14 @@ const ResourceRender: React.FC<{
       }
 
       if (showExtras) {
-        addValueDiv(resource.value(k), `extra-value-${k}`, {
-          prec: extrasPrecision,
-          cls: "extra-value",
-        });
+        addValueDiv(
+          resource.value ? resource.value(k) : resource.extra[k],
+          `extra-value-${k}`,
+          {
+            prec: extrasPrecision,
+            cls: "extra-value",
+          },
+        );
       }
 
       if (showRawExtras) {
@@ -293,33 +352,5 @@ const roundNumber = (
   const exp = 10 ** prec;
   return roundMethods[round](val * exp) / exp;
 };
-
-export function formatNumber(
-  val: number,
-  len = 21,
-  prec = 3,
-  sign = false,
-  grp = false,
-): string {
-  const options: Intl.NumberFormatOptions = {
-    style: "decimal",
-    notation: "standard",
-    signDisplay: sign ? "always" : "auto",
-    useGrouping: grp,
-    minimumIntegerDigits: 1,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: clamp(prec, 0, len - 1),
-    minimumSignificantDigits: 1,
-    maximumSignificantDigits: len,
-  };
-
-  const res = val.toLocaleString(undefined, options);
-  if (res.length > len) {
-    options.notation = "scientific";
-    return val.toLocaleString(undefined, options);
-  } else {
-    return res;
-  }
-}
 
 export default ResourceRender;

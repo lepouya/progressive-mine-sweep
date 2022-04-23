@@ -1,54 +1,32 @@
-import React from "react";
+import clamp from "./clamp";
 
-const TimeDuration: React.FC<{
-  start?: number;
-  end?: number;
-  length?: "tiny" | "compact" | "expanded";
+export function formatNumber(
+  val: number,
+  len = 21,
+  prec = 3,
+  sign = false,
+  grp = false,
+): string {
+  const options: Intl.NumberFormatOptions = {
+    style: "decimal",
+    notation: "standard",
+    signDisplay: sign ? "always" : "auto",
+    useGrouping: grp,
+    minimumIntegerDigits: 1,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: clamp(prec, 0, len - 1),
+    minimumSignificantDigits: 1,
+    maximumSignificantDigits: len,
+  };
 
-  prefix?: string;
-  suffix?: string;
-  separator?: string;
-  never?: string;
-  now?: string;
-
-  millis?: boolean;
-  negatives?: boolean;
-}> = ({
-  start = 0,
-  end = 0,
-  length = "expanded",
-  prefix = "",
-  suffix = "",
-  separator = length === "expanded" ? ", " : ":",
-  never = "never",
-  now = "now",
-  millis = false,
-  negatives = false,
-}) => {
-  let duration = end - start;
-  if (never.length > 0 && (start <= 0 || end <= 0)) {
-    duration = -1;
-  } else if (!negatives && duration < 0) {
-    duration = 0;
+  const res = val.toLocaleString(undefined, options);
+  if (res.length > len) {
+    options.notation = "scientific";
+    return val.toLocaleString(undefined, options);
+  } else {
+    return res;
   }
-
-  const wording = formatDuration(
-    duration,
-    length,
-    millis,
-    separator,
-    now,
-    never,
-  );
-
-  return (
-    <div className="time-duration">
-      {prefix}
-      {wording}
-      {wording !== now && wording !== never ? suffix : ""}
-    </div>
-  );
-};
+}
 
 export function formatDuration(
   time: number,
@@ -57,6 +35,7 @@ export function formatDuration(
   sep = len === "expanded" ? ", " : ":",
   now = "",
   never = "",
+  ago = "",
 ): string {
   if (never.length > 0 && time < 0) {
     return never;
@@ -104,7 +83,7 @@ export function formatDuration(
     );
   } else {
     words = [
-      [years, "years"],
+      [years, "year"],
       [days, "day"],
       [hours, "hour"],
       [mins, "minute"],
@@ -120,7 +99,8 @@ export function formatDuration(
     );
   }
 
-  return words.filter((word) => word.length > 0).join(sep);
+  return (
+    words.filter((word) => word.length > 0).join(sep) +
+    (ago.length > 0 ? " " + ago : "")
+  );
 }
-
-export default TimeDuration;

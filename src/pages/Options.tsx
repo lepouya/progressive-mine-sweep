@@ -1,8 +1,8 @@
 import React, { ChangeEvent, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
-import TimeDuration from "../utils/TimeDuration";
 import useGameContext from "../utils/GameContext";
+import ResourceRender from "../utils/ResourceRender";
 
 const Options: React.FC = () => {
   const context = useGameContext();
@@ -70,31 +70,34 @@ const Options: React.FC = () => {
       <div className="panel options">
         <div className="title-bar">Game Data</div>
         <div className="full">
-          <TimeDuration
-            start={settings.lastReset}
-            end={settings.lastUpdate}
+          <ResourceRender
+            epoch={settings.lastReset / 1000}
+            value={settings.lastUpdate / 1000}
+            display={"time"}
+            precision={0}
             prefix={"You started this game "}
-            suffix={" ago"}
+            suffix={"."}
           />
-          .
         </div>
         <div className="full">
-          <TimeDuration
-            start={settings.lastLoaded}
-            end={settings.lastUpdate}
+          <ResourceRender
+            epoch={settings.lastLoaded / 1000}
+            value={settings.lastUpdate / 1000}
+            display={"time"}
+            precision={0}
             prefix={"This session started "}
-            suffix={" ago"}
+            suffix={"."}
           />
-          .
         </div>
         <div className="full">
-          <TimeDuration
-            start={settings.lastSaved}
-            end={settings.lastUpdate}
+          <ResourceRender
+            epoch={settings.lastSaved / 1000}
+            value={settings.lastUpdate / 1000}
+            display={"time"}
+            precision={0}
             prefix={"Game was last saved "}
-            suffix={" ago"}
+            suffix={"."}
           />
-          .
         </div>
         <hr className="separator" />
         <div className="half center">
@@ -165,11 +168,10 @@ const Options: React.FC = () => {
         </div>
         <div className="half">Saving frequency:</div>
         <div className="half center">
-          <TimeDuration
-            end={settings.saveFrequencySecs * 1000}
-            millis={settings.saveFrequencySecs < 10}
-            never=""
-            now=""
+          <ResourceRender
+            value={settings.saveFrequencySecs}
+            display={"time"}
+            precision={0}
           />
         </div>
         <div className="half"></div>

@@ -43,16 +43,16 @@
     }
   }
 
+  .resource {
+    margin: 0;
+    padding: 0;
+    width: auto;
+  }
+
   &.debug {
     .full {
       font-size: small;
       white-space: pre;
-    }
-
-    .resource {
-      margin: auto 2px;
-      border: 1px solid gray;
-      border-radius: 1ex;
     }
   }
 }
