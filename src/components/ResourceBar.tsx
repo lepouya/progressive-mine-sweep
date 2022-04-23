@@ -4,56 +4,50 @@ import ResourceRender from "../utils/ResourceRender";
 
 const ResourceBar: React.FC = () => {
   const { board, resource } = useGameContext();
-  function render(name: string) {
-    const res = resource(name);
-    return (
-      res.count > 0 && (
-        <div>
-          <ResourceRender
-            resource={res}
-            showIcon={true}
-            showName={true}
-            showValue={true}
-            showRate={true}
-            showZeroRates={true}
-            showRatePercentages={false}
-          />
-        </div>
-      )
-    );
-  }
-
   return (
     <div className={`panel scoreboard-${board.state}`}>
-      {render("wins")}
-      {render("cells")}
+      <ResourceRender
+        resource={resource("wins")}
+        showRate={true}
+        showZeroRates={true}
+        showRatePercentages={false}
+        showChrome={true}
+      />
+      <ResourceRender
+        resource={resource("cells")}
+        showRate={true}
+        showZeroRates={true}
+        showRatePercentages={false}
+        showChrome={true}
+      />
       <hr className="separator" />
-      <div className="left">
-        <div>
-          Board: {board.rows}x{board.cols}
-        </div>
-      </div>
-      <div className="center">
-        <div>
-          {board.state === "won"
-            ? "Minefield won!"
-            : board.state === "lost"
-            ? "Minefield lost!!"
-            : board.state === "active"
-            ? "Progress: " +
-              Math.floor(
-                (100 * board.cellCounts.revealed) /
-                  (board.rows * board.cols - board.numMines),
-              ) +
-              "%"
-            : ""}
-        </div>
-      </div>
-      <div className="right">
-        <div>
-          Mines: {board.cellCounts.flagged}/{board.numMines}
-        </div>
-      </div>
+      <ResourceRender
+        name={"Board"}
+        suffix={`${board.rows}x${board.cols}`}
+        showChrome={true}
+      />
+      <ResourceRender
+        name={"progress"}
+        value={
+          (board.cellCounts.revealed + board.cellCounts.flagged) /
+          (board.rows * board.cols)
+        }
+        display={"percentage"}
+        showName={board.state === "active"}
+        showValue={board.state === "active"}
+        prefix={board.state === "active" ? "" : "Minefield"}
+        suffix={board.state === "active" ? "" : board.state + "!"}
+        showChrome={true}
+      />
+      <ResourceRender
+        resource={{
+          name: "Mines",
+          count: board.cellCounts.flagged,
+          maxCount: board.numMines,
+        }}
+        showMaxValue={true}
+        showChrome={true}
+      />
     </div>
   );
 };

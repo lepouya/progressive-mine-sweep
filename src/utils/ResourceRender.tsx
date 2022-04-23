@@ -5,6 +5,7 @@ import { Resource } from "../model/Resource";
 
 const ResourceRender: React.FC<{
   resource?: Partial<Resource>;
+  name?: string;
   value?: number;
   epoch?: number;
   kind?: string;
@@ -31,6 +32,7 @@ const ResourceRender: React.FC<{
   showZeroRates?: boolean;
   showRatePercentages?: boolean;
   showCapitalized?: boolean;
+  showChrome?: boolean;
 
   precision?: number;
   valuePrecision?: number;
@@ -55,9 +57,10 @@ const ResourceRender: React.FC<{
 }> = ({
   value,
   epoch,
-  resource = { count: value },
+  name,
+  resource = { name, count: value },
   kind = "",
-  display = (resource.name ?? "").toLowerCase().indexOf("time") >= 0
+  display = (resource.name ?? name ?? "").toLowerCase().indexOf("time") >= 0
     ? "time"
     : "number",
   length = "expanded",
@@ -65,7 +68,7 @@ const ResourceRender: React.FC<{
 
   showLocked = false,
   showIcon = true,
-  showName = false,
+  showName = true,
   showValue = true,
   showMaxValue = false,
   showRawValue = false,
@@ -82,6 +85,7 @@ const ResourceRender: React.FC<{
   showZeroRates = false,
   showRatePercentages = display === "number",
   showCapitalized = true,
+  showChrome = false,
 
   precision = display === "time" ? 3 : display === "number" ? 2 : 0,
   valuePrecision = precision,
@@ -184,7 +188,7 @@ const ResourceRender: React.FC<{
     word?: string,
     { condition = true, empties = false, caps = showCapitalized } = {},
   ) =>
-    condition && (empties || (word && word.length > 0))
+    condition && (empties || (word != null && word.length > 0))
       ? caps
         ? (word ?? "")
             .replace(
@@ -211,13 +215,13 @@ const ResourceRender: React.FC<{
     locked = true;
   }
 
-  if (!locked && ((showIcon && resource.icon) || showName)) {
+  if (!locked && ((showIcon && resource.icon) || (showName && resource.name))) {
     output.push(
       <div className="name" key="name">
         {showIcon && resource.icon && resource.icon.length > 0 ? (
           <Icon icon={resource.icon} size="1em" />
         ) : null}
-        {getWord(resource.name, { condition: showName })}
+        {getWord(resource.name ?? name, { condition: showName })}
         {infix}
       </div>,
     );
@@ -235,7 +239,7 @@ const ResourceRender: React.FC<{
     addValueDiv(
       resource.value
         ? resource.value(kind)
-        : (resource.extra ?? {})[kind] ?? resource.count,
+        : (resource.extra ?? {})[kind] ?? resource.count ?? value,
       "value",
       {
         prec: valuePrecision,
@@ -248,7 +252,7 @@ const ResourceRender: React.FC<{
 
   if (!locked && showRawValue) {
     addValueDiv(
-      kind && resource.extra ? resource.extra[kind] : resource.count,
+      kind && resource.extra ? resource.extra[kind] : resource.count ?? value,
       "raw-value",
       {
         disp: "number",
@@ -272,7 +276,7 @@ const ResourceRender: React.FC<{
         (showRatePercentages && resource.rate > 0
           ? resource.value
             ? resource.value()
-            : resource.count ?? 0
+            : resource.count ?? value ?? 0
           : 1.0),
       "rate",
       {
@@ -332,13 +336,19 @@ const ResourceRender: React.FC<{
     }
   }
 
-  return (
+  const res = (
     <div className={classNames.join(" ")} style={style}>
       {prefix && <div className="prefix">{prefix}</div>}
       {output}
       {suffix && <div className="suffix">{suffix}</div>}
     </div>
   );
+
+  if (showChrome) {
+    return <div>{res}</div>;
+  } else {
+    return res;
+  }
 };
 
 const maxLengths = { tiny: 4, compact: 9, expanded: 21 };

@@ -17,7 +17,6 @@ const Stats: React.FC = () => {
             display={"time"}
             precision={0}
             prefix={"Started "}
-            suffix={"."}
           />
         </div>
       </div>
