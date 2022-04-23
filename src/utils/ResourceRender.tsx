@@ -59,7 +59,7 @@ const ResourceRender: React.FC<{
   epoch,
   name,
   resource = { name, count: value },
-  kind = "",
+  kind = undefined,
   display = (resource.name ?? name ?? "").toLowerCase().indexOf("time") >= 0
     ? "time"
     : "number",
@@ -141,7 +141,7 @@ const ResourceRender: React.FC<{
     }
 
     const classes = [disp.toString()];
-    if (cls.length > 0) {
+    if (!!cls) {
       classes.push(cls);
     }
     if (color) {
@@ -200,34 +200,20 @@ const ResourceRender: React.FC<{
       : null;
 
   const classNames = ["resource"];
-  if (className) {
-    classNames.push(className);
-  }
 
-  let locked = false;
-  if (!showLocked && !(resource.unlocked ?? true)) {
-    classNames.push("locked");
-    output.push(
-      <div className="placeholder" key="lock">
-        {placeholder}
-      </div>,
-    );
-    locked = true;
-  }
-
-  if (!locked && ((showIcon && resource.icon) || (showName && resource.name))) {
+  if ((showIcon && resource.icon) || (showName && resource.name)) {
     output.push(
       <div className="name" key="name">
         {showIcon && resource.icon && resource.icon.length > 0 ? (
           <Icon icon={resource.icon} size="1em" />
         ) : null}
-        {getWord(resource.name ?? name, { condition: showName })}
+        {getWord(name ?? resource.name, { condition: showName })}
         {infix}
       </div>,
     );
   }
 
-  if (!locked && showValue) {
+  if (showValue) {
     const denom = showMaxValue
       ? addValueDiv(resource.maxCount, "denominator", {
           prec: valuePrecision,
@@ -237,9 +223,10 @@ const ResourceRender: React.FC<{
       : "";
 
     addValueDiv(
-      resource.value
-        ? resource.value(kind)
-        : (resource.extra ?? {})[kind] ?? resource.count ?? value,
+      value ??
+        (resource.value
+          ? resource.value(kind)
+          : (resource.extra ?? {})[kind ?? ""] ?? resource.count),
       "value",
       {
         prec: valuePrecision,
@@ -250,9 +237,9 @@ const ResourceRender: React.FC<{
     );
   }
 
-  if (!locked && showRawValue) {
+  if (showRawValue) {
     addValueDiv(
-      kind && resource.extra ? resource.extra[kind] : resource.count ?? value,
+      value ?? (kind && resource.extra ? resource.extra[kind] : resource.count),
       "raw-value",
       {
         disp: "number",
@@ -264,9 +251,8 @@ const ResourceRender: React.FC<{
   }
 
   if (
-    !locked &&
     showRate &&
-    kind === "" &&
+    !kind &&
     resource.rate != null &&
     (resource._rate?.lastCheck ?? 0) > 0 &&
     (showZeroRates || resource.rate !== 0)
@@ -274,9 +260,7 @@ const ResourceRender: React.FC<{
     addValueDiv(
       resource.rate /
         (showRatePercentages && resource.rate > 0
-          ? resource.value
-            ? resource.value()
-            : resource.count ?? value ?? 0
+          ? value ?? (resource.value ? resource.value() : resource.count) ?? 0
           : 1.0),
       "rate",
       {
@@ -296,10 +280,10 @@ const ResourceRender: React.FC<{
   }
 
   if (
-    !locked &&
     (showExtras || showRawExtras) &&
-    kind === "" &&
-    Object.keys(resource.extra ?? {}).length > 0
+    !kind &&
+    resource.extra &&
+    Object.keys(resource.extra).length > 0
   ) {
     for (let k in resource.extra) {
       if (k.length > 0) {
@@ -333,11 +317,39 @@ const ResourceRender: React.FC<{
           cls: "raw-extra-value",
         });
       }
+
+      if (
+        showRate &&
+        resource.rate != null &&
+        (resource._rate?.lastCheck ?? 0) > 0 &&
+        (showZeroRates || resource.rate !== 0)
+      ) {
+        output.push(
+          <div key={`extra-rate-${k}`} className={"rate"}>
+            {placeholder}
+          </div>,
+        );
+      }
     }
   }
 
+  if (!showLocked && !(resource.unlocked ?? true)) {
+    classNames.push("locked");
+    output.splice(
+      0,
+      output.length,
+      <div className="placeholder" key="lock">
+        {placeholder}
+      </div>,
+    );
+  }
+
+  const resStyle = showChrome ? undefined : style;
+  if (!!className && !showChrome) {
+    classNames.push(className);
+  }
   const res = (
-    <div className={classNames.join(" ")} style={style}>
+    <div className={classNames.join(" ")} style={resStyle}>
       {prefix && <div className="prefix">{prefix}</div>}
       {output}
       {suffix && <div className="suffix">{suffix}</div>}
@@ -345,7 +357,11 @@ const ResourceRender: React.FC<{
   );
 
   if (showChrome) {
-    return <div>{res}</div>;
+    return (
+      <div className={!className ? undefined : className} style={style}>
+        {res}
+      </div>
+    );
   } else {
     return res;
   }

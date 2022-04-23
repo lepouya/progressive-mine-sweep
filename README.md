@@ -26,7 +26,7 @@ Perhaps I could do prestige/reset options once this is ready
 
 - ~~Set up resource management~~
 - ~~Track and use game resources~~
-- Report game currencies on screen
+- ~~Report game currencies on screen~~
 - Add options for increasing grid size
 - Add options for increasing difficulty and multiplier
 - Hint purchase, and options to increase hint quality
