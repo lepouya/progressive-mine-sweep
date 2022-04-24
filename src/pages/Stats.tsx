@@ -5,11 +5,12 @@ import ResourceRender from "../components/ResourceRender";
 
 const Stats: React.FC = () => {
   const { resource } = useGameContext();
-  const render = (name: string, display?: "number" | "time" | "percentage") => (
+  const render = (name: string, percent = false) => (
     <ResourceRender
       resource={resource(name)}
-      display={display}
-      length={"compact"}
+      display={percent ? "percentage" : undefined}
+      length={percent ? "tiny" : "compact"}
+      precision={percent ? 1 : undefined}
       showMaxValue={true}
       showRate={true}
       showExtras={true}
@@ -30,8 +31,9 @@ const Stats: React.FC = () => {
         <div className="title-bar">Board Info</div>
         {render("rows")}
         {render("cols")}
-        {render("difficulty", "percentage")}
-        {render("hintQuality", "percentage")}
+        {render("difficulty", true)}
+        {render("resetSpeed", true)}
+        {render("hintQuality", true)}
       </div>
       <div className="panel stats">
         <div className="title-bar">Game Info</div>

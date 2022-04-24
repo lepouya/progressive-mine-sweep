@@ -307,6 +307,7 @@ const ResourceRender: React.FC<{
           resource.value ? resource.value(k) : resource.extra[k],
           `extra-value-${k}`,
           {
+            disp: k.toLowerCase().indexOf("time") >= 0 ? "time" : display,
             prec: extrasPrecision,
             cls: "extra-value",
           },

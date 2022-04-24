@@ -17,7 +17,7 @@
   },
   {
     "name": "resets",
-    "icon": "refresh-dot",
+    "icon": "refresh",
     "extra": {
       "auto": 0,
       "manual": 0

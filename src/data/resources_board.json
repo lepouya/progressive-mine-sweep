@@ -18,5 +18,13 @@
     "name": "hintQuality",
     "icon": "bulb",
     "count": 0
+  },
+  {
+    "name": "resetSpeed",
+    "icon": "refresh-alert",
+    "count": 0,
+    "extra": {
+      "remainingTime": 0
+    }
   }
 ]
