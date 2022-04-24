@@ -1,0 +1,22 @@
+[
+  {
+    "name": "rows",
+    "icon": "arrows-vertical",
+    "count": 3
+  },
+  {
+    "name": "cols",
+    "icon": "arrows-horizontal",
+    "count": 3
+  },
+  {
+    "name": "difficulty",
+    "icon": "adjustments-horizontal",
+    "count": 0.15
+  },
+  {
+    "name": "hintQuality",
+    "icon": "bulb",
+    "count": 0
+  }
+]

@@ -1,0 +1,45 @@
+[
+  {
+    "name": "clicks",
+    "icon": "hand-click",
+    "extra": {
+      "left": 0,
+      "right": 0,
+      "useless": 0
+    }
+  },
+  {
+    "name": "cells",
+    "icon": "darkgreen square",
+    "extra": {
+      "auto": 0,
+      "manual": 0,
+      "hidden": 0
+    }
+  },
+  {
+    "name": "hints",
+    "icon": "green eye",
+    "extra": {
+      "auto": 0,
+      "manual": 0
+    }
+  },
+  {
+    "name": "flags",
+    "icon": "darkblue flag-2",
+    "extra": {
+      "auto": 0,
+      "manual": 0,
+      "unflags": 0
+    }
+  },
+  {
+    "name": "explosions",
+    "icon": "red alert-triangle",
+    "extra": {
+      "auto": 0,
+      "manual": 0
+    }
+  }
+]

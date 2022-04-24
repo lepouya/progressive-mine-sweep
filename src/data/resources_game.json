@@ -1,0 +1,26 @@
+[
+  {
+    "name": "wins",
+    "icon": "darkgreen square-check",
+    "extra": {
+      "auto": 0,
+      "manual": 0
+    }
+  },
+  {
+    "name": "losses",
+    "icon": "darkred square-x",
+    "extra": {
+      "auto": 0,
+      "manual": 0
+    }
+  },
+  {
+    "name": "resets",
+    "icon": "refresh-dot",
+    "extra": {
+      "auto": 0,
+      "manual": 0
+    }
+  }
+]

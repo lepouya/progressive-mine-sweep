@@ -1,0 +1,22 @@
+[
+  {
+    "name": "totalTime",
+    "icon": "clock"
+  },
+  {
+    "name": "activeTime",
+    "icon": "alarm",
+    "extra": {
+      "current": 0,
+      "max": 0
+    }
+  },
+  {
+    "name": "offlineTime",
+    "icon": "user-off",
+    "extra": {
+      "current": 0,
+      "max": 0
+    }
+  }
+]

@@ -22,7 +22,7 @@ const assetEntries = ["assets/**/*"];
 const htmlEntries = ["src/index.html"];
 const cssEntries = ["src/**/*.scss"];
 const tsEntries = ["src/index.tsx"];
-const extensions = [".js", ".ts", ".jsx", ".tsx", ".json"];
+const extensions = [".js", ".ts", ".jsx", ".tsx"];
 const externalLibs = {
   react: [
     "react",
@@ -222,6 +222,7 @@ function ts() {
             ["@babel/preset-env", { bugfixes: true }],
             "@babel/preset-react",
           ],
+          plugins: ["@babel/transform-runtime"],
           extensions,
           comments: debug,
           compact: !debug,
