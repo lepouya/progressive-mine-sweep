@@ -1,26 +1,12 @@
 import React from "react";
 
-const Spinner: React.FC<{ numFrames?: number; durationSecs?: number }> = ({
-  numFrames = 12,
-  durationSecs = 1,
+const Spinner: React.FC<{ frames?: number; duration?: number }> = ({
+  frames = 12,
+  duration = 1,
 }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    xmlnsXlink="http://www.w3.org/1999/xlink"
-    className="lds-spinner"
-    width="128px"
-    height="128px"
-    viewBox="0 0 100 100"
-    preserveAspectRatio="xMidYMid"
-    style={{
-      background: "none",
-    }}
-  >
-    {Array.from(Array(numFrames).keys()).map((num) => (
-      <g
-        transform={`rotate(${(num * 360) / numFrames} 50 50)`}
-        key={`frame-${num}`}
-      >
+  <svg className="spinner" width="128px" height="128px" viewBox="0 0 100 100">
+    {Array.from(Array(frames).keys()).map((num) => (
+      <g transform={`rotate(${(num * 360) / frames} 50 50)`} key={`g-${num}`}>
         <rect
           x="47"
           y="24"
@@ -34,8 +20,8 @@ const Spinner: React.FC<{ numFrames?: number; durationSecs?: number }> = ({
             attributeName="opacity"
             values="1;0"
             keyTimes="0;1"
-            dur={`${durationSecs}s`}
-            begin={`${(num - numFrames) * (durationSecs / numFrames)}s`}
+            dur={`${duration}s`}
+            begin={`${(num - frames) * (duration / frames)}s`}
             repeatCount="indefinite"
           />
         </rect>

@@ -1,25 +1,31 @@
 .progress-circle {
-  position: relative;
-  display: inline-block;
-
-  border-radius: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 
   > .children {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    left: 0;
-
-    display: flex;
     flex-flow: row wrap;
     justify-content: center;
-    align-items: center;
-    text-align: center;
+  }
+
+  > svg {
+    position: absolute;
+    pointer-events: none;
+
+    > circle {
+      fill: transparent;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
   }
 
   .primary {
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
+    stroke: cyan;
+  }
+
+  .secondary {
+    stroke: lightcyan;
   }
 }
