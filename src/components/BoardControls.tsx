@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { genHints, genBoard, Board } from "../model/Board";
+import { genHints, Board } from "../model/Board";
 import clamp from "../utils/clamp";
 import useGameContext from "./GameContext";
 
@@ -18,7 +18,7 @@ const BoardControls: React.FC<{
       setCols(resource("cols").value());
       setDifficulty(Math.floor(100 * resource("difficulty").value()));
     } else {
-      resetBoard();
+      board.state = "inactive";
     }
   }, [board]);
 
@@ -42,20 +42,6 @@ const BoardControls: React.FC<{
         resource(target.name).count = clamp(num / 100);
       }
     }
-  }
-
-  function resetBoard() {
-    resource("resets").count++;
-    if (board.rows === 0 || board.cols === 0) {
-      resource("resets").extra.auto++;
-    } else {
-      resource("resets").extra.manual++;
-    }
-
-    const r = resource("rows").value();
-    const c = resource("cols").value();
-    const m = r * c * resource("difficulty").value();
-    setBoard(genBoard(r, c, Math.floor(m), Math.ceil(m)));
   }
 
   function getHint() {
@@ -82,11 +68,7 @@ const BoardControls: React.FC<{
           />
         </div>
       </div>
-      <div className="right half">
-        <div className="half">
-          <input type="button" value="Reset Board" onClick={resetBoard} />
-        </div>
-      </div>
+      <div className="right half"></div>
       <div className="half">
         <div className="half">Number of columns:</div>
         <div className="half">

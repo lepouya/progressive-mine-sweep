@@ -5,7 +5,7 @@ import ResourceRender from "./ResourceRender";
 const ResourceBar: React.FC = () => {
   const { board, resource } = useGameContext();
   return (
-    <div className={`panel scoreboard-${board.state}`}>
+    <div className={`panel board-state-${board.state}`}>
       <ResourceRender
         resource={resource("wins")}
         showRate={true}
@@ -33,10 +33,6 @@ const ResourceBar: React.FC = () => {
           (board.rows * board.cols)
         }
         display={"percentage"}
-        showName={board.state === "active"}
-        showValue={board.state === "active"}
-        prefix={board.state === "active" ? "" : "Minefield"}
-        suffix={board.state === "active" ? "" : board.state + "!"}
         showChrome={true}
       />
       <ResourceRender

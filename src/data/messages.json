@@ -1,0 +1,47 @@
+{
+  "active": [
+    "Game in progress..."
+  ],
+  "inavtive": [
+    "There's no game yet...?",
+    "Hmm... seems like you should reset the board.",
+    "Game is inactive :("
+  ],
+  "won": [
+    "Hooray!!!",
+    "Minefield cleared!!",
+    "You win!",
+    "Game won!",
+    "Success!",
+    "Amazing job!!!",
+    "WIN!",
+    "#winning"
+  ],
+  "lost": [
+    "Oh no! :(",
+    "KABOOOM!!!!!",
+    "Minefield blown :/",
+    "TOTAL CATASTROPHIC LOSS OF EVERYTHING!!!!",
+    "Game lost!",
+    "You lost this one :(",
+    "#fail",
+    "What a tragedy...",
+    "It wasn't your fault!"
+  ],
+  "resetting": [
+    "Un-de-mining the playing field...",
+    "Resetting the board...",
+    "Ordering new landmines...",
+    "Contemplating modern warfare...",
+    "Bulldozing the ground...",
+    "Wasting time for no reason...",
+    "Treating shellshock...",
+    "Rasterizing cell graphics...",
+    "Writing new reset messages...",
+    "Pre-computing game features...",
+    "Calculating total land area...",
+    "Integrating the area under board...",
+    "Un-defusing the mines...",
+    "Calling technical support..."
+  ]
+}

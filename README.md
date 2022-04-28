@@ -27,11 +27,12 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Set up resource management~~
 - ~~Track and use game resources~~
 - ~~Report game currencies on screen~~
+- ~~Reseting board dialog and delays~~
 - Add options for increasing grid size
 - Add options for increasing difficulty and multiplier
 - Hint purchase, and options to increase hint quality
+- Options to improve reset time
 - Score multipliers
-- Delay before starting a new game, option to decrese it
 
 ### M2: Automation
 

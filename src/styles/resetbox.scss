@@ -1,0 +1,43 @@
+.reset-box {
+  position: absolute;
+  display: block;
+
+  left: calc(50% - 160px);
+  top: calc(50% - 160px);
+  width: 320px;
+  height: 320px;
+
+  span {
+    display: block;
+    width: 100%;
+  }
+
+  input[type="button"] {
+    padding: 0.5em 1em;
+    font-size: large;
+  }
+
+  circle {
+    stroke-width: 5 !important;
+  }
+
+  .panel {
+    height: 100%;
+    gap: 10px 0;
+
+    justify-content: start;
+    text-align: center;
+
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+      rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+      rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  }
+
+  .primary {
+    stroke: rgba(127, 255, 255, 0.5);
+  }
+
+  .secondary {
+    stroke: transparent;
+  }
+}
