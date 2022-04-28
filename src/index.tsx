@@ -5,8 +5,8 @@ import Loader from "./components/Loader";
 import { GameContextProvider } from "./components/GameContext";
 
 window.onload = () => {
-  const main = document.getElementById("main");
-  const root = createRoot(main!);
+  const app = document.getElementById("app");
+  const root = createRoot(app!);
   root.render(
     <GameContextProvider>
       <Loader />
