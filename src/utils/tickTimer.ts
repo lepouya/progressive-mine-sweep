@@ -25,7 +25,7 @@ export default function tickTimer(
   const newTick = (dt: number, src?: string) => {
     if (!source || src === source) {
       let cur = (kind ? res.extra[kind] : res.count) ?? 0;
-      if (cur > min && cur < max) {
+      if ((cur > min || direction > 0) && (cur < max || direction < 0)) {
         cur = clamp(cur + direction * dt, min, max);
         if (kind) {
           res.extra[kind] = cur;
