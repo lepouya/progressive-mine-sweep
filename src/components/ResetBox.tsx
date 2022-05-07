@@ -8,11 +8,9 @@ import { genBoard } from "../model/Board";
 const ResetBox: React.FC = () => {
   const { board, setBoard, resource } = useGameContext();
   const [title, setTitle] = useState<string>(board.state);
-  const [resetting, setResetting] = useState({
-    active: false,
-    message: "",
-    switchTime: 0,
-  });
+  const [isResetting, setResetting] = useState(false);
+  const [resetMessage, setResetMessage] = useState("");
+  const [messageTime, setMessageTime] = useState(0);
 
   useEffect(() => {
     setTitle(message(board.state));
@@ -32,37 +30,27 @@ const ResetBox: React.FC = () => {
       resource("rows").value() *
         resource("cols").value() *
         resource("difficulty").value() *
-        10,
+        10
     );
   const remainingTime = resetSpeed.extra.remainingTime;
 
   if (
-    resetting.active &&
-    (!resetting.message || waitTime - remainingTime >= resetting.switchTime)
+    isResetting &&
+    (!resetMessage || waitTime - remainingTime >= messageTime)
   ) {
-    setResetting({
-      active: resetting.active,
-      message: message("resetting"),
-      switchTime: resetting.switchTime + 2,
-    });
+    setResetMessage(message("resetting"));
+    setMessageTime(messageTime + 2);
   }
 
-  if (resetting.active && remainingTime === 0) {
-    setResetting({
-      active: false,
-      message: "",
-      switchTime: 0,
-    });
+  if (isResetting && remainingTime === 0) {
+    setResetting(false);
     resetBoard();
   }
 
   function startReset() {
-    if (!resetting.active) {
-      setResetting({
-        active: true,
-        message: "",
-        switchTime: 0,
-      });
+    if (!isResetting) {
+      setResetting(true);
+      setMessageTime(0);
       resetSpeed.extra.remainingTime = waitTime;
     }
   }
@@ -90,20 +78,20 @@ const ResetBox: React.FC = () => {
           You may reset the board to receive a brand new game to play:
         </div>
         <ProgressCircle
-          value={resetting.active ? (waitTime - remainingTime) / waitTime : 0}
-          showPercent={resetting.active}
+          value={isResetting ? (waitTime - remainingTime) / waitTime : 0}
+          showPercent={isResetting}
           width="100%"
           height="50%"
         >
-          {!resetting.active && (
+          {!isResetting && (
             <input
               type="button"
               value="Reset!"
-              disabled={resetting.active}
+              disabled={isResetting}
               onClick={startReset}
             />
           )}
-          {resetting.active && <span>{resetting.message}</span>}
+          {isResetting && <span>{resetMessage}</span>}
         </ProgressCircle>
       </div>
     </div>
