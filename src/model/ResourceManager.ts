@@ -15,17 +15,28 @@ export type ResourceManager = {
 
   upsert: (props: Partial<Resource> | string) => Resource & ResourceHelper;
   get: (resource: Resource | string) => Resource & ResourceHelper;
-  purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => ResourceCount[];
+  purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => PurchaseCost;
 
   update: (now?: number, settings?: Partial<Settings>, source?: string) => void;
 };
 
-export type PurchaseStyle = "full" | "partial" | "free" | "dry";
+export type PurchaseStyle =
+  | "full"
+  | "partial"
+  | "free"
+  | "dry-full"
+  | "dry-partial";
+
+export type PurchaseCost = {
+  count: number;
+  gain: ResourceCount[];
+  cost: ResourceCount[];
+};
 
 export type ResourceHelper = {
-  buy: (count?: number, style?: PurchaseStyle, kind?: string) => number;
-  add: (count?: number, kind?: string) => number;
-  canBuy: (count?: number, kind?: string) => number;
+  buy: (count?: number, style?: PurchaseStyle, kind?: string) => PurchaseCost;
+  add: (count?: number, kind?: string) => PurchaseCost;
+  canBuy: (count?: number, kind?: string) => PurchaseCost;
 };
 
 export function genResourceManager(): ResourceManager {
@@ -79,13 +90,9 @@ function upsert(
   }
 
   res.buy = (count = 1, style = "partial", kind = "") =>
-    getCountOf(
-      purchase(rm, [{ resource: res, count, kind }], style),
-      res.name,
-      kind,
-    );
+    purchase(rm, [{ resource: res, count, kind }], style);
   res.add = (count, kind) => res.buy(count, "free", kind);
-  res.canBuy = (count, kind) => res.buy(count, "dry", kind);
+  res.canBuy = (count, kind) => res.buy(count, "dry-partial", kind);
 
   if (res.name) {
     rm.resources[res.name] = res;
@@ -156,31 +163,41 @@ function purchase(
   rm: ResourceManager,
   toBuy: ResourceCount[],
   style?: PurchaseStyle,
-): ResourceCount[] {
-  return combineResources(
-    resolveAll(rm, toBuy)
-      .map((rc) => {
-        const [gain, cost] = getPurchaseCost(
-          rm,
-          rc.resource,
-          rc.count,
-          rc.kind,
-          style ?? "partial",
-        );
+): PurchaseCost {
+  const costs = resolveAll(rm, toBuy).map((rc) => {
+    const rcCost = getPurchaseCost(
+      rm,
+      rc.resource,
+      rc.count,
+      rc.kind,
+      style ?? "partial",
+    );
 
-        if (style === "dry") {
-          return [gain];
-        } else {
-          cost.forEach(({ resource, count, kind }) =>
+    if (style === "dry-partial" || style === "dry-full") {
+      return rcCost;
+    } else {
+      const gain = applyToResource(rc.resource, rcCost.gain),
+        count = getCountOf(gain, rc.resource.name, rc.kind),
+        cost = rcCost.cost
+          .map(({ resource, count, kind }) =>
             applyToResource(resolve(rm, resource), [
               { resource, count: -count, kind },
             ]),
-          );
-          return applyToResource(rc.resource, [gain]);
-        }
-      })
-      .flat(),
-  );
+          )
+          .flat();
+      return {
+        count,
+        gain,
+        cost,
+      };
+    }
+  });
+
+  return {
+    count: costs.reduce((count, rcCost) => count + rcCost.count, 0),
+    gain: combineResources(costs.map((rcCost) => rcCost.gain).flat()),
+    cost: combineResources(costs.map((rcCost) => rcCost.cost).flat()),
+  };
 }
 
 function resolveAll(
@@ -229,9 +246,9 @@ function getPurchaseCost(
   count: number,
   kind: string,
   style: PurchaseStyle,
-): [ResourceCount, ResourceCount[]] {
+): PurchaseCost {
   if (!resource || count <= 0 || !(resource.unlocked ?? true)) {
-    return [{ resource, count: 0, kind }, []];
+    return { count: 0, gain: [], cost: [] };
   }
 
   const start = kind ? resource.extra[kind] ?? 0 : resource.count;
@@ -241,14 +258,18 @@ function getPurchaseCost(
   }
 
   if (style === "free") {
-    return [{ resource, count: target - start, kind }, []];
+    return {
+      count: target - start,
+      gain: [{ resource, count: target - start, kind }],
+      cost: [],
+    };
   }
 
   let cost: ResourceCount[] = [];
   let partialCost = cost;
   let partialCount = 0;
   for (let i = start; i < target; i++) {
-    if (style !== "full") {
+    if (style === "partial" || style === "dry-partial") {
       partialCost = combineResources(
         partialCost,
         resolveAll(rm, resource.cost(i + 1, kind)),
@@ -262,12 +283,18 @@ function getPurchaseCost(
     cost = combineResources(cost, resolveAll(rm, resource.cost(i + 1, kind)));
   }
 
+  const gain = [{ resource, count: partialCount, kind }];
+
   if (
-    !canAfford(rm, cost) ||
+    (style !== "dry-full" && !canAfford(rm, cost)) ||
     (style === "full" && start + partialCount !== target)
   ) {
-    return [{ resource, count: 0, kind }, []];
+    return { count: 0, gain: [], cost: [] };
   }
 
-  return [{ resource, count: partialCount, kind }, cost];
+  return {
+    count: partialCount,
+    gain,
+    cost,
+  };
 }

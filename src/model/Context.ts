@@ -8,6 +8,7 @@ import {
   mergeResourceManagers,
   ResourceManager,
 } from "./ResourceManager";
+import { Resource } from "./Resource";
 import { initGameResources } from "./GameResources";
 
 export type Context = {
@@ -31,7 +32,7 @@ export const wrapContext = (context: Context) => ({
   ...context,
 
   setBoard: (board: Board) => (context.board = board),
-  resource: (res: string) => context.resourceManager.get(res),
+  resource: (res: string | Resource) => context.resourceManager.get(res),
 
   load: () => _load(context, () => Store.load(_store, context)),
   loadAs: (str: string) => _load(context, () => Store.loadAs(context, str)),
