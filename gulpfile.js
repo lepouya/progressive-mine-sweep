@@ -360,7 +360,9 @@ function favicon(done) {
   var currentVersion = JSON.parse(fs.readFileSync(favIconDataFile)).version;
   plugins.realFavicon.checkForUpdates(currentVersion, function (err) {
     if (err) {
-      return generateFavicon(done);
+      if (err.code !== "ENOTFOUND") {
+        return generateFavicon(done);
+      }
     }
     done();
   });
