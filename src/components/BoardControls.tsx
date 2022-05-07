@@ -4,6 +4,7 @@ import clamp from "../utils/clamp";
 import useGameContext from "./GameContext";
 import BuyButton from "./BuyButton";
 import ResourceRender from "./ResourceRender";
+import { useLocation } from "react-router";
 
 const BoardControls: React.FC<{
   board: Board;
@@ -13,6 +14,12 @@ const BoardControls: React.FC<{
   const [numRows, setNumRows] = useState(0);
   const [numCols, setNumCols] = useState(0);
   const [difficulty, setDifficulty] = useState(0);
+
+  const location = useLocation();
+  const showDebug =
+    `${location.pathname} ${location.search} ${location.hash} ${location.key}`
+      .toLowerCase()
+      .indexOf("debug") >= 0;
 
   const rows = resource("rows");
   const cols = resource("cols");
@@ -67,101 +74,101 @@ const BoardControls: React.FC<{
   }
 
   return (
-    <div className="board-controls panel">
-      <div className="title-bar">Upgrades</div>
+    <div>
+      <div className="board-controls panel">
+        <div className="title-bar">Upgrades</div>
 
-      <div className="quarter">Game Width:</div>
-      <div className="quarter">
-        <ResourceRender
-          resource={cols}
-          showName={false}
-          showIcon={false}
-          showChrome={true}
-        />
-        <ResourceRender
-          resource={cols}
-          showValue={false}
-          showChrome={true}
-          infix={""}
-        />
-      </div>
-      <div className="right half">
-        <BuyButton resource="cols" />
-      </div>
-      <div className="quarter">Game Height:</div>
-      <div className="quarter">
-        <ResourceRender
-          resource={rows}
-          showName={false}
-          showIcon={false}
-          showChrome={true}
-        />
-        <ResourceRender
-          resource={rows}
-          showValue={false}
-          showChrome={true}
-          infix={""}
-        />
-      </div>
-      <div className="right half">
-        <BuyButton resource="rows" />
-      </div>
-      {boardSizeChanged && (
-        <div className="left">
-          On reset, game board will change to size to
-          {` ${rows.value()}x${cols.value()}`}
-        </div>
-      )}
-      {boardSizeChanged && (
-        <div className="right quarter">
-          <input type="button" value="Reset Now!" onClick={reset} />
-        </div>
-      )}
-
-      <hr />
-      <div className="title-bar">Temporary Game parameters</div>
-      <div className="quarter">Number of rows:</div>
-      <div className="quarter">
-        <input
-          type="number"
-          name="rows"
-          min={0}
-          max={40}
-          value={numRows}
-          onInput={changeInput}
-        />
-      </div>
-      <div className="right half"></div>
-      <div className="quarter">Number of columns:</div>
-      <div className="quarter">
-        <input
-          type="number"
-          name="cols"
-          min={0}
-          max={40}
-          value={numCols}
-          onInput={changeInput}
-        />
-      </div>
-      <div className="right half"></div>
-      <div className="half">
-        <div className="half">Game difficulty:</div>
-        <div className="half">
-          <input
-            type="range"
-            name="difficulty"
-            min={1}
-            max={99}
-            value={difficulty}
-            onInput={changeInput}
+        <div className="quarter">Game Width:</div>
+        <div className="quarter">
+          <ResourceRender
+            resource={cols}
+            showName={false}
+            showIcon={false}
+            showChrome={true}
+          />
+          <ResourceRender
+            resource={cols}
+            showValue={false}
+            showChrome={true}
+            infix={""}
           />
         </div>
-      </div>
-      <div className="right half">
-        <div className="half">
-          <input type="button" value="Get A Hint" onClick={getHint} />
+        <div className="right half">
+          <BuyButton resource="cols" />
         </div>
+        <div className="quarter">Game Height:</div>
+        <div className="quarter">
+          <ResourceRender
+            resource={rows}
+            showName={false}
+            showIcon={false}
+            showChrome={true}
+          />
+          <ResourceRender
+            resource={rows}
+            showValue={false}
+            showChrome={true}
+            infix={""}
+          />
+        </div>
+        <div className="right half">
+          <BuyButton resource="rows" />
+        </div>
+        {boardSizeChanged && (
+          <div className="left">
+            On reset, game board will change to size to
+            {` ${rows.value()}x${cols.value()}`}
+          </div>
+        )}
+        {boardSizeChanged && (
+          <div className="right quarter">
+            <input type="button" value="Reset Now!" onClick={reset} />
+          </div>
+        )}
       </div>
+
+      {showDebug && (
+        <div className="board-controls panel">
+          <div className="title-bar">Debug Game parameters</div>
+          <div className="quarter">Number of rows:</div>
+          <div className="quarter">
+            <input
+              type="number"
+              name="rows"
+              min={0}
+              max={40}
+              value={numRows}
+              onInput={changeInput}
+            />
+          </div>
+          <div className="quarter">Game difficulty:</div>
+          <div className="quarter">
+            <input
+              type="range"
+              name="difficulty"
+              min={1}
+              max={99}
+              value={difficulty}
+              onInput={changeInput}
+            />
+          </div>
+          <div className="quarter">Number of columns:</div>
+          <div className="quarter">
+            <input
+              type="number"
+              name="cols"
+              min={0}
+              max={40}
+              value={numCols}
+              onInput={changeInput}
+            />
+          </div>
+          <div className="quarter"></div>
+          <div className="right quarter">
+            <input type="button" value="Get A Hint" onClick={getHint} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
