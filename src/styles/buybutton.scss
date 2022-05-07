@@ -1,0 +1,32 @@
+.buy-button {
+  width: 100%;
+
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: flex-start;
+  white-space: nowrap;
+
+  .resource {
+    flex-wrap: nowrap;
+
+    .value {
+      order: 1;
+      padding-inline-start: 0.5ex;
+    }
+
+    .name {
+      order: 2;
+      padding-inline: 0.5ex;
+    }
+  }
+
+  &-affordable {
+    color: rgba(0, 0, 0, 1);
+  }
+
+  &-unaffordable {
+    color: rgba(63, 63, 63, 0.75);
+  }
+}

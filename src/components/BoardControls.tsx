@@ -1,21 +1,28 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { genHints, Board } from "../model/Board";
+import { genHints, Board, genBoardState } from "../model/Board";
 import clamp from "../utils/clamp";
 import useGameContext from "./GameContext";
+import BuyButton from "./BuyButton";
+import ResourceRender from "./ResourceRender";
 
 const BoardControls: React.FC<{
   board: Board;
   setBoard: (board: Board) => void;
 }> = ({ board, setBoard }) => {
   const { resource } = useGameContext();
-  const [rows, setRows] = useState(0);
-  const [cols, setCols] = useState(0);
+  const [numRows, setNumRows] = useState(0);
+  const [numCols, setNumCols] = useState(0);
   const [difficulty, setDifficulty] = useState(0);
+
+  const rows = resource("rows");
+  const cols = resource("cols");
+  const boardSizeChanged =
+    board.rows !== rows.value() || board.cols !== cols.value();
 
   useEffect(() => {
     if (board.rows > 0 && board.cols > 0) {
-      setRows(resource("rows").value());
-      setCols(resource("cols").value());
+      setNumRows(rows.value());
+      setNumCols(cols.value());
       setDifficulty(Math.floor(100 * resource("difficulty").value()));
     } else {
       board.state = "inactive";
@@ -32,10 +39,10 @@ const BoardControls: React.FC<{
       }
 
       if (target.name === "rows") {
-        setRows(num);
+        setNumRows(num);
         resource(target.name).count = clamp(num, 3, 40);
       } else if (target.name === "cols") {
-        setCols(num);
+        setNumCols(num);
         resource(target.name).count = clamp(num, 3, 40);
       } else if (target.name === "difficulty") {
         setDifficulty(num);
@@ -52,41 +59,91 @@ const BoardControls: React.FC<{
     }
   }
 
+  function reset() {
+    board.state = "lost";
+    setBoard(genBoardState(board));
+    resource("losses").count++;
+    resource("losses").extra.manual++;
+  }
+
   return (
     <div className="board-controls panel">
-      <div className="title-bar">Game parameters</div>
-      <div className="half">
-        <div className="half">Number of rows:</div>
-        <div className="half">
-          <input
-            type="number"
-            name="rows"
-            min={0}
-            max={40}
-            value={rows}
-            onInput={changeInput}
-          />
-        </div>
-      </div>
-      <div className="right half"></div>
-      <div className="half">
-        <div className="half">Number of columns:</div>
-        <div className="half">
-          <input
-            type="number"
-            name="cols"
-            min={0}
-            max={40}
-            value={cols}
-            onInput={changeInput}
-          />
-        </div>
+      <div className="title-bar">Upgrades</div>
+
+      <div className="quarter">Game Width:</div>
+      <div className="quarter">
+        <ResourceRender
+          resource={cols}
+          showName={false}
+          showIcon={false}
+          showChrome={true}
+        />
+        <ResourceRender
+          resource={cols}
+          showValue={false}
+          showChrome={true}
+          infix={""}
+        />
       </div>
       <div className="right half">
-        <div className="half">
-          <input type="button" value="Get A Hint" onClick={getHint} />
-        </div>
+        <BuyButton resource="cols" />
       </div>
+      <div className="quarter">Game Height:</div>
+      <div className="quarter">
+        <ResourceRender
+          resource={rows}
+          showName={false}
+          showIcon={false}
+          showChrome={true}
+        />
+        <ResourceRender
+          resource={rows}
+          showValue={false}
+          showChrome={true}
+          infix={""}
+        />
+      </div>
+      <div className="right half">
+        <BuyButton resource="rows" />
+      </div>
+      {boardSizeChanged && (
+        <div className="left">
+          On reset, game board will change to size to
+          {` ${rows.value()}x${cols.value()}`}
+        </div>
+      )}
+      {boardSizeChanged && (
+        <div className="right quarter">
+          <input type="button" value="Reset Now!" onClick={reset} />
+        </div>
+      )}
+
+      <hr />
+      <div className="title-bar">Temporary Game parameters</div>
+      <div className="quarter">Number of rows:</div>
+      <div className="quarter">
+        <input
+          type="number"
+          name="rows"
+          min={0}
+          max={40}
+          value={numRows}
+          onInput={changeInput}
+        />
+      </div>
+      <div className="right half"></div>
+      <div className="quarter">Number of columns:</div>
+      <div className="quarter">
+        <input
+          type="number"
+          name="cols"
+          min={0}
+          max={40}
+          value={numCols}
+          onInput={changeInput}
+        />
+      </div>
+      <div className="right half"></div>
       <div className="half">
         <div className="half">Game difficulty:</div>
         <div className="half">
@@ -98,6 +155,11 @@ const BoardControls: React.FC<{
             value={difficulty}
             onInput={changeInput}
           />
+        </div>
+      </div>
+      <div className="right half">
+        <div className="half">
+          <input type="button" value="Get A Hint" onClick={getHint} />
         </div>
       </div>
     </div>
