@@ -364,14 +364,14 @@ describe("Purchasing", () => {
       { resource: "r2", count: n },
     ];
 
-    let canBuy = rm.purchase([{ resource: "r3", count: 1 }], "dry");
+    let canBuy = rm.purchase([{ resource: "r3", count: 1 }], "dry-full");
     expect(r1.count).to.equal(100);
     expect(r1.extra["auto"]).to.equal(10);
     expect(r2.count).to.equal(20);
     expect(r3.count).to.equal(0);
     expect(canBuy.gain).to.deep.equal([{ resource: r3, count: 1, kind: "" }]);
 
-    canBuy = rm.purchase([{ resource: "r2", count: 1 }], "dry");
+    canBuy = rm.purchase([{ resource: "r2", count: 1 }], "dry-full");
     expect(r1.count).to.equal(100);
     expect(r1.extra["auto"]).to.equal(10);
     expect(r2.count).to.equal(20);
@@ -383,7 +383,7 @@ describe("Purchasing", () => {
         { resource: r3, count: 10 },
         { resource: "r2", count: 10 },
       ],
-      "dry",
+      "dry-partial",
     );
     expect(canBuy.gain).to.deep.equal([
       { resource: r3, count: 5, kind: "" },
