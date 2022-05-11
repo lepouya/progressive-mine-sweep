@@ -16,6 +16,7 @@ export type ResourceManager = {
   upsert: (props: Partial<Resource> | string) => Resource & ResourceHelper;
   get: (resource: Resource | string) => Resource & ResourceHelper;
   purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => PurchaseCost;
+  canAfford: (cost: ResourceCount[]) => boolean;
 
   update: (now?: number, settings?: Partial<Settings>, source?: string) => void;
 };
@@ -45,6 +46,7 @@ export function genResourceManager(): ResourceManager {
     upsert: (props) => upsert(rm, props),
     get: (resource) => resolve(rm, resource),
     purchase: (toBuy, style) => purchase(rm, toBuy, style),
+    canAfford: (cost) => canAfford(rm, cost),
     update: (now, settings, source) =>
       update(rm, now, settings ?? {}, source ?? "unknown"),
   };
