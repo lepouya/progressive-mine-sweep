@@ -60,7 +60,6 @@ const BoardControls: React.FC<{
 
   function getHint() {
     if (genHints(board, 1, 0, 8, resource("hintQuality").value()) > 0) {
-      resource("hints").count++;
       resource("hints").extra.manual++;
       setBoard({ ...board });
     }
@@ -94,7 +93,7 @@ const BoardControls: React.FC<{
           />
         </div>
         <div className="right half">
-          <BuyButton resource="cols" />
+          <BuyButton resource={cols} />
         </div>
         <div className="quarter">Game Height:</div>
         <div className="quarter">
@@ -112,7 +111,11 @@ const BoardControls: React.FC<{
           />
         </div>
         <div className="right half">
-          <BuyButton resource="rows" />
+          <BuyButton resource={rows} />
+        </div>
+        <div className="half"></div>
+        <div className="right half">
+          <BuyButton resource={"hints"} onPurchase={getHint} />
         </div>
         {boardSizeChanged && (
           <div className="left">

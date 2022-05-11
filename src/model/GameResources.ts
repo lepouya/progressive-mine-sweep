@@ -28,6 +28,7 @@ export function initGameResources(
 
   rm.get("rows").cost = (n) => [{ resource: "cells", count: n ** 2 }];
   rm.get("cols").cost = (n) => [{ resource: "cells", count: n ** 2 }];
+  rm.get("hints").cost = () => [{ resource: "wins", count: 1 }];
 
   tickTimer(rm.get("resetSpeed"), { kind: "remainingTime" });
   tickTimer(rm.get("totalTime"), { direction: 1 });
