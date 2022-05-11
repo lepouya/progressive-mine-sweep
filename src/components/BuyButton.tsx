@@ -1,30 +1,37 @@
 import React from "react";
-import { ResourceCount } from "../model/Resource";
+import { Resource, ResourceCount } from "../model/Resource";
 
 import useGameContext from "./GameContext";
 import ResourceRender from "./ResourceRender";
 
 const BuyButton: React.FC<{
-  resource: string;
+  resource: string | Resource;
   kind?: string;
+
   maxNum?: number;
   minNum?: number;
   increment?: number;
   enabled?: boolean;
+
   className?: string;
   style?: React.CSSProperties;
+
+  onPurchase?: (resource: Resource, kind?: string, bought?: number) => void;
 }> = ({
-  resource: resName,
+  resource: resProp,
   kind,
+
   maxNum = 1,
   minNum = 1,
   increment = 1,
   enabled = true,
+
   className,
   style,
+  onPurchase,
 }) => {
   const { resource } = useGameContext();
-  const res = resource(resName);
+  const res = resource(resProp);
 
   function adjustCount(count = 0) {
     return Math.max(
@@ -33,20 +40,23 @@ const BuyButton: React.FC<{
     );
   }
 
-  function purchase(count = 0) {
+  function doPurchase(count = 0) {
     if (!enabled || count < 1) {
       return;
     }
     res.buy(count, "partial", kind);
+    if (onPurchase) {
+      onPurchase(res, kind, count);
+    }
   }
 
   let active = true;
-  let cost = res.buy(adjustCount(maxNum), "dry-partial", kind);
-  if (cost.count % increment !== 0) {
-    cost = res.buy(adjustCount(cost.count), "dry-partial", kind);
+  let purchase = res.buy(adjustCount(maxNum), "dry-partial", kind);
+  if (purchase.count % increment !== 0) {
+    purchase = res.buy(adjustCount(purchase.count), "dry-partial", kind);
   }
-  if (cost.count < minNum) {
-    cost = res.buy(adjustCount(maxNum), "dry-full", kind);
+  if (purchase.count < minNum) {
+    purchase = res.buy(adjustCount(maxNum), "dry-full", kind);
     active = false;
   }
 
@@ -58,15 +68,15 @@ const BuyButton: React.FC<{
 
   return (
     <button
-      onClick={() => purchase(active && enabled ? cost.count : 0)}
+      onClick={() => doPurchase(active && enabled ? purchase.count : 0)}
       disabled={!active || !enabled}
       className={classNames.join(" ")}
       style={style}
     >
       Buy
-      {renderResourceCounts(cost.gain)}
+      {renderResourceCounts(purchase.gain)}
       for
-      {renderResourceCounts(cost.cost, -1)}
+      {renderResourceCounts(purchase.cost, -1)}
     </button>
   );
 };
