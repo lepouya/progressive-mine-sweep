@@ -10,16 +10,6 @@
 
   .resource {
     flex-wrap: nowrap;
-
-    .value {
-      order: 1;
-      padding-inline-start: 0.5ex;
-    }
-
-    .name {
-      order: 2;
-      padding-inline: 0.5ex;
-    }
   }
 
   &-affordable {

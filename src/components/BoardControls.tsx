@@ -81,15 +81,9 @@ const BoardControls: React.FC<{
         <div className="quarter">
           <ResourceRender
             resource={cols}
-            showName={false}
-            showIcon={false}
             showChrome={true}
-          />
-          <ResourceRender
-            resource={cols}
-            showValue={false}
-            showChrome={true}
-            infix={""}
+            infix=""
+            className="value-first"
           />
         </div>
         <div className="right half">
@@ -99,15 +93,9 @@ const BoardControls: React.FC<{
         <div className="quarter">
           <ResourceRender
             resource={rows}
-            showName={false}
-            showIcon={false}
             showChrome={true}
-          />
-          <ResourceRender
-            resource={rows}
-            showValue={false}
-            showChrome={true}
-            infix={""}
+            infix=""
+            className="value-first"
           />
         </div>
         <div className="right half">

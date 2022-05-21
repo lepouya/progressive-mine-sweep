@@ -96,6 +96,7 @@ function renderResourceCounts(rcs: ResourceCount[], multiplier = 1) {
       showColors={true}
       showPlusSign={true}
       showChrome={true}
+      className={"value-first"}
       key={typeof rc.resource === "string" ? rc.resource : rc.resource.name}
     />
   ));
