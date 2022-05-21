@@ -32,12 +32,7 @@ const externalLibs = {
     "react-router-dom",
   ],
 };
-const externalCdns = {
-  tablerIcons: [
-    "<script>var tablerIcons={},exports=tablerIcons;</script>",
-    "https://unpkg.com/@tabler/icons@latest/icons-react/dist/index.cjs{min}.js",
-  ],
-};
+const externalCdns = {};
 const watchStreams = {};
 
 function injectHtmlDep(dep) {

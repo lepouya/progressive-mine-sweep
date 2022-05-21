@@ -1,0 +1,18 @@
+{
+  "hidden": "transparent question-mark",
+  "hinted": "green eye",
+  "flagged": "darkblue flag-2",
+  "blown": "red alert-triangle",
+  "revealed": [
+    "darkgreen square-dot",
+    "darkgreen square-1",
+    "darkgreen square-2",
+    "darkgreen square-3",
+    "darkgreen square-4",
+    "darkgreen square-5",
+    "darkgreen square-6",
+    "darkgreen square-7",
+    "darkgreen square-8",
+    "darkgreen square"
+  ]
+}
