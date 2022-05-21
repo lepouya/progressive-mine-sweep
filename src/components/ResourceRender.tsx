@@ -64,9 +64,7 @@ const ResourceRender: React.FC<{
   name,
   resource = { name, count: value },
   kind = undefined,
-  display = (resource.name ?? name ?? "").toLowerCase().indexOf("time") >= 0
-    ? "time"
-    : "number",
+  display = resource.display ?? "number",
   length = "expanded",
   rounding = display === "number" ? "floor" : "round",
 

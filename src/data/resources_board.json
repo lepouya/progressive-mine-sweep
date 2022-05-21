@@ -12,16 +12,19 @@
   {
     "name": "difficulty",
     "icon": "adjustments-horizontal",
+    "display": "percentage",
     "count": 0.15
   },
   {
     "name": "hintQuality",
     "icon": "bulb",
+    "display": "percentage",
     "count": 0
   },
   {
     "name": "resetSpeed",
     "icon": "refresh-alert",
+    "display": "percentage",
     "count": 0,
     "extra": {
       "remainingTime": 0

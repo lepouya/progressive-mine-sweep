@@ -8,6 +8,7 @@ export type Resource = {
   readonly name: string;
   description?: string;
   icon?: string;
+  display?: "number" | "time" | "percentage";
   unlocked?: boolean;
 
   count: number;

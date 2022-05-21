@@ -1,11 +1,13 @@
 [
   {
     "name": "totalTime",
-    "icon": "clock"
+    "icon": "clock",
+    "display": "time"
   },
   {
     "name": "activeTime",
     "icon": "alarm",
+    "display": "time",
     "extra": {
       "current": 0,
       "max": 0
@@ -14,6 +16,7 @@
   {
     "name": "offlineTime",
     "icon": "user-off",
+    "display": "time",
     "extra": {
       "current": 0,
       "max": 0
