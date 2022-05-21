@@ -26,11 +26,13 @@ const extensions = [".js", ".ts", ".jsx", ".tsx"];
 const externalLibs = {
   react: [
     "react",
+    "react/jsx-runtime",
     "react-dom",
     "react-dom/client",
     "react-router",
     "react-router-dom",
   ],
+  typescript: ["tslib"],
 };
 const externalCdns = {};
 const watchStreams = {};
@@ -203,6 +205,7 @@ function ts() {
     bundler = browserify({
       basedir: ".",
       entries: tsEntries,
+      commondir: debug,
       debug,
       extensions,
       fullPaths: debug,
@@ -214,14 +217,15 @@ function ts() {
       .transform(
         babelify.configure({
           presets: [
-            ["@babel/preset-env", { bugfixes: true }],
-            "@babel/preset-react",
+            ["@babel/preset-env", { bugfixes: true, loose: true }],
+            ["@babel/preset-react", { runtime: "automatic" }],
           ],
           plugins: ["@babel/transform-runtime"],
           extensions,
           comments: debug,
           compact: !debug,
           minified: !debug,
+          moduleIds: !debug,
           sourceMaps: debug,
         }),
       );

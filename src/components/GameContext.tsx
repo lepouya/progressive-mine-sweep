@@ -1,4 +1,4 @@
-import React, { createContext, FC, PropsWithChildren, useContext } from "react";
+import { createContext, FC, PropsWithChildren, useContext } from "react";
 import { Context, emptyContext, wrapContext } from "../model/Context";
 
 const GameReactContext = createContext<Context>(emptyContext());

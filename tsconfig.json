@@ -6,7 +6,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
 
-    "jsx": "react",
+    "jsx": "react-jsx",
     "lib": ["DOM", "ESNext", "ScriptHost"],
     "module": "commonjs",
     "moduleResolution": "node",
@@ -19,6 +19,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,

@@ -196,7 +196,7 @@ const ResourceRender: React.FC<{
       ? caps
         ? (word ?? "")
             .replace(
-              /(\p{Ll})(\p{Lu}|_\S)/gu,
+              /([a-z])([A-Z]|_\S)/g,
               (_, c1, c2) => `${c1} ${c2.slice(-1)}`,
             )
             .replace(/(?:^|\s)\S/g, (c) => c.toUpperCase())
