@@ -61,3 +61,5 @@ Perhaps I could do prestige/reset options once this is ready
 - Brainstorm on what can be done here
 
 ### Bugs to fix
+
+- Pluralization of resources

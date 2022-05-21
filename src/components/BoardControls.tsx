@@ -82,8 +82,8 @@ const BoardControls: React.FC<{
           <ResourceRender
             resource={cols}
             showChrome={true}
-            infix=""
-            className="value-first"
+            infix={""}
+            className={"value-first"}
           />
         </div>
         <div className="right half">
@@ -94,8 +94,8 @@ const BoardControls: React.FC<{
           <ResourceRender
             resource={rows}
             showChrome={true}
-            infix=""
-            className="value-first"
+            infix={""}
+            className={"value-first"}
           />
         </div>
         <div className="right half">
@@ -103,7 +103,7 @@ const BoardControls: React.FC<{
         </div>
         <div className="half"></div>
         <div className="right half">
-          <BuyButton resource={"hints"} onPurchase={getHint} />
+          <BuyButton resource={"hints"} prefix={"Get"} onPurchase={getHint} />
         </div>
         {boardSizeChanged && (
           <div className="left">

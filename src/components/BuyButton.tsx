@@ -13,6 +13,10 @@ const BuyButton: React.FC<{
   increment?: number;
   enabled?: boolean;
 
+  prefix?: string;
+  suffix?: string;
+  infix?: string;
+
   className?: string;
   style?: React.CSSProperties;
 
@@ -25,6 +29,10 @@ const BuyButton: React.FC<{
   minNum = 1,
   increment = 1,
   enabled = true,
+
+  prefix = "Buy",
+  suffix = "",
+  infix = "for",
 
   className,
   style,
@@ -73,10 +81,11 @@ const BuyButton: React.FC<{
       className={classNames.join(" ")}
       style={style}
     >
-      Buy
+      {prefix && <div className="prefix">{prefix}</div>}
       {renderResourceCounts(purchase.gain)}
-      for
+      {infix && <div className="infix">{infix}</div>}
       {renderResourceCounts(purchase.cost, -1)}
+      {suffix && <div className="suffix">{suffix}</div>}
     </button>
   );
 };
