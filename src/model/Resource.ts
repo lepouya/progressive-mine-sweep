@@ -6,10 +6,13 @@ export type ResourceCount = {
 
 export type Resource = {
   readonly name: string;
-  description?: string;
+  unlocked?: boolean;
+
   icon?: string;
   display?: "number" | "time" | "percentage";
-  unlocked?: boolean;
+  description?: string;
+  singularName?: string;
+  pluralName?: string;
 
   count: number;
   maxCount?: number;

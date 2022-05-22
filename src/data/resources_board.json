@@ -1,11 +1,13 @@
 [
   {
     "name": "rows",
+    "singularName": "row",
     "icon": "arrows-vertical",
     "count": 3
   },
   {
     "name": "cols",
+    "singularName": "col",
     "icon": "arrows-horizontal",
     "count": 3
   },

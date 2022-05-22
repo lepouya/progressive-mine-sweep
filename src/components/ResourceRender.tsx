@@ -186,11 +186,11 @@ const ResourceRender: React.FC<{
     return res;
   }
 
-  const getWord = (
+  function getWord(
     word?: string,
     { condition = true, empties = false, caps = showCapitalized } = {},
-  ) =>
-    condition && (empties || (word != null && word.length > 0))
+  ) {
+    return condition && (empties || (word != null && word.length > 0))
       ? caps
         ? (word ?? "")
             .replace(
@@ -200,6 +200,33 @@ const ResourceRender: React.FC<{
             .replace(/(?:^|\s)\S/g, (c) => c.toUpperCase())
         : word
       : null;
+  }
+
+  function getValue(): number | undefined {
+    return (
+      value ??
+      (resource.value ? resource.value(kind) : undefined) ??
+      (resource.extra ?? {})[kind ?? ""] ??
+      resource.count
+    );
+  }
+
+  function getName(): string | undefined {
+    if (name) {
+      return name;
+    }
+
+    let count = round(
+      (getValue() ?? 0) * multipliers[display],
+      valuePrecision,
+      rounding,
+    );
+
+    return (
+      (Math.abs(count) === 1 ? resource.singularName : resource.pluralName) ??
+      resource.name
+    );
+  }
 
   const classNames = ["resource"];
 
@@ -209,7 +236,7 @@ const ResourceRender: React.FC<{
         {showIcon && resource.icon && resource.icon.length > 0 ? (
           <Icon icon={resource.icon} size="1em" />
         ) : null}
-        {getWord(name ?? resource.name, { condition: showName })}
+        {getWord(getName(), { condition: showName })}
         {infix}
       </div>,
     );
@@ -224,19 +251,12 @@ const ResourceRender: React.FC<{
         })
       : "";
 
-    addValueDiv(
-      value ??
-        (resource.value
-          ? resource.value(kind)
-          : (resource.extra ?? {})[kind ?? ""] ?? resource.count),
-      "value",
-      {
-        prec: valuePrecision,
-        ref: epoch != undefined && !isNaN(epoch),
-        post: denom,
-        cls: "value",
-      },
-    );
+    addValueDiv(getValue(), "value", {
+      prec: valuePrecision,
+      ref: epoch != undefined && !isNaN(epoch),
+      post: denom,
+      cls: "value",
+    });
   }
 
   if (showRawValue) {

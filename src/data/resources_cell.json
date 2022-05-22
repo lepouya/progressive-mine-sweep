@@ -1,6 +1,7 @@
 [
   {
     "name": "clicks",
+    "singularName": "click",
     "icon": "hand-click",
     "extra": {
       "left": 0,
@@ -10,6 +11,7 @@
   },
   {
     "name": "cells",
+    "singularName": "cell",
     "icon": "darkgreen square",
     "extra": {
       "auto": 0,
@@ -19,6 +21,7 @@
   },
   {
     "name": "hints",
+    "singularName": "hint",
     "icon": "green eye",
     "extra": {
       "auto": 0,
@@ -27,6 +30,7 @@
   },
   {
     "name": "flags",
+    "singularName": "flag",
     "icon": "darkblue flag-2",
     "extra": {
       "auto": 0,
@@ -36,6 +40,7 @@
   },
   {
     "name": "explosions",
+    "singularName": "explosion",
     "icon": "red alert-triangle",
     "extra": {
       "auto": 0,

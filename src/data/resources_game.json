@@ -1,6 +1,7 @@
 [
   {
     "name": "wins",
+    "singularName": "win",
     "icon": "darkgreen square-check",
     "extra": {
       "auto": 0,
@@ -9,6 +10,7 @@
   },
   {
     "name": "losses",
+    "singularName": "lose",
     "icon": "darkred square-x",
     "extra": {
       "auto": 0,
@@ -17,6 +19,7 @@
   },
   {
     "name": "resets",
+    "singularName": "reset",
     "icon": "refresh",
     "extra": {
       "auto": 0,
