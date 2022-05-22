@@ -276,17 +276,20 @@ const ResourceRender: React.FC<{
     showRate &&
     !kind &&
     resource.rate != null &&
-    (resource._rate?.lastCheck ?? 0) > 0 &&
-    (showZeroRates || resource.rate !== 0)
+    (resource.rate.lastCheck ?? 0) > 0 &&
+    (showZeroRates || resource.rate.value !== 0)
   ) {
     addValueDiv(
-      resource.rate /
-        (showRatePercentages && resource.rate > 0
+      resource.rate.value /
+        (showRatePercentages && resource.rate.value > 0
           ? value ?? (resource.value ? resource.value() : resource.count) ?? 0
           : 1.0),
       "rate",
       {
-        disp: showRatePercentages && resource.rate > 0 ? "percentage" : display,
+        disp:
+          showRatePercentages && resource.rate.value > 0
+            ? "percentage"
+            : display,
         prec: ratePrecision,
         paren: showValue || showRawValue,
         color: showRateColors,
@@ -344,8 +347,8 @@ const ResourceRender: React.FC<{
       if (
         showRate &&
         resource.rate != null &&
-        (resource._rate?.lastCheck ?? 0) > 0 &&
-        (showZeroRates || resource.rate !== 0)
+        (resource.rate.lastCheck ?? 0) > 0 &&
+        (showZeroRates || resource.rate.value !== 0)
       ) {
         output.push(
           <div key={`extra-rate-${k}`} className={"rate"}>

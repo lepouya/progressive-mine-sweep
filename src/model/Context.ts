@@ -37,8 +37,10 @@ export const wrapContext = (context: Context) => ({
   load: () => _load(context, () => Store.load(_store, context)),
   loadAs: (str: string) => _load(context, () => Store.loadAs(context, str)),
 
-  save: () => _save(context, () => Store.save(_store, context)),
-  saveAs: () => _save(context, () => Store.saveAs(context)),
+  save: (pretty?: boolean) =>
+    _save(context, () => Store.save(_store, context, pretty)),
+  saveAs: (pretty?: boolean) =>
+    _save(context, () => Store.saveAs(context, pretty)),
 
   reset: () => _reset(context),
 });

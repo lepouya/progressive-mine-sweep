@@ -12,13 +12,13 @@ const Options: React.FC = () => {
   const location = useLocation();
 
   const settings = context.settings;
-  const showDebug =
+  const debug =
     `${location.pathname} ${location.search} ${location.hash} ${location.key}`
       .toLowerCase()
       .indexOf("debug") >= 0;
 
   function saveGame() {
-    context.save();
+    context.save(debug);
   }
 
   function loadGame() {
@@ -28,7 +28,7 @@ const Options: React.FC = () => {
   }
 
   function exportGame() {
-    setTextContents(context.saveAs());
+    setTextContents(context.saveAs(debug));
   }
 
   function importGame() {
@@ -216,7 +216,7 @@ const Options: React.FC = () => {
         </div>
       </div>
 
-      {showDebug && (
+      {debug && (
         <div className="panel options debug">
           <div className="title-bar">Debug Context</div>
           <div className="half">Settings:</div>

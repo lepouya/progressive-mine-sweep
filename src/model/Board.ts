@@ -1,4 +1,5 @@
 import clamp from "../utils/clamp";
+import { setSaveProperties } from "../utils/store";
 import { actOnCell, Cell } from "./Cell";
 
 export type Board = {
@@ -51,10 +52,11 @@ export function makeClearBoard(rows: number, cols: number): Board {
         state: "hidden",
         neighbors: 0,
       };
+      setSaveProperties(cells[row][col], ["contents", "state"]);
     }
   }
 
-  return {
+  const board: Board = {
     rows,
     cols,
     cells,
@@ -62,6 +64,9 @@ export function makeClearBoard(rows: number, cols: number): Board {
     state: "active",
     cellCounts: { ...emptyCellCounts, hidden: rows * cols },
   };
+
+  setSaveProperties(board, ["rows", "cols", "cells"]);
+  return board;
 }
 
 export function populateRandomMines(
@@ -92,8 +97,12 @@ export function populateRandomMines(
 }
 
 export function populateNeighboringCells(board: Board): Board {
+  board.cells.forEach((cells) => cells.forEach((cell) => (cell.neighbors = 0)));
+
   for (let r = 0; r < board.rows; r++) {
     for (let c = 0; c < board.cols; c++) {
+      board.cells[r][c].row = r;
+      board.cells[r][c].col = c;
       if (board.cells[r][c].contents === "mine") {
         for (let dr = r - 1; dr <= r + 1; dr++) {
           for (let dc = c - 1; dc <= c + 1; dc++) {
@@ -116,9 +125,15 @@ export function populateNeighboringCells(board: Board): Board {
 }
 
 export function genBoardState(board: Board): Board {
+  populateNeighboringCells(board);
+
   board.cellCounts = { ...emptyCellCounts };
+  board.numMines = 0;
   board.cells.forEach((cells) =>
-    cells.forEach((cell) => board.cellCounts[cell.state]++),
+    cells.forEach((cell) => {
+      board.cellCounts[cell.state]++;
+      board.numMines += cell.contents === "mine" ? 1 : 0;
+    }),
   );
 
   if (board.state === "lost") {
@@ -153,7 +168,6 @@ export function genBoard(
 ): Board {
   let board = makeClearBoard(rows, cols);
   board = populateRandomMines(board, minMines, maxMines);
-  board = populateNeighboringCells(board);
   board = genBoardState(board);
 
   return board;

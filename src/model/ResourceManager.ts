@@ -141,22 +141,22 @@ function update(
 
   Object.values(rm.resources).forEach((res) => {
     const rateDt =
-      ((settings.lastUpdate ?? 0) - (res._rate.lastCheck ?? 0)) / 1000.0;
+      ((settings.lastUpdate ?? 0) - (res.rate.lastCheck ?? 0)) / 1000.0;
     if (rateDt >= rateUpdateSecs) {
-      if (res._rate.lastCount !== undefined) {
-        res.rate = (res.count - res._rate.lastCount) / rateDt;
+      if (res.rate.lastCount !== undefined) {
+        res.rate.value = (res.count - res.rate.lastCount) / rateDt;
       } else {
-        res.rate = 0;
+        res.rate.value = 0;
       }
     }
 
     if (
-      res._rate.lastCheck === undefined ||
-      res._rate.lastCount === undefined ||
+      res.rate.lastCheck === undefined ||
+      res.rate.lastCount === undefined ||
       rateDt >= rateUpdateSecs
     ) {
-      res._rate.lastCheck = settings.lastUpdate;
-      res._rate.lastCount = res.count;
+      res.rate.lastCheck = settings.lastUpdate;
+      res.rate.lastCount = res.count;
     }
   });
 }

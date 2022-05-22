@@ -39,6 +39,10 @@ export const CellIcon: React.FC<{
   if (icon instanceof Array) {
     icon = icon[props.cell?.neighbors ?? props.neighbors ?? 0];
   }
+  if (!icon) {
+    return null;
+  }
+
   return (
     <Icon
       icon={icon}

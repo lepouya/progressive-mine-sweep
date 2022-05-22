@@ -42,19 +42,39 @@ function _codec(s: string): string {
   );
 }
 
+function _save_properties<T>(obj: T): (keyof T)[] {
+  const saveProperties: (keyof T)[] = [];
+  const _save_properties = (<any>obj)["_save_properties"];
+  if (
+    _save_properties != null &&
+    typeof _save_properties === "object" &&
+    Array.isArray(_save_properties)
+  ) {
+    saveProperties.push(..._save_properties);
+  }
+
+  return saveProperties;
+}
+
 function _toObject<T>(value: T): any {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
+  if (!value || typeof value !== "object") {
     return value;
+  } else if (Array.isArray(value)) {
+    return value.map((e) => _toObject(e));
   } else if (Object.keys(value).length === 0) {
     // No need to save empty records
     return null;
   }
 
   const saveObj: Record<string, any> = {};
+  const saveProperties = _save_properties(value);
 
   let k: keyof typeof value;
   for (k in value) {
-    if (!k.startsWith("_")) {
+    if (
+      !k.startsWith("_") &&
+      (saveProperties.length === 0 || saveProperties.includes(k))
+    ) {
       const v = value[k];
       if (typeof v === "object") {
         saveObj[k.toString()] = _toObject(v);
@@ -86,12 +106,42 @@ export function skipEncoding() {
   _skipEncoding = true;
 }
 
-export function saveAs<T>(value: T): string {
-  return window.btoa(_codec(JSON.stringify(_toObject(value))));
+export function saveAs<T>(value: T, pretty = false): string {
+  if (pretty) {
+    return JSON.stringify(_toObject(value), null, 2);
+  } else {
+    return window.btoa(_codec(JSON.stringify(_toObject(value))));
+  }
 }
 
 export function loadAs<T>(value: T, loadStr: string): boolean {
-  return _fromObject(value, JSON.parse(_codec(window.atob(loadStr))));
+  let parsed: any = null;
+  if (!parsed) {
+    try {
+      parsed = JSON.parse(_codec(window.atob(loadStr)));
+    } catch (_) {
+      parsed = null;
+    }
+  }
+  if (!parsed) {
+    try {
+      parsed = JSON.parse(window.atob(loadStr));
+    } catch (_) {
+      parsed = null;
+    }
+  }
+  if (!parsed) {
+    try {
+      parsed = JSON.parse(loadStr);
+    } catch (_) {
+      parsed = null;
+    }
+  }
+  if (!parsed) {
+    return false;
+  }
+
+  return _fromObject(value, parsed);
 }
 
 export function reset(name: string): void {
@@ -100,9 +150,9 @@ export function reset(name: string): void {
   }
 }
 
-export function save<T>(name: string, value: T): boolean {
+export function save<T>(name: string, value: T, pretty = false): boolean {
   if (_storageAvailable()) {
-    const saveVal = saveAs(value);
+    const saveVal = saveAs(value, pretty);
     if (saveVal) {
       window.localStorage.setItem(name, saveVal);
       return true;
@@ -123,4 +173,11 @@ export function load<T>(name: string, value: T): boolean {
   }
 
   return false;
+}
+
+export function setSaveProperties<T>(value: T, props: (keyof T)[]): T {
+  const saveProperties = _save_properties(value);
+  saveProperties.push(...props);
+  Object.assign(value, { _save_properties: props });
+  return value;
 }

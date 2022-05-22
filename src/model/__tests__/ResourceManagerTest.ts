@@ -171,15 +171,15 @@ describe("Updating resources", () => {
 
     rm.update(2000, settings);
     expect(rm.resources["test1"].count).to.be.equal(2);
-    expect(rm.resources["test1"].rate).to.be.equal(1);
+    expect(rm.resources["test1"].rate.value).to.be.equal(1);
     expect(rm.resources["test2"].count).to.be.equal(3);
-    expect(rm.resources["test2"].rate).to.be.equal(2);
+    expect(rm.resources["test2"].rate.value).to.be.equal(2);
 
     rm.update(5000, settings);
     expect(rm.resources["test1"].count).to.be.equal(5);
-    expect(rm.resources["test1"].rate).to.be.equal(1);
+    expect(rm.resources["test1"].rate.value).to.be.equal(1);
     expect(rm.resources["test2"].count).to.be.equal(15);
-    expect(rm.resources["test2"].rate).to.be.equal(4);
+    expect(rm.resources["test2"].rate.value).to.be.equal(4);
   });
 });
 

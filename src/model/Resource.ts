@@ -1,3 +1,5 @@
+import { setSaveProperties } from "../utils/store";
+
 export type ResourceCount = {
   resource: Resource | string;
   count: number;
@@ -22,8 +24,8 @@ export type Resource = {
   cost: (n: number, kind?: string) => ResourceCount[];
   tick?: (dt: number, source?: string) => void;
 
-  rate: number;
-  _rate: {
+  rate: {
+    value: number;
     lastCheck?: number;
     lastCount?: number;
   };
@@ -36,10 +38,10 @@ export function genEmptyResource(name: string): Resource {
     extra: {},
     value: (kind) => (!kind ? res.count : res.extra[kind] ?? 0),
     cost: () => [],
-    rate: 0,
-    _rate: {},
+    rate: { value: 0 },
   };
 
+  setSaveProperties(res, ["name", "unlocked", "count", "maxCount", "extra"]);
   return res;
 }
 
