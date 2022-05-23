@@ -1,20 +1,21 @@
 import React from "react";
-import useGameContext from "./GameContext";
+import useGameContext, { useResources } from "./GameContext";
 import ResourceRender from "./ResourceRender";
 
 const ResourceBar: React.FC = () => {
-  const { board, resource } = useGameContext();
+  const { board } = useGameContext();
+  const { wins, cells } = useResources();
   return (
     <div className={`panel board-state-${board.state}`}>
       <ResourceRender
-        resource={resource("wins")}
+        resource={wins}
         showRate={true}
         showZeroRates={true}
         showRatePercentages={false}
         showChrome={true}
       />
       <ResourceRender
-        resource={resource("cells")}
+        resource={cells}
         showRate={true}
         showZeroRates={true}
         showRatePercentages={false}

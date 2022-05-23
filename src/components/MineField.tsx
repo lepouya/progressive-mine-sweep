@@ -5,14 +5,15 @@ import { Board, genBoardState } from "../model/Board";
 import MineCell from "./MineCell";
 import { CellIcon } from "./Icon";
 import clamp from "../utils/clamp";
-import useGameContext from "./GameContext";
+import useGameContext, { useResources } from "./GameContext";
 
 const MineField: React.FC<{
   board: Board;
   setBoard: (board: Board) => void;
   showToggleTap?: boolean;
 }> = ({ board, setBoard, showToggleTap }) => {
-  const { settings, resource } = useGameContext();
+  const { settings } = useGameContext();
+  const { losses, wins } = useResources();
   const [tapMode, setTapMode] = useState<CellAction>("reveal");
 
   const onAction = useCallback(() => {
@@ -25,11 +26,11 @@ const MineField: React.FC<{
     if (board.cellCounts["blown"] >= settings.maxErrors) {
       board.state = "lost";
       setBoard(genBoardState(board));
-      resource("losses").count++;
-      resource("losses").extra.manual++;
+      losses.count++;
+      losses.extra.manual++;
     } else if (board.state === "won") {
-      resource("wins").count++;
-      resource("wins").extra.manual++;
+      wins.count++;
+      wins.extra.manual++;
     }
   }, [board]);
 

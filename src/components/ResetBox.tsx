@@ -1,37 +1,32 @@
 import React, { useEffect, useState } from "react";
 
-import useGameContext from "./GameContext";
+import useGameContext, { useResources } from "./GameContext";
 import message from "../utils/message";
 import ProgressCircle from "./ProgressCircle";
 import { genBoard } from "../model/Board";
 
 const ResetBox: React.FC = () => {
-  const { board, setBoard, resource } = useGameContext();
+  const { board, setBoard } = useGameContext();
   const [title, setTitle] = useState<string>(board.state);
   const [isResetting, setResetting] = useState(false);
   const [resetMessage, setResetMessage] = useState("");
   const [messageTime, setMessageTime] = useState(0);
+  const { rows, cols, difficulty, resetSpeed, resets } = useResources();
 
   useEffect(() => {
     setTitle(message(board.state));
   }, [board, board.state]);
 
-  if (board.state === "active") {
-    return null;
-  } else if (board.state === "inactive") {
+  if (board.rows === 0 || board.cols === 0 || board.state === "inactive") {
     resetBoard();
+    return null;
+  } else if (board.state === "active") {
     return null;
   }
 
-  const resetSpeed = resource("resetSpeed");
   const waitTime =
     (1 - resetSpeed.value() / 100) *
-    Math.sqrt(
-      resource("rows").value() *
-        resource("cols").value() *
-        (resource("difficulty").value() / 100) *
-        10,
-    );
+    Math.sqrt(rows.value() * cols.value() * (difficulty.value() / 100) * 10);
   const remainingTime = resetSpeed.extra.remainingTime;
 
   if (
@@ -56,16 +51,16 @@ const ResetBox: React.FC = () => {
   }
 
   function resetBoard() {
-    resource("resets").count++;
+    resets.count++;
     if (board.rows === 0 || board.cols === 0) {
-      resource("resets").extra.auto++;
+      resets.extra.auto++;
     } else {
-      resource("resets").extra.manual++;
+      resets.extra.manual++;
     }
 
-    const r = resource("rows").value();
-    const c = resource("cols").value();
-    const m = r * c * (resource("difficulty").value() / 100);
+    const r = rows.value();
+    const c = cols.value();
+    const m = r * c * (difficulty.value() / 100);
     setBoard(genBoard(r, c, Math.floor(m), Math.ceil(m)));
   }
 
