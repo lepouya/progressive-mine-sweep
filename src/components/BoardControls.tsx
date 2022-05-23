@@ -23,6 +23,9 @@ const BoardControls: React.FC<{
 
   const rows = resource("rows");
   const cols = resource("cols");
+  const hintQuality = resource("hintQuality");
+  const hints = resource("hints");
+
   const boardSizeChanged =
     board.rows !== rows.value() || board.cols !== cols.value();
 
@@ -30,7 +33,7 @@ const BoardControls: React.FC<{
     if (board.rows > 0 && board.cols > 0) {
       setNumRows(rows.value());
       setNumCols(cols.value());
-      setDifficulty(Math.floor(100 * resource("difficulty").value()));
+      setDifficulty(resource("difficulty").value());
     } else {
       board.state = "inactive";
     }
@@ -53,14 +56,14 @@ const BoardControls: React.FC<{
         resource(target.name).count = clamp(num, 3, 40);
       } else if (target.name === "difficulty") {
         setDifficulty(num);
-        resource(target.name).count = clamp(num / 100);
+        resource(target.name).count = clamp(num, 0, 100);
       }
     }
   }
 
   function getHint() {
-    if (genHints(board, 1, 0, 8, resource("hintQuality").value()) > 0) {
-      resource("hints").extra.manual++;
+    if (genHints(board, 1, 0, 8, resource("hintQuality").value() / 100) > 0) {
+      hints.extra.manual++;
       setBoard({ ...board });
     }
   }
@@ -87,7 +90,7 @@ const BoardControls: React.FC<{
           />
         </div>
         <div className="right half">
-          <BuyButton resource={cols} />
+          <BuyButton resource={cols} prefix={"Expand"} />
         </div>
         <div className="quarter">Game Height:</div>
         <div className="quarter">
@@ -99,11 +102,24 @@ const BoardControls: React.FC<{
           />
         </div>
         <div className="right half">
-          <BuyButton resource={rows} />
+          <BuyButton resource={rows} prefix={"Expand"} />
+        </div>
+        <div className="quarter">Hint Quality:</div>
+        <div className="quarter">
+          <ResourceRender
+            resource={hintQuality}
+            showChrome={true}
+            showName={false}
+            infix={""}
+            className={"value-first"}
+          />
+        </div>
+        <div className="right half">
+          <BuyButton resource={hintQuality} prefix={"Improve"} />
         </div>
         <div className="half"></div>
         <div className="right half">
-          <BuyButton resource={"hints"} prefix={"Get"} onPurchase={getHint} />
+          <BuyButton resource={hints} prefix={"Get"} onPurchase={getHint} />
         </div>
         {boardSizeChanged && (
           <div className="left">
@@ -137,8 +153,8 @@ const BoardControls: React.FC<{
             <input
               type="range"
               name="difficulty"
-              min={1}
-              max={99}
+              min={0}
+              max={100}
               value={difficulty}
               onInput={changeInput}
             />

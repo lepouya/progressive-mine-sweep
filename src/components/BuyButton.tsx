@@ -16,6 +16,7 @@ const BuyButton: React.FC<{
   prefix?: string;
   suffix?: string;
   infix?: string;
+  and?: string;
 
   className?: string;
   style?: React.CSSProperties;
@@ -33,6 +34,7 @@ const BuyButton: React.FC<{
   prefix = "Buy",
   suffix = "",
   infix = "for",
+  and = "&",
 
   className,
   style,
@@ -40,6 +42,29 @@ const BuyButton: React.FC<{
 }) => {
   const { resource } = useGameContext();
   const res = resource(resProp);
+
+  function renderResourceCounts(rcs: ResourceCount[], multiplier = 1) {
+    return rcs.map((rc, i) => (
+      <ResourceRender
+        resource={
+          typeof rc.resource === "string" ? { name: rc.resource } : rc.resource
+        }
+        value={rc.count * multiplier}
+        kind={rc.kind}
+        display={
+          typeof rc.resource !== "string" ? rc.resource.display : "number"
+        }
+        infix={""}
+        prefix={i > 0 ? and : ""}
+        showLocked={true}
+        showColors={true}
+        showPlusSign={true}
+        showChrome={true}
+        className={"value-first"}
+        key={typeof rc.resource === "string" ? rc.resource : rc.resource.name}
+      />
+    ));
+  }
 
   function adjustCount(count = 0) {
     return Math.max(
@@ -89,26 +114,5 @@ const BuyButton: React.FC<{
     </button>
   );
 };
-
-function renderResourceCounts(rcs: ResourceCount[], multiplier = 1) {
-  return rcs.map((rc, i) => (
-    <ResourceRender
-      resource={
-        typeof rc.resource === "string" ? { name: rc.resource } : rc.resource
-      }
-      value={rc.count * multiplier}
-      kind={rc.kind}
-      display={"number"}
-      infix={""}
-      prefix={i > 0 ? "& " : ""}
-      showLocked={true}
-      showColors={true}
-      showPlusSign={true}
-      showChrome={true}
-      className={"value-first"}
-      key={typeof rc.resource === "string" ? rc.resource : rc.resource.name}
-    />
-  ));
-}
 
 export default BuyButton;

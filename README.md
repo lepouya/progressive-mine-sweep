@@ -30,7 +30,7 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Reseting board dialog and delays~~
 - ~~Add options for increasing grid size~~
 - Add options for increasing difficulty and multiplier
-- Hint purchase, and options to increase hint quality
+- ~~Hint purchase, and options to increase hint quality~~
 - Options to improve reset time
 - Score multipliers
 

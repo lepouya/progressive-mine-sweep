@@ -15,7 +15,7 @@
     "name": "difficulty",
     "icon": "adjustments-horizontal",
     "display": "percentage",
-    "count": 0.15
+    "count": 15
   },
   {
     "name": "hintQuality",

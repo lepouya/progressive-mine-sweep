@@ -25,12 +25,12 @@ const ResetBox: React.FC = () => {
 
   const resetSpeed = resource("resetSpeed");
   const waitTime =
-    (1 - resetSpeed.value()) *
+    (1 - resetSpeed.value() / 100) *
     Math.sqrt(
       resource("rows").value() *
         resource("cols").value() *
-        resource("difficulty").value() *
-        10
+        (resource("difficulty").value() / 100) *
+        10,
     );
   const remainingTime = resetSpeed.extra.remainingTime;
 
@@ -65,7 +65,7 @@ const ResetBox: React.FC = () => {
 
     const r = resource("rows").value();
     const c = resource("cols").value();
-    const m = r * c * resource("difficulty").value();
+    const m = r * c * (resource("difficulty").value() / 100);
     setBoard(genBoard(r, c, Math.floor(m), Math.ceil(m)));
   }
 

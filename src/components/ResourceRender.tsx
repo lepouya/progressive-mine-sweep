@@ -5,7 +5,7 @@ import { formatNumber, formatTime } from "../utils/format";
 import round, { roundMethods } from "../utils/round";
 
 const maxLengths = { tiny: 4, compact: 9, expanded: 21 };
-const multipliers = { number: 1.0, percentage: 100.0, time: 1000.0 };
+const multipliers = { number: 1.0, percentage: 1.0, time: 1000.0 };
 
 const ResourceRender: React.FC<{
   resource?: Partial<Resource>;

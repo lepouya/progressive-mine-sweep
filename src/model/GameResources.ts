@@ -20,15 +20,19 @@ export function initGameResources(
   const rm = resourceManager ?? genResourceManager();
   loadResources.flat().forEach((props) => rm.upsert(props));
 
-  setValueFunction(rm.get("rows"), (v) => Math.max(3, v));
-  setValueFunction(rm.get("cols"), (v) => Math.max(3, v));
-  setValueFunction(rm.get("difficulty"), (v) => clamp(v));
-  setValueFunction(rm.get("hintQuality"), (v) => clamp(v));
-  setValueFunction(rm.get("resetSpeed"), (v, k) => (k ? v : clamp(v)));
+  setValueFunction(rm.get("rows"), (v) => clamp(v, 3, 100));
+  setValueFunction(rm.get("cols"), (v) => clamp(v, 3, 100));
+  setValueFunction(rm.get("difficulty"), (v) => clamp(v, 0, 100));
+  setValueFunction(rm.get("hintQuality"), (v) => clamp(v, 0, 100));
+  setValueFunction(rm.get("resetSpeed"), (v, k) => (k ? v : clamp(v, 0, 100)));
 
   rm.get("rows").cost = (n) => [{ resource: "cells", count: n ** 2 }];
   rm.get("cols").cost = (n) => [{ resource: "cells", count: n ** 2 }];
   rm.get("hints").cost = () => [{ resource: "wins", count: 1 }];
+  rm.get("hintQuality").cost = (n) => [
+    { resource: "wins", count: 1 },
+    { resource: "cells", count: n },
+  ];
 
   tickTimer(rm.get("resetSpeed"), { kind: "remainingTime" });
   tickTimer(rm.get("totalTime"), { direction: 1 });
