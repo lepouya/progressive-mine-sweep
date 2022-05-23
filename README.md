@@ -34,7 +34,12 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Options to improve reset time~~
 - Score multipliers
 
-### M2: Automation
+### M3: Tutorial
+
+- Add a tutorial for starting the game and how to progress
+- Tooltips and help options
+
+### M4: Automation
 
 - Auto reset puzzle + interval
 - Auto fill blank squares + upgrade interval
@@ -43,12 +48,7 @@ Perhaps I could do prestige/reset options once this is ready
 - Auto mine + improvements? + interval
 - Auto reason + improvements + interval
 
-### M3: Tutorial
-
-- Add a tutorial for starting the game and how to progress
-- Tooltips and help options
-
-### M4: Achievements
+### M5: Achievements
 
 - Add achievement tracking
 - Some basic achievements to complete
@@ -56,7 +56,7 @@ Perhaps I could do prestige/reset options once this is ready
 - More complex achievements perhaps
 - More complex bonuses?
 
-### M5: Prestige
+### M6: Prestige
 
 - Brainstorm on what can be done here
 
@@ -64,3 +64,4 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Resource selling?
 - Resource minimums
+- Fix the svg issue in local dir
