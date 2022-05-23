@@ -33,11 +33,13 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Hint purchase, and options to increase hint quality~~
 - ~~Options to improve reset time~~
 - Score multipliers
+- Buy multi
 
 ### M3: Tutorial
 
 - Add a tutorial for starting the game and how to progress
 - Tooltips and help options
+- Recover from failed loads
 
 ### M4: Automation
 
@@ -65,3 +67,5 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource selling?
 - Resource minimums
 - Fix the svg issue in local dir
+- Extract dedpue util
+- There seems to be null 'extra' data in saves
