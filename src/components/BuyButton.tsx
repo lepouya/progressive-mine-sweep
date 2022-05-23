@@ -52,6 +52,7 @@ const BuyButton: React.FC<{
   function renderResourceCounts(
     rcs: ResourceCount[],
     multiplier: number,
+    showPlusSign?: boolean,
     reversedDirection?: boolean,
   ) {
     return rcs.map((rc, i) => (
@@ -69,6 +70,7 @@ const BuyButton: React.FC<{
         showLocked={true}
         showColors={true}
         showChrome={true}
+        showPlusSign={showPlusSign}
         className={"value-first"}
         key={typeof rc.resource === "string" ? rc.resource : rc.resource.name}
         reversedDirection={reversedDirection}
@@ -138,10 +140,10 @@ const BuyButton: React.FC<{
       style={style}
     >
       {prefix && <div className="prefix">{prefix}</div>}
-      {renderResourceCounts(purchase.gain, gainMultiplier)}
+      {renderResourceCounts(purchase.gain, gainMultiplier, true, false)}
       {totalCost > 0 && infix && <div className="infix">{infix}</div>}
       {totalCost > 0 &&
-        renderResourceCounts(purchase.cost, costMultiplier, true)}
+        renderResourceCounts(purchase.cost, costMultiplier, false, true)}
       {suffix && <div className="suffix">{suffix}</div>}
     </button>
   );

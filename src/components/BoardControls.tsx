@@ -9,7 +9,8 @@ const BoardControls: React.FC<{
   board: Board;
   setBoard: (board: Board) => void;
 }> = ({ board, setBoard }) => {
-  const { rows, cols, difficulty, hintQuality, hints, losses } = useResources();
+  const { rows, cols, difficulty, hintQuality, resetSpeed, hints, losses } =
+    useResources();
 
   const boardSizeChanged =
     board.rows !== rows.value() || board.cols !== cols.value();
@@ -93,6 +94,24 @@ const BoardControls: React.FC<{
             prefix={"Decrease"}
             gainMultiplier={-1}
             enabled={difficulty.count > 0}
+          />
+        </div>
+
+        <div className="quarter">Reset Speed:</div>
+        <div className="quarter">
+          <ResourceRender
+            resource={resetSpeed}
+            showChrome={true}
+            showName={false}
+            infix={""}
+            className={"value-first"}
+          />
+        </div>
+        <div className="right half">
+          <BuyButton
+            resource={resetSpeed}
+            prefix={"Speed up"}
+            enabled={resetSpeed.count < 100}
           />
         </div>
 
