@@ -6,16 +6,12 @@
   input {
     margin-left: 5px;
 
-    &[type="number"] {
-      width: 4em;
-    }
-
-    &[type="range"] {
-      width: auto;
-    }
-
     &[type="button"] {
       width: 100%;
     }
+  }
+
+  .resource {
+    flex-wrap: nowrap;
   }
 }

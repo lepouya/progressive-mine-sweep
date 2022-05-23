@@ -100,6 +100,10 @@ const BuyButton: React.FC<{
     active = false;
   }
 
+  if (!enabled) {
+    purchase.cost = [];
+  }
+
   const classNames = [
     "buy-button",
     `buy-button-${active ? "" : "un"}affordable`,
@@ -115,8 +119,8 @@ const BuyButton: React.FC<{
     >
       {prefix && <div className="prefix">{prefix}</div>}
       {renderResourceCounts(purchase.gain, gainMultiplier)}
-      {infix && <div className="infix">{infix}</div>}
-      {renderResourceCounts(purchase.cost, -1)}
+      {enabled && infix && <div className="infix">{infix}</div>}
+      {enabled && renderResourceCounts(purchase.cost, -1)}
       {suffix && <div className="suffix">{suffix}</div>}
     </button>
   );

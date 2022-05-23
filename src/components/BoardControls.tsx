@@ -3,7 +3,7 @@ import { genHints, Board, genBoardState } from "../model/Board";
 import { useResources } from "./GameContext";
 import BuyButton from "./BuyButton";
 import ResourceRender from "./ResourceRender";
-import { hintFormula } from "../utils/formulas";
+import { hintFormula, remainingHintsFormula } from "../utils/formulas";
 
 const BoardControls: React.FC<{
   board: Board;
@@ -45,7 +45,6 @@ const BoardControls: React.FC<{
         <div className="right half">
           <BuyButton resource={cols} prefix={"Expand"} />
         </div>
-
         <div className="quarter">Game Height:</div>
         <div className="quarter">
           <ResourceRender
@@ -58,6 +57,17 @@ const BoardControls: React.FC<{
         <div className="right half">
           <BuyButton resource={rows} prefix={"Expand"} />
         </div>
+        {boardSizeChanged && (
+          <div className="left">
+            On reset, game board will change to size to
+            {` ${rows.value()}x${cols.value()}`}
+          </div>
+        )}
+        {boardSizeChanged && (
+          <div className="right quarter">
+            <input type="button" value="Reset Now!" onClick={reset} />
+          </div>
+        )}
 
         <div className="quarter">Game Difficulty:</div>
         <div className="quarter">
@@ -70,7 +80,11 @@ const BoardControls: React.FC<{
           />
         </div>
         <div className="right half">
-          <BuyButton resource={difficulty} prefix={"Increase"} />
+          <BuyButton
+            resource={difficulty}
+            prefix={"Increase"}
+            enabled={difficulty.count < 100}
+          />
         </div>
         <div className="half"></div>
         <div className="right half">
@@ -78,6 +92,7 @@ const BoardControls: React.FC<{
             resource={difficulty}
             prefix={"Decrease"}
             gainMultiplier={-1}
+            enabled={difficulty.count > 0}
           />
         </div>
 
@@ -92,24 +107,21 @@ const BoardControls: React.FC<{
           />
         </div>
         <div className="right half">
-          <BuyButton resource={hintQuality} prefix={"Improve"} />
+          <BuyButton
+            resource={hintQuality}
+            prefix={"Improve"}
+            enabled={hintQuality.count < 100}
+          />
         </div>
         <div className="half"></div>
         <div className="right half">
-          <BuyButton resource={hints} prefix={"Get"} onPurchase={getHint} />
+          <BuyButton
+            resource={hints}
+            prefix={"Get"}
+            enabled={remainingHintsFormula(board) > 0}
+            onPurchase={getHint}
+          />
         </div>
-        {boardSizeChanged && (
-          <div className="left">
-            On reset, game board will change to size to
-            {` ${rows.value()}x${cols.value()}`}
-          </div>
-        )}
-
-        {boardSizeChanged && (
-          <div className="right quarter">
-            <input type="button" value="Reset Now!" onClick={reset} />
-          </div>
-        )}
       </div>
     </div>
   );

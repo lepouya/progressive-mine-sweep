@@ -20,6 +20,10 @@ export function hintFormula(hintQuality: Resource): number {
   return hintQuality.value() / 100;
 }
 
+export function remainingHintsFormula(board: Board): number {
+  return board.rows * board.cols - board.numMines - board.cellCounts.revealed;
+}
+
 export function resetTimeFormula(
   rows: Resource,
   cols: Resource,
