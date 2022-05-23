@@ -52,11 +52,10 @@ export function makeClearBoard(rows: number, cols: number): Board {
         state: "hidden",
         neighbors: 0,
       };
-      setSaveProperties(cells[row][col], ["contents", "state"]);
     }
   }
 
-  const board: Board = {
+  return {
     rows,
     cols,
     cells,
@@ -64,9 +63,6 @@ export function makeClearBoard(rows: number, cols: number): Board {
     state: "active",
     cellCounts: { ...emptyCellCounts, hidden: rows * cols },
   };
-
-  setSaveProperties(board, ["rows", "cols", "cells"]);
-  return board;
 }
 
 export function populateRandomMines(
@@ -125,14 +121,13 @@ export function populateNeighboringCells(board: Board): Board {
 }
 
 export function genBoardState(board: Board): Board {
-  populateNeighboringCells(board);
-
   board.cellCounts = { ...emptyCellCounts };
   board.numMines = 0;
   board.cells.forEach((cells) =>
     cells.forEach((cell) => {
       board.cellCounts[cell.state]++;
       board.numMines += cell.contents === "mine" ? 1 : 0;
+      setSaveProperties(cell, ["contents", "state"]);
     }),
   );
 
@@ -157,6 +152,8 @@ export function genBoardState(board: Board): Board {
     board.state = "active";
   }
 
+  populateNeighboringCells(board);
+  setSaveProperties(board, ["rows", "cols", "cells"]);
   return board;
 }
 
