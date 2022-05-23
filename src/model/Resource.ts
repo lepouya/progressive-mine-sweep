@@ -73,18 +73,22 @@ export function combineResources(
     .filter(({ count }) => count !== 0);
 }
 
+export function scaleResources(
+  rcs: ResourceCount[],
+  scalar: number,
+): ResourceCount[] {
+  return rcs.map(({ resource, count, kind }) => ({
+    resource,
+    count: scalar * count,
+    kind,
+  }));
+}
+
 export function subtractResources(
   rcs1: ResourceCount[],
   rcs2: ResourceCount[],
 ): ResourceCount[] {
-  return combineResources(
-    rcs1,
-    rcs2.map(({ resource, count, kind }) => ({
-      resource,
-      count: -count,
-      kind,
-    })),
-  );
+  return combineResources(rcs1, scaleResources(rcs2, -1));
 }
 
 export function getResourceCounts(resource: Resource): ResourceCount[] {

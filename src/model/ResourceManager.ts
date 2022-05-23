@@ -187,11 +187,7 @@ function purchase(
             ]),
           )
           .flat();
-      return {
-        count,
-        gain,
-        cost,
-      };
+      return { count, gain, cost };
     }
   });
 
@@ -294,9 +290,5 @@ function getPurchaseCost(
     return { count: 0, gain: [], cost: [] };
   }
 
-  return {
-    count: partialCount,
-    gain,
-    cost,
-  };
+  return { count: partialCount, gain, cost };
 }

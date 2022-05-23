@@ -1,5 +1,5 @@
 import React from "react";
-import { Resource, ResourceCount } from "../model/Resource";
+import { Resource, ResourceCount, scaleResources } from "../model/Resource";
 
 import useGameContext from "./GameContext";
 import ResourceRender from "./ResourceRender";
@@ -14,6 +14,7 @@ const BuyButton: React.FC<{
   increment?: number;
 
   gainMultiplier?: number;
+  costMultiplier?: number;
 
   prefix?: string;
   suffix?: string;
@@ -34,6 +35,7 @@ const BuyButton: React.FC<{
   increment = 1,
 
   gainMultiplier = 1,
+  costMultiplier = 1,
 
   prefix = "Buy",
   suffix = "",
@@ -44,10 +46,14 @@ const BuyButton: React.FC<{
   style,
   onPurchase,
 }) => {
-  const { resource } = useGameContext();
+  const { resource, resourceManager } = useGameContext();
   const res = resource(resProp);
 
-  function renderResourceCounts(rcs: ResourceCount[], multiplier = 1) {
+  function renderResourceCounts(
+    rcs: ResourceCount[],
+    multiplier: number,
+    reversedDirection?: boolean,
+  ) {
     return rcs.map((rc, i) => (
       <ResourceRender
         resource={
@@ -62,10 +68,10 @@ const BuyButton: React.FC<{
         prefix={i > 0 ? and : ""}
         showLocked={true}
         showColors={true}
-        showPlusSign={true}
         showChrome={true}
         className={"value-first"}
         key={typeof rc.resource === "string" ? rc.resource : rc.resource.name}
+        reversedDirection={reversedDirection}
       />
     ));
   }
@@ -82,8 +88,21 @@ const BuyButton: React.FC<{
       return;
     }
 
-    let gainCount = res.buy(count, "partial", kind).count;
-    gainCount += res.add((gainMultiplier - 1) * gainCount, kind).count;
+    const bought = res.buy(count, "partial", kind);
+    let gainCount = bought.count;
+    if (gainMultiplier != 1) {
+      const adjustment = resourceManager.purchase(
+        scaleResources(bought.gain, gainMultiplier - 1),
+        "free",
+      );
+      gainCount += adjustment.count;
+    }
+    if (costMultiplier != 1) {
+      resourceManager.purchase(
+        scaleResources(bought.cost, 1 - costMultiplier),
+        "free",
+      );
+    }
 
     if (onPurchase) {
       onPurchase(res, kind, purchase.count + gainCount);
@@ -103,6 +122,7 @@ const BuyButton: React.FC<{
   if (!enabled) {
     purchase.cost = [];
   }
+  const totalCost = purchase.cost.reduce((tot, rc) => (tot += rc.count), 0);
 
   const classNames = [
     "buy-button",
@@ -119,8 +139,9 @@ const BuyButton: React.FC<{
     >
       {prefix && <div className="prefix">{prefix}</div>}
       {renderResourceCounts(purchase.gain, gainMultiplier)}
-      {enabled && infix && <div className="infix">{infix}</div>}
-      {enabled && renderResourceCounts(purchase.cost, -1)}
+      {totalCost > 0 && infix && <div className="infix">{infix}</div>}
+      {totalCost > 0 &&
+        renderResourceCounts(purchase.cost, costMultiplier, true)}
       {suffix && <div className="suffix">{suffix}</div>}
     </button>
   );
