@@ -4,6 +4,7 @@ import useGameContext, { useResources } from "./GameContext";
 import message from "../utils/message";
 import ProgressCircle from "./ProgressCircle";
 import { genBoard } from "../model/Board";
+import { numMinesFormula, resetTimeFormula } from "../utils/formulas";
 
 const ResetBox: React.FC = () => {
   const { board, setBoard } = useGameContext();
@@ -24,9 +25,7 @@ const ResetBox: React.FC = () => {
     return null;
   }
 
-  const waitTime =
-    (1 - resetSpeed.value() / 100) *
-    Math.sqrt(rows.value() * cols.value() * (difficulty.value() / 100) * 10);
+  const waitTime = resetTimeFormula(rows, cols, difficulty, resetSpeed);
   const remainingTime = resetSpeed.extra.remainingTime;
 
   if (
@@ -58,10 +57,8 @@ const ResetBox: React.FC = () => {
       resets.extra.manual++;
     }
 
-    const r = rows.value();
-    const c = cols.value();
-    const m = r * c * (difficulty.value() / 100);
-    setBoard(genBoard(r, c, Math.floor(m), Math.ceil(m)));
+    const m = numMinesFormula(rows, cols, difficulty);
+    setBoard(genBoard(rows.value(), cols.value(), Math.floor(m), Math.ceil(m)));
   }
 
   return (

@@ -1,4 +1,5 @@
 import React from "react";
+import { boardProgressFormula } from "../utils/formulas";
 import useGameContext, { useResources } from "./GameContext";
 import ResourceRender from "./ResourceRender";
 
@@ -29,10 +30,7 @@ const ResourceBar: React.FC = () => {
       />
       <ResourceRender
         name={"progress"}
-        value={
-          (board.cellCounts.revealed + board.cellCounts.flagged) /
-          (board.rows * board.cols)
-        }
+        value={boardProgressFormula(board)}
         display={"percentage"}
         showChrome={true}
       />

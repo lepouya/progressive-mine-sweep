@@ -3,6 +3,7 @@ import { genHints, Board, genBoardState } from "../model/Board";
 import { useResources } from "./GameContext";
 import BuyButton from "./BuyButton";
 import ResourceRender from "./ResourceRender";
+import { hintFormula } from "../utils/formulas";
 
 const BoardControls: React.FC<{
   board: Board;
@@ -14,7 +15,7 @@ const BoardControls: React.FC<{
     board.rows !== rows.value() || board.cols !== cols.value();
 
   function getHint() {
-    if (genHints(board, 1, 0, 8, hintQuality.value() / 100) > 0) {
+    if (genHints(board, 1, 0, 8, hintFormula(hintQuality)) > 0) {
       hints.extra.manual++;
       setBoard({ ...board });
     }
