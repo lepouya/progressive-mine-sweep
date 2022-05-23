@@ -29,6 +29,10 @@ export function initGameResources(
   rm.get("rows").cost = (n) => [{ resource: "cells", count: n ** 2 }];
   rm.get("cols").cost = (n) => [{ resource: "cells", count: n ** 2 }];
   rm.get("hints").cost = () => [{ resource: "wins", count: 1 }];
+  rm.get("difficulty").cost = (n) => [
+    { resource: "wins", count: 1 },
+    { resource: "cells", count: n },
+  ];
   rm.get("hintQuality").cost = (n) => [
     { resource: "wins", count: 1 },
     { resource: "cells", count: n },

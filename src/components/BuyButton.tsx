@@ -7,11 +7,13 @@ import ResourceRender from "./ResourceRender";
 const BuyButton: React.FC<{
   resource: string | Resource;
   kind?: string;
+  enabled?: boolean;
 
   maxNum?: number;
   minNum?: number;
   increment?: number;
-  enabled?: boolean;
+
+  gainMultiplier?: number;
 
   prefix?: string;
   suffix?: string;
@@ -25,11 +27,13 @@ const BuyButton: React.FC<{
 }> = ({
   resource: resProp,
   kind,
+  enabled = true,
 
   maxNum = 1,
   minNum = 1,
   increment = 1,
-  enabled = true,
+
+  gainMultiplier = 1,
 
   prefix = "Buy",
   suffix = "",
@@ -77,9 +81,12 @@ const BuyButton: React.FC<{
     if (!enabled || count < 1) {
       return;
     }
-    res.buy(count, "partial", kind);
+
+    let gainCount = res.buy(count, "partial", kind).count;
+    gainCount += res.add((gainMultiplier - 1) * gainCount, kind).count;
+
     if (onPurchase) {
-      onPurchase(res, kind, count);
+      onPurchase(res, kind, purchase.count + gainCount);
     }
   }
 
@@ -107,7 +114,7 @@ const BuyButton: React.FC<{
       style={style}
     >
       {prefix && <div className="prefix">{prefix}</div>}
-      {renderResourceCounts(purchase.gain)}
+      {renderResourceCounts(purchase.gain, gainMultiplier)}
       {infix && <div className="infix">{infix}</div>}
       {renderResourceCounts(purchase.cost, -1)}
       {suffix && <div className="suffix">{suffix}</div>}

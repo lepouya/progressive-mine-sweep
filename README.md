@@ -29,7 +29,7 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Report game currencies on screen~~
 - ~~Reseting board dialog and delays~~
 - ~~Add options for increasing grid size~~
-- Add options for increasing difficulty and multiplier
+- ~~Add options for changing difficulty~~
 - ~~Hint purchase, and options to increase hint quality~~
 - Options to improve reset time
 - Score multipliers
@@ -61,3 +61,5 @@ Perhaps I could do prestige/reset options once this is ready
 - Brainstorm on what can be done here
 
 ### Bugs to fix
+
+- Resource selling?

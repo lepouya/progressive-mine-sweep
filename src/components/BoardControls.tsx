@@ -9,7 +9,7 @@ const BoardControls: React.FC<{
   board: Board;
   setBoard: (board: Board) => void;
 }> = ({ board, setBoard }) => {
-  const { rows, cols, hintQuality, hints, losses } = useResources();
+  const { rows, cols, difficulty, hintQuality, hints, losses } = useResources();
 
   const boardSizeChanged =
     board.rows !== rows.value() || board.cols !== cols.value();
@@ -45,6 +45,7 @@ const BoardControls: React.FC<{
         <div className="right half">
           <BuyButton resource={cols} prefix={"Expand"} />
         </div>
+
         <div className="quarter">Game Height:</div>
         <div className="quarter">
           <ResourceRender
@@ -57,6 +58,29 @@ const BoardControls: React.FC<{
         <div className="right half">
           <BuyButton resource={rows} prefix={"Expand"} />
         </div>
+
+        <div className="quarter">Game Difficulty:</div>
+        <div className="quarter">
+          <ResourceRender
+            resource={difficulty}
+            showChrome={true}
+            showName={false}
+            infix={""}
+            className={"value-first"}
+          />
+        </div>
+        <div className="right half">
+          <BuyButton resource={difficulty} prefix={"Increase"} />
+        </div>
+        <div className="half"></div>
+        <div className="right half">
+          <BuyButton
+            resource={difficulty}
+            prefix={"Decrease"}
+            gainMultiplier={-1}
+          />
+        </div>
+
         <div className="quarter">Hint Quality:</div>
         <div className="quarter">
           <ResourceRender
@@ -80,6 +104,7 @@ const BoardControls: React.FC<{
             {` ${rows.value()}x${cols.value()}`}
           </div>
         )}
+
         {boardSizeChanged && (
           <div className="right quarter">
             <input type="button" value="Reset Now!" onClick={reset} />

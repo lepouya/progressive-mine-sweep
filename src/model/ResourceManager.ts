@@ -249,7 +249,7 @@ function getPurchaseCost(
   kind: string,
   style: PurchaseStyle,
 ): PurchaseCost {
-  if (!resource || count <= 0 || !(resource.unlocked ?? true)) {
+  if (!resource || count === 0 || !(resource.unlocked ?? true)) {
     return { count: 0, gain: [], cost: [] };
   }
 
