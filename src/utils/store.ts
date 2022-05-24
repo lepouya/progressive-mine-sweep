@@ -1,3 +1,5 @@
+import dedupe from "./dedupe";
+
 function _storageAvailable(): boolean {
   const storage = window.localStorage;
   const x = "__storage_test__";
@@ -178,10 +180,6 @@ export function load<T>(name: string, value: T): boolean {
 export function setSaveProperties<T>(value: T, props: (keyof T)[]): T {
   const saveProperties = _save_properties(value);
   saveProperties.push(...props);
-  Object.assign(value, {
-    _save_properties: saveProperties.filter(
-      (value, index, self) => self.indexOf(value) === index,
-    ),
-  });
+  Object.assign(value, { _save_properties: dedupe(saveProperties) });
   return value;
 }
