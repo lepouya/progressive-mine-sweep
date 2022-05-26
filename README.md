@@ -39,7 +39,7 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Add a tutorial for starting the game and how to progress
 - Tooltips and help options
-- Recover from failed loads
+- ~~Recover from failed loads~~
 
 ### M4: Automation
 
