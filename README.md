@@ -40,6 +40,7 @@ Perhaps I could do prestige/reset options once this is ready
 - Add a tutorial for starting the game and how to progress
 - Tooltips and help options
 - ~~Recover from failed loads~~
+- Add color themes
 
 ### M4: Automation
 
@@ -67,4 +68,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource selling?
 - Resource minimums
 - Fix the svg issue in local dir
-- Color themes
+- Fix names of stylesheets
