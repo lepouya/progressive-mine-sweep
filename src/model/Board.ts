@@ -120,7 +120,7 @@ export function populateNeighboringCells(board: Board): Board {
   return board;
 }
 
-export function genBoardState(board: Board): Board {
+export function genBoardState(board: Board, maxErrors = 1): Board {
   board.cellCounts = { ...emptyCellCounts };
   board.numMines = 0;
   board.cells.forEach((cells) =>
@@ -131,7 +131,8 @@ export function genBoardState(board: Board): Board {
     }),
   );
 
-  if (board.state === "lost") {
+  if (board.state === "lost" || board.cellCounts["blown"] >= maxErrors) {
+    board.state = "lost";
     board.cells.forEach((cells) =>
       cells.forEach((cell) => {
         board.cellCounts[cell.state]--;

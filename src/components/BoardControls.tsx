@@ -8,15 +8,38 @@ import { hintFormula, remainingHintsFormula } from "../utils/formulas";
 const BoardControls: React.FC<{
   board: Board;
   setBoard: (board: Board) => void;
-}> = ({ board, setBoard }) => {
+  buyAmount: string;
+}> = ({ board, setBoard, buyAmount }) => {
   const { rows, cols, difficulty, hintQuality, resetSpeed, hints, losses } =
     useResources();
+
+  let buyAmounts = { min: 1, max: 1, inc: 1 };
+  switch (buyAmount) {
+    case "max":
+      buyAmounts = { min: 1, max: 100, inc: 1 };
+      break;
+    case "x5":
+      buyAmounts = { min: 1, max: 5, inc: 5 };
+      break;
+    case "x10":
+      buyAmounts = { min: 1, max: 10, inc: 10 };
+      break;
+    case "+5":
+      buyAmounts = { min: 5, max: 5, inc: 1 };
+      break;
+    case "+10":
+      buyAmounts = { min: 10, max: 10, inc: 1 };
+      break;
+    case "x1":
+    default:
+      buyAmounts = { min: 1, max: 1, inc: 1 };
+  }
 
   const boardSizeChanged =
     board.rows !== rows.value() || board.cols !== cols.value();
 
-  function getHint() {
-    if (genHints(board, 1, 0, 8, hintFormula(hintQuality)) > 0) {
+  function getHint(_res: unknown, _kind: unknown, numHints = 0) {
+    if (genHints(board, numHints, 0, 8, hintFormula(hintQuality)) > 0) {
       hints.extra.manual++;
       setBoard({ ...board });
     }
@@ -44,7 +67,14 @@ const BoardControls: React.FC<{
           />
         </div>
         <div className="right half">
-          <BuyButton resource={cols} prefix={"Expand"} />
+          <BuyButton
+            resource={cols}
+            prefix={"Expand"}
+            maxCount={50}
+            minNum={buyAmounts.min}
+            maxNum={buyAmounts.max}
+            increment={buyAmounts.inc}
+          />
         </div>
         <div className="quarter">Game Height:</div>
         <div className="quarter">
@@ -56,7 +86,14 @@ const BoardControls: React.FC<{
           />
         </div>
         <div className="right half">
-          <BuyButton resource={rows} prefix={"Expand"} />
+          <BuyButton
+            resource={rows}
+            prefix={"Expand"}
+            maxCount={50}
+            minNum={buyAmounts.min}
+            maxNum={buyAmounts.max}
+            increment={buyAmounts.inc}
+          />
         </div>
         {boardSizeChanged && (
           <div className="left">
@@ -84,7 +121,10 @@ const BoardControls: React.FC<{
           <BuyButton
             resource={difficulty}
             prefix={"Increase"}
-            enabled={difficulty.count < 100}
+            maxCount={100}
+            minNum={buyAmounts.min}
+            maxNum={buyAmounts.max}
+            increment={buyAmounts.inc}
           />
         </div>
         <div className="half"></div>
@@ -111,7 +151,10 @@ const BoardControls: React.FC<{
           <BuyButton
             resource={resetSpeed}
             prefix={"Speed up"}
-            enabled={resetSpeed.count < 100}
+            maxCount={100}
+            minNum={buyAmounts.min}
+            maxNum={buyAmounts.max}
+            increment={buyAmounts.inc}
           />
         </div>
 
@@ -129,16 +172,23 @@ const BoardControls: React.FC<{
           <BuyButton
             resource={hintQuality}
             prefix={"Improve"}
-            enabled={hintQuality.count < 100}
+            maxCount={100}
+            minNum={buyAmounts.min}
+            maxNum={buyAmounts.max}
+            increment={buyAmounts.inc}
           />
         </div>
         <div className="half"></div>
         <div className="right half">
           <BuyButton
             resource={hints}
+            count={0}
             prefix={"Get"}
-            enabled={remainingHintsFormula(board) > 0}
+            maxCount={remainingHintsFormula(board)}
             onPurchase={getHint}
+            minNum={buyAmounts.min}
+            maxNum={buyAmounts.max}
+            increment={buyAmounts.inc}
           />
         </div>
       </div>

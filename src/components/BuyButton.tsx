@@ -1,5 +1,6 @@
 import React from "react";
 import { Resource, ResourceCount, scaleResources } from "../model/Resource";
+import clamp from "../utils/clamp";
 
 import useGameContext from "./GameContext";
 import ResourceRender from "./ResourceRender";
@@ -8,6 +9,9 @@ const BuyButton: React.FC<{
   resource: string | Resource;
   kind?: string;
   enabled?: boolean;
+
+  count?: number;
+  maxCount?: number;
 
   maxNum?: number;
   minNum?: number;
@@ -29,6 +33,9 @@ const BuyButton: React.FC<{
   resource: resProp,
   kind,
   enabled = true,
+
+  count: overrideCount,
+  maxCount = Infinity,
 
   maxNum = 1,
   minNum = 1,
@@ -78,13 +85,6 @@ const BuyButton: React.FC<{
     ));
   }
 
-  function adjustCount(count = 0) {
-    return Math.max(
-      0,
-      Math.floor((res.count + count) / increment) * increment - res.count,
-    );
-  }
-
   function doPurchase(count = 0) {
     if (!enabled || count < 1) {
       return;
@@ -107,8 +107,17 @@ const BuyButton: React.FC<{
     }
 
     if (onPurchase) {
-      onPurchase(res, kind, purchase.count + gainCount);
+      onPurchase(res, kind, gainCount);
     }
+  }
+
+  function adjustCount(count = 0) {
+    const currentCount = overrideCount ?? res.count;
+    return clamp(
+      Math.floor((currentCount + count) / increment) * increment - currentCount,
+      0,
+      maxCount - currentCount,
+    );
   }
 
   let active = true;
@@ -116,8 +125,12 @@ const BuyButton: React.FC<{
   if (purchase.count % increment !== 0) {
     purchase = res.buy(adjustCount(purchase.count), "dry-partial", kind);
   }
-  if (purchase.count < minNum) {
-    purchase = res.buy(adjustCount(maxNum), "dry-full", kind);
+  if (purchase.count < minNum || purchase.count <= 0) {
+    purchase = res.buy(
+      adjustCount(clamp(increment, minNum, maxNum)),
+      "dry-full",
+      kind,
+    );
     active = false;
   }
 

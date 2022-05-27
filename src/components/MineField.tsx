@@ -1,31 +1,27 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 
 import { CellAction } from "../model/Cell";
 import { Board, genBoardState } from "../model/Board";
 import MineCell from "./MineCell";
-import { CellIcon } from "./Icon";
 import clamp from "../utils/clamp";
 import useGameContext, { useResources } from "./GameContext";
 
 const MineField: React.FC<{
   board: Board;
   setBoard: (board: Board) => void;
-  showToggleTap?: boolean;
-}> = ({ board, setBoard, showToggleTap }) => {
+  tapMode: CellAction;
+}> = ({ board, setBoard, tapMode }) => {
   const { settings } = useGameContext();
   const { losses, wins } = useResources();
-  const [tapMode, setTapMode] = useState<CellAction>("reveal");
 
   const onAction = useCallback(() => {
     if (board.state !== "active") {
       return;
     }
 
-    board = genBoardState({ ...board });
-    setBoard(board);
-    if (board.cellCounts["blown"] >= settings.maxErrors) {
-      board.state = "lost";
-      setBoard(genBoardState(board));
+    board = genBoardState(board, settings.maxErrors);
+    setBoard({ ...board });
+    if (board.state === "lost") {
       losses.count++;
       losses.extra.manual++;
     } else if (board.state === "won") {
@@ -37,30 +33,9 @@ const MineField: React.FC<{
   const estSize = Math.floor(95 / Math.max(board.rows, board.cols));
   const cellSize = clamp(estSize, 2, 30);
 
-  function toggleTapMode() {
-    setTapMode(tapMode === "reveal" ? "flag" : "reveal");
-  }
-
   return (
     <div className="minefield">
       <table>
-        {(showToggleTap ?? true) && (
-          <thead>
-            <tr>
-              <th colSpan={board.cols} className="cell">
-                <button type="button" value={tapMode} onClick={toggleTapMode}>
-                  Tap mode:
-                  <CellIcon
-                    state={tapMode === "reveal" ? "revealed" : "flagged"}
-                    neighbors={9}
-                    size="1em"
-                  />
-                  {tapMode === "reveal" ? "Revealing" : "Flagging"}
-                </button>
-              </th>
-            </tr>
-          </thead>
-        )}
         <tbody>
           {board.cells.flatMap((row, r) => (
             <tr key={`row:${r}:*`}>

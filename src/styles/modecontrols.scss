@@ -1,0 +1,25 @@
+.mode-controls {
+  background-color: #eef8f8;
+
+  button {
+    margin: 2px;
+    padding: 2px;
+
+    background-color: #dddddd;
+
+    &.selected {
+      background-color: inherit;
+    }
+  }
+
+  span {
+    margin-right: 1ex;
+  }
+
+  .icon {
+    display: inline-block;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0;
+  }
+}
