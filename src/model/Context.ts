@@ -10,6 +10,11 @@ import {
 } from "./ResourceManager";
 import { Resource } from "./Resource";
 import { initGameResources } from "./GameResources";
+import {
+  loadFromBrowser,
+  resetOnBrowser,
+  saveToBrowser,
+} from "../utils/localStorage";
 
 export type Context = {
   settings: Settings;
@@ -34,22 +39,20 @@ export const wrapContext = (context: Context) => ({
   setBoard: (board: Board) => (context.board = board),
   resource: (res: string | Resource) => context.resourceManager.get(res),
 
-  load: () => _load(context, () => Store.load(_store, context)),
-  loadAs: (str: string) => _load(context, () => Store.loadAs(context, str)),
+  load: () => _load(context, loadFromBrowser(_store)),
+  loadAs: (loadStr: string) => _load(context, loadStr),
 
-  save: (pretty?: boolean) =>
-    _save(context, () => Store.save(_store, context, pretty)),
-  saveAs: (pretty?: boolean) =>
-    _save(context, () => Store.saveAs(context, pretty)),
+  save: (pretty?: boolean) => saveToBrowser(_store, _save(context, pretty)),
+  saveAs: (pretty?: boolean) => _save(context, pretty),
 
   reset: () => _reset(context),
 });
 
 const _store = "Context";
 
-function _load<T>(context: Context, loadFunction: () => T): T {
+function _load(context: Context, loadStr: string | null): boolean {
   const oldContext = { ...context };
-  const loaded = loadFunction();
+  const loaded = !!loadStr && Store.loadAs(context, loadStr);
 
   if (loaded) {
     context.settings = {
@@ -79,13 +82,13 @@ function _load<T>(context: Context, loadFunction: () => T): T {
   return loaded;
 }
 
-function _save<T>(context: Context, saveFunction: () => T): T {
+function _save(context: Context, pretty?: boolean): string {
   context.settings.lastSaved = Date.now();
-  return saveFunction();
+  return Store.saveAs(context, pretty);
 }
 
 function _reset(context: Context): void {
-  Store.reset(_store);
+  resetOnBrowser(_store);
   const newContext = emptyContext();
   let k: keyof Context;
   for (k in newContext) {

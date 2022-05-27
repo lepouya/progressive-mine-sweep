@@ -1,31 +1,5 @@
 import dedupe from "./dedupe";
 
-function _storageAvailable(): boolean {
-  const storage = window.localStorage;
-  const x = "__storage_test__";
-
-  if (!storage) {
-    return false;
-  }
-
-  try {
-    storage.setItem(x, x);
-    storage.removeItem(x);
-    return true;
-  } catch (e) {
-    return (
-      e instanceof DOMException &&
-      // Acknowledge QuotaExceededError only if there's something already stored
-      storage.length !== 0 &&
-      (e.code === 22 || // Everything except Firefox
-        e.code === 1014 || // Firefox
-        // Also test the name field, because code might not be present
-        e.name === "QuotaExceededError" || // Everything except Firefox
-        e.name === "NS_ERROR_DOM_QUOTA_REACHED") // Firefox
-    );
-  }
-}
-
 let _skipEncoding = false;
 function _codec(s: string): string {
   if (_skipEncoding) {
@@ -148,91 +122,6 @@ export function loadAs<T>(value: T, loadStr: string): boolean {
   }
 
   return _fromObject(value, parsed);
-}
-
-export function reset(name: string): void {
-  if (_storageAvailable()) {
-    window.localStorage.removeItem(name);
-  }
-}
-
-export function save<T>(name: string, value: T, pretty = false): boolean {
-  if (_storageAvailable()) {
-    const saveVal = saveAs(value, pretty);
-    if (saveVal) {
-      window.localStorage.setItem(name, saveVal);
-      return true;
-    }
-  }
-
-  return false;
-}
-
-export function load<T>(name: string, value: T): boolean {
-  if (_storageAvailable()) {
-    const saveVal = window.localStorage.getItem(name);
-    if (saveVal) {
-      try {
-        return loadAs(value, saveVal);
-      } catch (_) {}
-    }
-  }
-
-  return false;
-}
-
-export function saveToFile(fileName: string, contents: string | Blob) {
-  if (!(contents instanceof Blob)) {
-    contents = new Blob([contents], { type: "text/plain" });
-  }
-  const url = URL.createObjectURL(contents);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  a.click();
-
-  URL.revokeObjectURL(url);
-}
-
-export function loadFromFile(
-  onSuccess?: (contents: string) => void,
-  onError?: () => void,
-) {
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.addEventListener(
-    "change",
-    function (changeEvent) {
-      const files = (changeEvent.target as HTMLInputElement).files;
-      if (!files || files.length === 0 || !files[0]) {
-        if (onError) {
-          onError();
-        }
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = function (loadEvent) {
-        const contents = loadEvent.target?.result;
-        if (!contents || typeof contents !== "string") {
-          if (onError) {
-            onError();
-          }
-          return;
-        }
-
-        if (onSuccess) {
-          onSuccess(contents);
-        }
-      };
-
-      reader.readAsText(files[0]);
-    },
-    false,
-  );
-
-  fileInput.click();
 }
 
 export function setSaveProperties<T>(value: T, props: (keyof T)[]): T {
