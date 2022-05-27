@@ -75,11 +75,15 @@ function _toObject<T>(value: T): any {
   for (k in value) {
     if (
       !k.startsWith("_") &&
+      value[k] != null &&
       (saveProperties.length === 0 || saveProperties.includes(k))
     ) {
       const v = value[k];
       if (typeof v === "object") {
-        saveObj[k.toString()] = _toObject(v);
+        const res = _toObject(v);
+        if (res != null) {
+          saveObj[k.toString()] = res;
+        }
       } else if (typeof v !== "function") {
         saveObj[k.toString()] = v;
       }

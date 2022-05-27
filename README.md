@@ -67,4 +67,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource selling?
 - Resource minimums
 - Fix the svg issue in local dir
-- There seems to be null 'extra' data in saves
+- Save to / load from file
