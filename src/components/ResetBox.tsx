@@ -4,7 +4,7 @@ import useGameContext, { useResources } from "./GameContext";
 import message from "../utils/message";
 import ProgressCircle from "./ProgressCircle";
 import { genBoard } from "../model/Board";
-import { numMinesFormula, resetTimeFormula } from "../utils/formulas";
+import { numMinesFormula, resetTimeFormula } from "../model/GameFormulas";
 
 const ResetBox: React.FC = () => {
   const { board, setBoard } = useGameContext();

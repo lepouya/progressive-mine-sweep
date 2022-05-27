@@ -1,5 +1,5 @@
-import { Board } from "../model/Board";
-import { Resource } from "../model/Resource";
+import { Board } from "./Board";
+import { Resource } from "./Resource";
 
 export function boardProgressFormula(board: Board): number {
   return (

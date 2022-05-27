@@ -3,7 +3,7 @@ import { genHints, Board, genBoardState } from "../model/Board";
 import { useResources } from "./GameContext";
 import BuyButton from "./BuyButton";
 import ResourceRender from "./ResourceRender";
-import { hintFormula, remainingHintsFormula } from "../utils/formulas";
+import { hintFormula, remainingHintsFormula } from "../model/GameFormulas";
 
 const BoardControls: React.FC<{
   board: Board;

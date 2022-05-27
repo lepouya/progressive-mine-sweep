@@ -1,5 +1,5 @@
 import React from "react";
-import { boardProgressFormula } from "../utils/formulas";
+import { boardProgressFormula } from "../model/GameFormulas";
 import useGameContext, { useResources } from "./GameContext";
 import ResourceRender from "./ResourceRender";
 
