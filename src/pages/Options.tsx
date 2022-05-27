@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router";
 
 import useGameContext from "../components/GameContext";
 import ResourceRender from "../components/ResourceRender";
+import * as Store from "../utils/store";
 
 const Options: React.FC = () => {
   const context = useGameContext();
@@ -35,6 +36,23 @@ const Options: React.FC = () => {
     if (context.loadAs(textContents)) {
       navigate({ pathname: "/", search: location.search });
     }
+  }
+
+  function loadFile() {
+    Store.loadFromFile((contents) => {
+      if (context.loadAs(contents)) {
+        navigate({ pathname: "/", search: location.search });
+      }
+    });
+  }
+
+  function saveFile() {
+    const date = new Date()
+      .toISOString()
+      .replace(/\D/g, " ")
+      .trim()
+      .replace(/\D/g, "-");
+    Store.saveToFile(`progressive-mine-sweep-${date}`, context.saveAs(debug));
   }
 
   function changeFrequency(timer: string, value: string) {
@@ -105,6 +123,12 @@ const Options: React.FC = () => {
         </div>
         <div className="half center">
           <input type="button" value="Save" onClick={saveGame} />
+        </div>
+        <div className="half center">
+          <input type="button" value="Load from File" onClick={loadFile} />
+        </div>
+        <div className="half center">
+          <input type="button" value="Save to File" onClick={saveFile} />
         </div>
         <div className="half center">
           <input type="button" value="Import" onClick={importGame} />

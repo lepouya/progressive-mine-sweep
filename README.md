@@ -67,4 +67,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource selling?
 - Resource minimums
 - Fix the svg issue in local dir
-- Save to / load from file
+- Color themes
