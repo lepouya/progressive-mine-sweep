@@ -68,7 +68,7 @@ export default function Game() {
         </div>
         <div className="spacer"></div>
         <div className="right">
-          <Link to="/stats">Stats</Link>
+          <Link to="/stats">Statistics</Link>
           <Link to="/help">Help</Link>
           <Link to="/options">Settings</Link>
         </div>

@@ -22,19 +22,7 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### ~~M1: Get classic minesweeper working~~
 
-### M2: Make it incremental
-
-- ~~Set up resource management~~
-- ~~Track and use game resources~~
-- ~~Report game currencies on screen~~
-- ~~Reseting board dialog and delays~~
-- ~~Add options for increasing grid size~~
-- ~~Add options for changing difficulty~~
-- ~~Hint purchase, and options to increase hint quality~~
-- ~~Options to improve reset time~~
-- ~~Score multipliers~~
-- ~~Buy multi~~
-- ~~Separate upgrades tab~~
+### ~~M2: Make it incremental~~
 
 ### M3: Tutorial
 
