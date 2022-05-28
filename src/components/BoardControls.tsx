@@ -13,7 +13,6 @@ export default function BoardControls() {
     context,
     board,
     setBoard,
-    settings: { buyAmount },
     resources: {
       rows,
       cols,
@@ -24,28 +23,6 @@ export default function BoardControls() {
       losses,
     },
   } = useGameContext();
-
-  let buyAmounts = { min: 1, max: 1, inc: 1 };
-  switch (buyAmount) {
-    case "max":
-      buyAmounts = { min: 1, max: 100, inc: 1 };
-      break;
-    case "x5":
-      buyAmounts = { min: 1, max: 5, inc: 5 };
-      break;
-    case "x10":
-      buyAmounts = { min: 1, max: 10, inc: 10 };
-      break;
-    case "+5":
-      buyAmounts = { min: 5, max: 5, inc: 1 };
-      break;
-    case "+10":
-      buyAmounts = { min: 10, max: 10, inc: 1 };
-      break;
-    case "x1":
-    default:
-      buyAmounts = { min: 1, max: 1, inc: 1 };
-  }
 
   const multiplier = scoreMultiplier(context);
 
@@ -81,14 +58,7 @@ export default function BoardControls() {
           />
         </div>
         <div className="right half">
-          <BuyButton
-            resource={cols}
-            prefix={"Expand"}
-            maxCount={50}
-            minNum={buyAmounts.min}
-            maxNum={buyAmounts.max}
-            increment={buyAmounts.inc}
-          />
+          <BuyButton resource={cols} prefix={"Expand"} maxCount={50} />
         </div>
         <div className="quarter">Game Height:</div>
         <div className="quarter">
@@ -100,14 +70,7 @@ export default function BoardControls() {
           />
         </div>
         <div className="right half">
-          <BuyButton
-            resource={rows}
-            prefix={"Expand"}
-            maxCount={50}
-            minNum={buyAmounts.min}
-            maxNum={buyAmounts.max}
-            increment={buyAmounts.inc}
-          />
+          <BuyButton resource={rows} prefix={"Expand"} maxCount={50} />
         </div>
         {boardSizeChanged && (
           <div className="left">
@@ -132,14 +95,7 @@ export default function BoardControls() {
           />
         </div>
         <div className="right half">
-          <BuyButton
-            resource={difficulty}
-            prefix={"Increase"}
-            maxCount={100}
-            minNum={buyAmounts.min}
-            maxNum={buyAmounts.max}
-            increment={buyAmounts.inc}
-          />
+          <BuyButton resource={difficulty} prefix={"Increase"} maxCount={100} />
         </div>
         <div className="quarter">
           <span className="computed">Score Multiplier:</span>
@@ -158,6 +114,9 @@ export default function BoardControls() {
             prefix={"Decrease"}
             gainMultiplier={-1}
             enabled={difficulty.count > 0}
+            minNum={1}
+            maxNum={1}
+            increment={1}
           />
         </div>
 
@@ -172,14 +131,7 @@ export default function BoardControls() {
           />
         </div>
         <div className="right half">
-          <BuyButton
-            resource={resetSpeed}
-            prefix={"Speed up"}
-            maxCount={100}
-            minNum={buyAmounts.min}
-            maxNum={buyAmounts.max}
-            increment={buyAmounts.inc}
-          />
+          <BuyButton resource={resetSpeed} prefix={"Speed up"} maxCount={100} />
         </div>
 
         <div className="quarter">Hint Quality:</div>
@@ -193,26 +145,15 @@ export default function BoardControls() {
           />
         </div>
         <div className="right half">
-          <BuyButton
-            resource={hintQuality}
-            prefix={"Improve"}
-            maxCount={100}
-            minNum={buyAmounts.min}
-            maxNum={buyAmounts.max}
-            increment={buyAmounts.inc}
-          />
+          <BuyButton resource={hintQuality} prefix={"Improve"} maxCount={100} />
         </div>
         <div className="half"></div>
         <div className="right half">
           <BuyButton
             resource={hints}
             count={0}
-            prefix={"Get"}
             maxCount={remainingHintsFormula(context)}
             onPurchase={getHint}
-            minNum={buyAmounts.min}
-            maxNum={buyAmounts.max}
-            increment={buyAmounts.inc}
           />
         </div>
       </div>

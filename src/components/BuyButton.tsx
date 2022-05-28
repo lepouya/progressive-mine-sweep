@@ -1,6 +1,6 @@
+import { getBuyAmount } from "../model/GameFormulas";
 import { Resource, ResourceCount, scaleResources } from "../model/Resource";
 import clamp from "../utils/clamp";
-
 import useGameContext from "./GameContext";
 import ResourceRender from "./ResourceRender";
 
@@ -38,9 +38,9 @@ export default function BuyButton({
   count: overrideCount,
   maxCount = Infinity,
 
-  maxNum = 1,
-  minNum = 1,
-  increment = 1,
+  maxNum,
+  minNum,
+  increment,
 
   gainMultiplier = 1,
   costMultiplier = 1,
@@ -54,8 +54,15 @@ export default function BuyButton({
   style,
   onPurchase,
 }: BuyButtonProps) {
-  const { resource, resourceManager } = useGameContext();
-  const res = resource(resProp);
+  const {
+    resourceManager,
+    settings: { buyAmount },
+  } = useGameContext();
+  const res = resourceManager.get(resProp);
+  const buyAmounts = getBuyAmount(buyAmount);
+  minNum ??= buyAmounts.min;
+  maxNum ??= buyAmounts.max;
+  increment ??= buyAmounts.inc;
 
   function renderResourceCounts(
     rcs: ResourceCount[],
@@ -112,7 +119,7 @@ export default function BuyButton({
     }
   }
 
-  function adjustCount(count = 0) {
+  function adjustCount(count = 0, increment = 1) {
     const currentCount = overrideCount ?? res.count;
     return clamp(
       Math.floor((currentCount + count) / increment) * increment - currentCount,
@@ -122,9 +129,13 @@ export default function BuyButton({
   }
 
   let active = true;
-  let purchase = res.buy(adjustCount(maxNum), "dry-partial", kind);
+  let purchase = res.buy(adjustCount(maxNum, increment), "dry-partial", kind);
   if (purchase.count % increment !== 0) {
-    purchase = res.buy(adjustCount(purchase.count), "dry-partial", kind);
+    purchase = res.buy(
+      adjustCount(purchase.count, increment),
+      "dry-partial",
+      kind,
+    );
   }
   if (purchase.count < minNum || purchase.count <= 0) {
     purchase = res.buy(

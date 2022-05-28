@@ -38,6 +38,10 @@ export function resetTimeFormula({
   );
 }
 
+export function getBuyAmount(buyAmount?: string) {
+  return _buyAmounts[buyAmount ?? ""] ?? _buyAmounts[""];
+}
+
 export function scoreMultiplier({
   resourceManager: {
     resources: { difficulty },
@@ -88,4 +92,14 @@ const _targetStates: Record<string, string> = {
   "cell:hinted": "hints",
   "cell:flagged": "flags",
   "cell:revealed": "cells",
+};
+
+const _buyAmounts: Record<string, { min: number; max: number; inc: number }> = {
+  "": { min: 1, max: 1, inc: 1 },
+  x1: { min: 1, max: 1, inc: 1 },
+  x5: { min: 1, max: 5, inc: 5 },
+  x10: { min: 1, max: 10, inc: 10 },
+  "+5": { min: 5, max: 5, inc: 1 },
+  "+10": { min: 10, max: 10, inc: 1 },
+  max: { min: 1, max: 100, inc: 1 },
 };
