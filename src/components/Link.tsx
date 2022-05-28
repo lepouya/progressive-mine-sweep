@@ -7,11 +7,13 @@ export type LinkProps = PropsWithChildren<{ to: string }>;
 export default function Link(props: LinkProps) {
   const location = useLocation();
   return (
-    <NavLink
-      className={({ isActive }) => (isActive ? "active" : "")}
-      to={{ pathname: props.to, search: location.search }}
-    >
-      {props.children}
-    </NavLink>
+    <div>
+      <NavLink
+        className={({ isActive }) => (isActive ? "active" : "")}
+        to={{ pathname: props.to, search: location.search }}
+      >
+        {props.children}
+      </NavLink>
+    </div>
   );
 }

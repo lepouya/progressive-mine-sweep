@@ -94,7 +94,6 @@ export default function Options() {
             display={"time"}
             precision={0}
             prefix={"You started this game "}
-            suffix={"."}
           />
         </div>
         <div className="full">
@@ -104,7 +103,6 @@ export default function Options() {
             display={"time"}
             precision={0}
             prefix={"This session started "}
-            suffix={"."}
           />
         </div>
         <div className="full">
@@ -114,7 +112,6 @@ export default function Options() {
             display={"time"}
             precision={0}
             prefix={"Game was last saved "}
-            suffix={"."}
           />
         </div>
         <hr className="separator" />

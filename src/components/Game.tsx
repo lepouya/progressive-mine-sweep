@@ -52,14 +52,11 @@ export default function Game() {
   return (
     <HashRouter>
       <nav className="navbar">
-        <div className="left">
-          <Link to="/">Mine Sweep</Link>
-          <Link to="/statistics">Statistics</Link>
-        </div>
-        <div className="right">
-          <Link to="/help">Help</Link>
-          <Link to="/options">Settings</Link>
-        </div>
+        <Link to="/">Mine Sweep</Link>
+        <div className="spacer"></div>
+        <Link to="/statistics">Statistics</Link>
+        <Link to="/help">Help</Link>
+        <Link to="/options">Settings</Link>
       </nav>
       <div className="main">
         <Routes>

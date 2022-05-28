@@ -1,5 +1,6 @@
 .navbar {
   display: flex;
+  flex-flow: row wrap;
   position: relative;
 
   background-color: #eeeeee;
@@ -7,16 +8,12 @@
   > div {
     display: flex;
     flex: 1;
-    flex-wrap: wrap;
     align-items: center;
+    white-space: nowrap;
   }
 
-  .left {
-    justify-content: flex-start;
-  }
-
-  .right {
-    justify-content: flex-end;
+  .spacer {
+    flex: 9 0;
   }
 
   .active {
@@ -25,6 +22,7 @@
 
   a {
     display: flex;
+    width: 100%;
     justify-content: center;
     align-items: center;
 
