@@ -2,7 +2,7 @@ import { MouseEvent, useCallback } from "react";
 
 import { genBoardState } from "../model/Board";
 import { actOnCell, Cell, CellAction } from "../model/Cell";
-import { scoreMultiplier, stateChanged } from "../model/GameFormulas";
+import { stateChanged } from "../model/GameFormulas";
 import useGameContext from "./GameContext";
 import Icon from "./Icon";
 
@@ -52,18 +52,10 @@ export default function MineCell({ cell, size, enabled, tapMode }: Props) {
       if (prevState === cell.state) {
         clicks.extra.useless++;
       } else {
-        if (cell.state === "hidden") {
-          const multiplier = scoreMultiplier(context);
-          if (prevState === "flagged") {
-            resources.flags.count -= multiplier;
-            resources.flags.extra.unflags++;
-          } else if (prevState === "revealed") {
-            resources.cells.count -= multiplier;
-            resources.cells.extra.hidden++;
-          }
-        }
-
         stateChanged(context, "cell", cell.state, false);
+        if (cell.state === "hidden") {
+          stateChanged(context, "cell", "un" + prevState, false);
+        }
 
         if (board.state === "active") {
           let newBoard = genBoardState(board, settings.maxErrors);

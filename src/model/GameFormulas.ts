@@ -52,17 +52,30 @@ export function stateChanged(
   state: string,
   automatic: boolean,
 ) {
+  const factor = 1;
+  const multiplier = scoreMultiplier(context);
   const resName = _targetStates[target + ":" + state];
-  if (resName) {
-    const res = context.resourceManager.resources[resName];
-    const multiplier = scoreMultiplier(context);
-    const factor = 1;
+  let res = context.resourceManager.resources[resName ?? ""];
 
+  if (resName && res) {
     res.count += factor * multiplier;
     if (automatic) {
       res.extra.auto += factor;
     } else {
       res.extra.manual += factor;
+    }
+  } else {
+    switch (target + ":" + state) {
+      case "cell:unflagged":
+        res = context.resourceManager.resources.flags;
+        res.count -= factor * multiplier;
+        res.extra.unflags += factor;
+        break;
+      case "cell:unrevealed":
+        res = context.resourceManager.resources.cells;
+        res.count -= factor * multiplier;
+        res.extra.hidden += factor;
+        break;
     }
   }
 }
