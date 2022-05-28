@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Spinner from "./Spinner";
 import Game from "./Game";
 import useGameContext from "./GameContext";
 import Reset from "../pages/Reset";
 
-const Loader: React.FC = () => {
+export default function Loader() {
   const { load } = useGameContext();
   const [isLoaded, setLoaded] = useState(false);
   const [isFailed, setFailed] = useState(false);
@@ -33,6 +33,4 @@ const Loader: React.FC = () => {
   } else {
     return <Spinner />;
   }
-};
-
-export default Loader;
+}

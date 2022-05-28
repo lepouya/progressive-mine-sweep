@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import BoardControls from "../components/BoardControls";
 import MineField from "../components/MineField";
@@ -8,13 +8,13 @@ import ResetBox from "../components/ResetBox";
 import { CellAction } from "../model/Cell";
 import ModeControls from "../components/ModeControls";
 
-const Main: React.FC = () => {
-  const { board, setBoard } = useGameContext();
+export default function Main() {
+  const { board } = useGameContext();
   const [tapMode, setTapMode] = useState<CellAction>("reveal");
   const [buyAmount, setBuyAmount] = useState("x1");
 
   const mineField = useMemo(
-    () => <MineField board={board} setBoard={setBoard} tapMode={tapMode} />,
+    () => <MineField tapMode={tapMode} />,
     [board, tapMode],
   );
 
@@ -29,9 +29,7 @@ const Main: React.FC = () => {
         buyAmount={buyAmount}
         setBuyAmount={setBuyAmount}
       />
-      <BoardControls board={board} setBoard={setBoard} buyAmount={buyAmount} />
+      <BoardControls buyAmount={buyAmount} />
     </div>
   );
-};
-
-export default Main;
+}

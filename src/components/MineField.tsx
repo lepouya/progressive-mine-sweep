@@ -1,30 +1,34 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 
 import { CellAction } from "../model/Cell";
-import { Board, genBoardState } from "../model/Board";
+import { genBoardState } from "../model/Board";
 import MineCell from "./MineCell";
 import clamp from "../utils/clamp";
-import useGameContext, { useResources } from "./GameContext";
+import useGameContext from "./GameContext";
 
-const MineField: React.FC<{
-  board: Board;
-  setBoard: (board: Board) => void;
+type Props = {
   tapMode: CellAction;
-}> = ({ board, setBoard, tapMode }) => {
-  const { settings } = useGameContext();
-  const { losses, wins } = useResources();
+};
+
+export default function MineField({ tapMode }: Props) {
+  const {
+    board,
+    setBoard,
+    settings,
+    resources: { losses, wins },
+  } = useGameContext();
 
   const onAction = useCallback(() => {
     if (board.state !== "active") {
       return;
     }
 
-    board = genBoardState(board, settings.maxErrors);
-    setBoard({ ...board });
-    if (board.state === "lost") {
+    let newBoard = genBoardState(board, settings.maxErrors);
+    setBoard({ ...newBoard });
+    if (newBoard.state === "lost") {
       losses.count++;
       losses.extra.manual++;
-    } else if (board.state === "won") {
+    } else if (newBoard.state === "won") {
       wins.count++;
       wins.extra.manual++;
     }
@@ -55,6 +59,4 @@ const MineField: React.FC<{
       </table>
     </div>
   );
-};
-
-export default MineField;
+}

@@ -22,31 +22,37 @@ export type Context = {
   resourceManager: ResourceManager;
 };
 
-export const emptyContext: () => Context = () => ({
-  settings: {
-    ...defaultSettings,
-    lastReset: Date.now(),
-    lastUpdate: Date.now(),
-    lastLoaded: Date.now(),
-  },
-  board: { ...emptyBoard },
-  resourceManager: initGameResources(genResourceManager()),
-});
+export function emptyContext() {
+  return {
+    settings: {
+      ...defaultSettings,
+      lastReset: Date.now(),
+      lastUpdate: Date.now(),
+      lastLoaded: Date.now(),
+    },
+    board: { ...emptyBoard },
+    resourceManager: initGameResources(genResourceManager()),
+  };
+}
 
-export const wrapContext = (context: Context) => ({
-  ...context,
+export function wrapContext(context: Context) {
+  return {
+    context,
+    ...context,
+    ...context.resourceManager,
 
-  setBoard: (board: Board) => (context.board = board),
-  resource: (res: string | Resource) => context.resourceManager.get(res),
+    setBoard: (board: Board) => (context.board = board),
+    resource: (res: string | Resource) => context.resourceManager.get(res),
 
-  load: () => _load(context, loadFromBrowser(_store)),
-  loadAs: (loadStr: string) => _load(context, loadStr),
+    load: () => _load(context, loadFromBrowser(_store)),
+    loadAs: (loadStr: string) => _load(context, loadStr),
 
-  save: (pretty?: boolean) => saveToBrowser(_store, _save(context, pretty)),
-  saveAs: (pretty?: boolean) => _save(context, pretty),
+    save: (pretty?: boolean) => saveToBrowser(_store, _save(context, pretty)),
+    saveAs: (pretty?: boolean) => _save(context, pretty),
 
-  reset: () => _reset(context),
-});
+    reset: () => _reset(context),
+  };
+}
 
 const _store = "Context";
 

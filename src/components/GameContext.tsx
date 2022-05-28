@@ -9,12 +9,6 @@ export const GameContextProvider: FC<PropsWithChildren<{}>> = (props) => (
   </GameReactContext.Provider>
 );
 
-export function useGameContext() {
+export default function useGameContext() {
   return wrapContext(useContext(GameReactContext));
 }
-
-export function useResources() {
-  return useContext(GameReactContext).resourceManager.resources;
-}
-
-export default useGameContext;

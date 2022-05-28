@@ -1,17 +1,28 @@
-import React from "react";
-import { genHints, Board, genBoardState } from "../model/Board";
-import { useResources } from "./GameContext";
+import { genHints, genBoardState } from "../model/Board";
+import useGameContext from "./GameContext";
 import BuyButton from "./BuyButton";
 import ResourceRender from "./ResourceRender";
 import { hintFormula, remainingHintsFormula } from "../model/GameFormulas";
 
-const BoardControls: React.FC<{
-  board: Board;
-  setBoard: (board: Board) => void;
+type Props = {
   buyAmount: string;
-}> = ({ board, setBoard, buyAmount }) => {
-  const { rows, cols, difficulty, hintQuality, resetSpeed, hints, losses } =
-    useResources();
+};
+
+export default function BoardControls({ buyAmount }: Props) {
+  const {
+    context,
+    board,
+    setBoard,
+    resources: {
+      rows,
+      cols,
+      difficulty,
+      hintQuality,
+      resetSpeed,
+      hints,
+      losses,
+    },
+  } = useGameContext();
 
   let buyAmounts = { min: 1, max: 1, inc: 1 };
   switch (buyAmount) {
@@ -39,7 +50,7 @@ const BoardControls: React.FC<{
     board.rows !== rows.value() || board.cols !== cols.value();
 
   function getHint(_res: unknown, _kind: unknown, numHints = 0) {
-    if (genHints(board, numHints, 0, 8, hintFormula(hintQuality)) > 0) {
+    if (genHints(board, numHints, 0, 8, hintFormula(context)) > 0) {
       hints.extra.manual++;
       setBoard({ ...board });
     }
@@ -184,7 +195,7 @@ const BoardControls: React.FC<{
             resource={hints}
             count={0}
             prefix={"Get"}
-            maxCount={remainingHintsFormula(board)}
+            maxCount={remainingHintsFormula(context)}
             onPurchase={getHint}
             minNum={buyAmounts.min}
             maxNum={buyAmounts.max}
@@ -194,6 +205,4 @@ const BoardControls: React.FC<{
       </div>
     </div>
   );
-};
-
-export default BoardControls;
+}

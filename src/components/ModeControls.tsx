@@ -1,14 +1,19 @@
-import React from "react";
-
 import { CellAction } from "../model/Cell";
-import Icon, { CellIcon } from "./Icon";
+import Icon from "./Icon";
 
-const ModeControls: React.FC<{
+type Props = {
   tapMode: CellAction;
   setTapMode: (tapMode: CellAction) => void;
   buyAmount: string;
   setBuyAmount: (amount: string) => void;
-}> = ({ tapMode, setTapMode, buyAmount, setBuyAmount }) => {
+};
+
+export default function ModeControls({
+  tapMode,
+  setTapMode,
+  buyAmount,
+  setBuyAmount,
+}: Props) {
   function toggleTapMode() {
     setTapMode(tapMode === "reveal" ? "flag" : "reveal");
   }
@@ -26,7 +31,7 @@ const ModeControls: React.FC<{
       <div className="left">
         <span>Tap mode:</span>
         <button type="button" value={tapMode} onClick={toggleTapMode}>
-          <CellIcon
+          <Icon
             state={tapMode === "reveal" ? "revealed" : "flagged"}
             neighbors={9}
             size="1em"
@@ -89,6 +94,4 @@ const ModeControls: React.FC<{
       </div>
     </div>
   );
-};
-
-export default ModeControls;
+}

@@ -1,16 +1,16 @@
-import React from "react";
+import { PropsWithChildren } from "react";
 
-const ProgressCircle: React.FC<
-  React.PropsWithChildren<{
-    value: number;
-    minValue?: number;
-    maxValue?: number;
-    width?: string | number;
-    height?: string | number;
-    showPercent?: boolean;
-    className?: string;
-  }>
-> = ({
+export type ProgressCircleProps = PropsWithChildren<{
+  value: number;
+  minValue?: number;
+  maxValue?: number;
+  width?: string | number;
+  height?: string | number;
+  showPercent?: boolean;
+  className?: string;
+}>;
+
+export default function ProgressCircle({
   value,
   minValue = 0.0,
   maxValue = 1.0,
@@ -19,7 +19,7 @@ const ProgressCircle: React.FC<
   showPercent = false,
   className,
   children,
-}) => {
+}: ProgressCircleProps) {
   const pct = (value - minValue) / (maxValue - minValue);
   return (
     <div
@@ -42,6 +42,4 @@ const ProgressCircle: React.FC<
       </svg>
     </div>
   );
-};
-
-export default ProgressCircle;
+}

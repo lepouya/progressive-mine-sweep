@@ -1,17 +1,27 @@
-import React, { MouseEvent, useCallback } from "react";
+import { MouseEvent, useCallback } from "react";
 
 import { actOnCell, Cell, CellAction } from "../model/Cell";
-import { CellIcon } from "./Icon";
-import { useResources } from "./GameContext";
+import useGameContext from "./GameContext";
+import Icon from "./Icon";
 
-const MineCell: React.FC<{
+type Props = {
   cell: Cell;
   size: number;
   enabled: boolean;
   tapMode: CellAction;
   onAction: (cell: Cell) => void;
-}> = ({ cell, size, enabled, tapMode, onAction }) => {
-  const { clicks, cells, flags, hints, explosions } = useResources();
+};
+
+export default function MineCell({
+  cell,
+  size,
+  enabled,
+  tapMode,
+  onAction,
+}: Props) {
+  const {
+    resources: { clicks, cells, flags, hints, explosions },
+  } = useGameContext();
 
   const handleClick = useCallback(
     (event: MouseEvent<Element>) => {
@@ -95,10 +105,8 @@ const MineCell: React.FC<{
       onContextMenu={handleClick}
     >
       <div style={{ width: cellSize, height: cellSize }}>
-        <CellIcon cell={cell} size="80%" />
+        <Icon cell={cell} size="80%" />
       </div>
     </td>
   );
-};
-
-export default MineCell;
+}

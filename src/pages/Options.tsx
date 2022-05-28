@@ -1,11 +1,11 @@
-import React, { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 import useGameContext from "../components/GameContext";
 import ResourceRender from "../components/ResourceRender";
 import { loadFromFile, saveToFile } from "../utils/fileStorage";
 
-const Options: React.FC = () => {
+export default function Options() {
   const context = useGameContext();
   const [textContents, setTextContents] = useState("");
   const [resetAcknowledged, setResetAcknowledged] = useState(false);
@@ -257,6 +257,4 @@ const Options: React.FC = () => {
       )}
     </div>
   );
-};
-
-export default Options;
+}

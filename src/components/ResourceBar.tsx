@@ -1,11 +1,14 @@
-import React from "react";
 import { boardProgressFormula } from "../model/GameFormulas";
-import useGameContext, { useResources } from "./GameContext";
+import useGameContext from "./GameContext";
 import ResourceRender from "./ResourceRender";
 
-const ResourceBar: React.FC = () => {
-  const { board } = useGameContext();
-  const { wins, cells } = useResources();
+export default function ResourceBar() {
+  const {
+    context,
+    board,
+    resources: { wins, cells },
+  } = useGameContext();
+
   return (
     <div className={`panel board-state-${board.state}`}>
       <ResourceRender
@@ -30,7 +33,7 @@ const ResourceBar: React.FC = () => {
       />
       <ResourceRender
         name={"progress"}
-        value={boardProgressFormula(board)}
+        value={boardProgressFormula(context)}
         display={"percentage"}
         showChrome={true}
       />
@@ -45,6 +48,4 @@ const ResourceBar: React.FC = () => {
       />
     </div>
   );
-};
-
-export default ResourceBar;
+}

@@ -1,20 +1,17 @@
-import React from "react";
+import { PropsWithChildren } from "react";
 import { useLocation } from "react-router";
 import { NavLink } from "react-router-dom";
 
-const Link: React.FC<React.PropsWithChildren<{ to: string }>> = ({
-  to,
-  children,
-}) => {
+export type LinkProps = PropsWithChildren<{ to: string }>;
+
+export default function Link(props: LinkProps) {
   const location = useLocation();
   return (
     <NavLink
       className={({ isActive }) => (isActive ? "active" : "")}
-      to={{ pathname: to, search: location.search }}
+      to={{ pathname: props.to, search: location.search }}
     >
-      {children}
+      {props.children}
     </NavLink>
   );
-};
-
-export default Link;
+}

@@ -1,11 +1,10 @@
-import React from "react";
 import { Resource, ResourceCount, scaleResources } from "../model/Resource";
 import clamp from "../utils/clamp";
 
 import useGameContext from "./GameContext";
 import ResourceRender from "./ResourceRender";
 
-const BuyButton: React.FC<{
+export type BuyButtonProps = {
   resource: string | Resource;
   kind?: string;
   enabled?: boolean;
@@ -29,7 +28,9 @@ const BuyButton: React.FC<{
   style?: React.CSSProperties;
 
   onPurchase?: (resource: Resource, kind?: string, bought?: number) => void;
-}> = ({
+};
+
+export default function BuyButton({
   resource: resProp,
   kind,
   enabled = true,
@@ -52,7 +53,7 @@ const BuyButton: React.FC<{
   className,
   style,
   onPurchase,
-}) => {
+}: BuyButtonProps) {
   const { resource, resourceManager } = useGameContext();
   const res = resource(resProp);
 
@@ -160,6 +161,4 @@ const BuyButton: React.FC<{
       {suffix && <div className="suffix">{suffix}</div>}
     </button>
   );
-};
-
-export default BuyButton;
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 
 import Main from "../pages/Main";
@@ -8,7 +8,7 @@ import useGameContext from "./GameContext";
 import Link from "./Link";
 import Stats from "../pages/Stats";
 
-const Game: React.FC = () => {
+export default function Game() {
   const { settings, resourceManager, save } = useGameContext();
   const [timerId, setTimerId] = useState<NodeJS.Timer | undefined>();
   const [_, setLastRendered] = useState(0);
@@ -71,6 +71,4 @@ const Game: React.FC = () => {
       </div>
     </HashRouter>
   );
-};
-
-export default Game;
+}

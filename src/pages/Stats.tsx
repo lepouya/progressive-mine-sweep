@@ -1,10 +1,9 @@
-import React from "react";
-
 import useGameContext from "../components/GameContext";
 import ResourceRender from "../components/ResourceRender";
 
-const Stats: React.FC = () => {
+export default function Stats() {
   const { resource } = useGameContext();
+
   function render(name: string) {
     const res = resource(name);
     return (
@@ -53,6 +52,4 @@ const Stats: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default Stats;
+}

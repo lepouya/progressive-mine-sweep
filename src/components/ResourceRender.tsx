@@ -1,4 +1,3 @@
-import React from "react";
 import Icon from "./Icon";
 import { Resource } from "../model/Resource";
 import { formatNumber, formatTime } from "../utils/format";
@@ -7,7 +6,7 @@ import round, { roundMethods } from "../utils/round";
 const maxLengths = { tiny: 4, compact: 9, expanded: 21 };
 const multipliers = { number: 1.0, percentage: 1.0, time: 1000.0 };
 
-const ResourceRender: React.FC<{
+export type ResourceRenderProps = {
   resource?: Partial<Resource>;
   name?: string;
   value?: number;
@@ -58,7 +57,9 @@ const ResourceRender: React.FC<{
 
   className?: string;
   style?: React.CSSProperties;
-}> = ({
+};
+
+export default function ResourceRender({
   value,
   epoch,
   name,
@@ -109,7 +110,7 @@ const ResourceRender: React.FC<{
 
   className = "",
   style,
-}) => {
+}: ResourceRenderProps) {
   const output: JSX.Element[] = [];
   function addValueDiv(
     num = NaN,
@@ -391,6 +392,4 @@ const ResourceRender: React.FC<{
   } else {
     return res;
   }
-};
-
-export default ResourceRender;
+}

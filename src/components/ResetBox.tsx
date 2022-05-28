@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import useGameContext, { useResources } from "./GameContext";
+import useGameContext from "./GameContext";
 import message from "../utils/message";
 import ProgressCircle from "./ProgressCircle";
 import { genBoard } from "../model/Board";
 import { numMinesFormula, resetTimeFormula } from "../model/GameFormulas";
 
-const ResetBox: React.FC = () => {
-  const { board, setBoard } = useGameContext();
+export default function ResetBox() {
+  const {
+    context,
+    board,
+    setBoard,
+    resources: { rows, cols, resetSpeed, resets },
+  } = useGameContext();
   const [title, setTitle] = useState<string>(board.state);
   const [isResetting, setResetting] = useState(false);
   const [resetMessage, setResetMessage] = useState("");
   const [messageTime, setMessageTime] = useState(0);
-  const { rows, cols, difficulty, resetSpeed, resets } = useResources();
 
   useEffect(() => {
     setTitle(message(board.state));
@@ -25,7 +29,7 @@ const ResetBox: React.FC = () => {
     return null;
   }
 
-  const waitTime = resetTimeFormula(rows, cols, difficulty, resetSpeed);
+  const waitTime = resetTimeFormula(context);
   const remainingTime = resetSpeed.extra.remainingTime;
 
   if (
@@ -57,7 +61,7 @@ const ResetBox: React.FC = () => {
       resets.extra.manual++;
     }
 
-    const m = numMinesFormula(rows, cols, difficulty);
+    const m = numMinesFormula(context);
     setBoard(genBoard(rows.value(), cols.value(), Math.floor(m), Math.ceil(m)));
   }
 
@@ -88,6 +92,4 @@ const ResetBox: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default ResetBox;
+}
