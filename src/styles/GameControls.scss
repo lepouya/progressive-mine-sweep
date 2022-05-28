@@ -1,15 +1,11 @@
-.board-controls {
+.game-controls {
   margin-top: 5px !important;
   gap: 5px 0;
 
   background-color: #eef8f8;
 
-  input {
-    margin-left: 5px;
-
-    &[type="button"] {
-      width: 100%;
-    }
+  button {
+    margin: 0 0.5em;
   }
 
   .resource {

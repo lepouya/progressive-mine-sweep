@@ -1,51 +1,21 @@
-import { genHints, genBoardState } from "../model/Board";
-import useGameContext from "./GameContext";
-import BuyButton from "./BuyButton";
-import ResourceRender from "./ResourceRender";
-import {
-  hintFormula,
-  remainingHintsFormula,
-  scoreMultiplier,
-} from "../model/GameFormulas";
+import BuyButton from "../components/BuyButton";
+import useGameContext from "../components/GameContext";
+import ModeControls from "../components/ModeControls";
+import ResourceBar from "../components/ResourceBar";
+import ResourceRender from "../components/ResourceRender";
+import { scoreMultiplier } from "../model/GameFormulas";
 
-export default function BoardControls() {
+export default function Upgrades() {
   const {
     context,
-    board,
-    setBoard,
-    resources: {
-      rows,
-      cols,
-      difficulty,
-      hintQuality,
-      resetSpeed,
-      hints,
-      losses,
-    },
+    resources: { rows, cols, difficulty, hintQuality, resetSpeed },
   } = useGameContext();
-
-  const multiplier = scoreMultiplier(context);
-
-  const boardSizeChanged =
-    board.rows !== rows.value() || board.cols !== cols.value();
-
-  function getHint(_res: unknown, _kind: unknown, numHints = 0) {
-    if (genHints(board, numHints, 0, 8, hintFormula(context)) > 0) {
-      hints.extra.manual++;
-      setBoard({ ...board });
-    }
-  }
-
-  function reset() {
-    board.state = "lost";
-    setBoard(genBoardState(board));
-    losses.count++;
-    losses.extra.manual++;
-  }
 
   return (
     <div>
-      <div className="board-controls panel">
+      <ResourceBar />
+      <ModeControls />
+      <div className="game-controls panel">
         <div className="title-bar">Upgrades</div>
 
         <div className="quarter">Game Width:</div>
@@ -72,17 +42,6 @@ export default function BoardControls() {
         <div className="right half">
           <BuyButton resource={rows} prefix={"Expand"} maxCount={50} />
         </div>
-        {boardSizeChanged && (
-          <div className="left">
-            On reset, game board will change to size to
-            {` ${rows.value()}x${cols.value()}`}
-          </div>
-        )}
-        {boardSizeChanged && (
-          <div className="right quarter">
-            <input type="button" value="Reset Now!" onClick={reset} />
-          </div>
-        )}
 
         <div className="quarter">Game Difficulty:</div>
         <div className="quarter">
@@ -102,7 +61,7 @@ export default function BoardControls() {
         </div>
         <div className="quarter">
           <ResourceRender
-            value={multiplier * 100}
+            value={scoreMultiplier(context) * 100}
             display="percentage"
             showChrome={true}
             className="computed"
@@ -146,15 +105,6 @@ export default function BoardControls() {
         </div>
         <div className="right half">
           <BuyButton resource={hintQuality} prefix={"Improve"} maxCount={100} />
-        </div>
-        <div className="half"></div>
-        <div className="right half">
-          <BuyButton
-            resource={hints}
-            count={0}
-            maxCount={remainingHintsFormula(context)}
-            onPurchase={getHint}
-          />
         </div>
       </div>
     </div>

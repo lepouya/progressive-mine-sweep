@@ -12,6 +12,14 @@
     white-space: nowrap;
   }
 
+  .left {
+    justify-content: flex-start;
+  }
+
+  .right {
+    justify-content: flex-end;
+  }
+
   .spacer {
     flex: 9 0;
   }

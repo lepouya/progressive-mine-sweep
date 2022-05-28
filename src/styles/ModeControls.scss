@@ -1,5 +1,5 @@
 .mode-controls {
-  background-color: #eef8f8;
+  background-color: #ddddff;
 
   button {
     margin: 2px;
@@ -8,7 +8,7 @@
     background-color: #dddddd;
 
     &.selected {
-      background-color: inherit;
+      background-color: #eef8f8;
     }
   }
 

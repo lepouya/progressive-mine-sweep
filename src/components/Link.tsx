@@ -2,9 +2,16 @@ import { PropsWithChildren } from "react";
 import { useLocation } from "react-router";
 import { NavLink } from "react-router-dom";
 
-export type LinkProps = PropsWithChildren<{ to: string }>;
+export type LinkProps = PropsWithChildren<{
+  to: string;
+  condition?: boolean;
+}>;
 
 export default function Link(props: LinkProps) {
+  if (props.condition != null && !props.condition) {
+    return null;
+  }
+
   const location = useLocation();
   return (
     <div>
