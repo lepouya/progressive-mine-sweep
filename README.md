@@ -34,6 +34,7 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Options to improve reset time~~
 - ~~Score multipliers~~
 - ~~Buy multi~~
+- Separate upgrades tab
 
 ### M3: Tutorial
 

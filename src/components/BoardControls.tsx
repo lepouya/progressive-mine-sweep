@@ -8,15 +8,12 @@ import {
   scoreMultiplier,
 } from "../model/GameFormulas";
 
-type Props = {
-  buyAmount: string;
-};
-
-export default function BoardControls({ buyAmount }: Props) {
+export default function BoardControls() {
   const {
     context,
     board,
     setBoard,
+    settings: { buyAmount },
     resources: {
       rows,
       cols,

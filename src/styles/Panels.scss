@@ -61,6 +61,10 @@
     margin-bottom: 2px;
   }
 
+  .spacer {
+    flex: 9 0;
+  }
+
   .title-bar {
     @extend .center;
     @extend .full;
