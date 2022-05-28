@@ -373,14 +373,15 @@ function copyDist() {
   const htmlName = "index" + min + ".html";
   const jsName = package + min + ".js";
   const cssName = package + min + ".css";
-  const vendors = Object.keys(externalLibs).map((s) => `vendor-${s}{min}.js`);
+  const vendors = Object.keys(externalLibs).map((s) => `vendor-${s}${min}.js`);
 
   return gulp
     .src(
       [htmlName, jsName, cssName]
         .concat(vendors)
         .concat(assetEntries)
-        .map((f) => outDir + "/" + f),
+        .map((f) => `${outDir}/${f}`),
+      { base: `./${outDir}/` },
     )
     .pipe(
       plugins.rename((path) => {
