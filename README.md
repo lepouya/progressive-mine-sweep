@@ -32,7 +32,7 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Add options for changing difficulty~~
 - ~~Hint purchase, and options to increase hint quality~~
 - ~~Options to improve reset time~~
-- Score multipliers
+- ~~Score multipliers~~
 - ~~Buy multi~~
 
 ### M3: Tutorial

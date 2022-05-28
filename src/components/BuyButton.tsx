@@ -128,7 +128,7 @@ export default function BuyButton({
   }
   if (purchase.count < minNum || purchase.count <= 0) {
     purchase = res.buy(
-      adjustCount(clamp(increment, minNum, maxNum)),
+      Math.max(1, adjustCount(clamp(increment, minNum, maxNum))),
       "dry-full",
       kind,
     );

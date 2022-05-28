@@ -4,14 +4,18 @@ import useGameContext from "./GameContext";
 import message from "../utils/message";
 import ProgressCircle from "./ProgressCircle";
 import { genBoard } from "../model/Board";
-import { numMinesFormula, resetTimeFormula } from "../model/GameFormulas";
+import {
+  numMinesFormula,
+  resetTimeFormula,
+  stateChanged,
+} from "../model/GameFormulas";
 
 export default function ResetBox() {
   const {
     context,
     board,
     setBoard,
-    resources: { rows, cols, resetSpeed, resets },
+    resources: { rows, cols, resetSpeed },
   } = useGameContext();
   const [title, setTitle] = useState<string>(board.state);
   const [isResetting, setResetting] = useState(false);
@@ -54,12 +58,12 @@ export default function ResetBox() {
   }
 
   function resetBoard() {
-    resets.count++;
-    if (board.rows === 0 || board.cols === 0) {
-      resets.extra.auto++;
-    } else {
-      resets.extra.manual++;
-    }
+    stateChanged(
+      context,
+      "board",
+      "active",
+      board.rows === 0 || board.cols === 0,
+    );
 
     const m = numMinesFormula(context);
     setBoard(genBoard(rows.value(), cols.value(), Math.floor(m), Math.ceil(m)));

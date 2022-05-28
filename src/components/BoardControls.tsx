@@ -2,7 +2,11 @@ import { genHints, genBoardState } from "../model/Board";
 import useGameContext from "./GameContext";
 import BuyButton from "./BuyButton";
 import ResourceRender from "./ResourceRender";
-import { hintFormula, remainingHintsFormula } from "../model/GameFormulas";
+import {
+  hintFormula,
+  remainingHintsFormula,
+  scoreMultiplier,
+} from "../model/GameFormulas";
 
 type Props = {
   buyAmount: string;
@@ -45,6 +49,8 @@ export default function BoardControls({ buyAmount }: Props) {
     default:
       buyAmounts = { min: 1, max: 1, inc: 1 };
   }
+
+  const multiplier = scoreMultiplier(context);
 
   const boardSizeChanged =
     board.rows !== rows.value() || board.cols !== cols.value();
@@ -138,7 +144,17 @@ export default function BoardControls({ buyAmount }: Props) {
             increment={buyAmounts.inc}
           />
         </div>
-        <div className="half"></div>
+        <div className="quarter">
+          <span className="computed">Score Multiplier:</span>
+        </div>
+        <div className="quarter">
+          <ResourceRender
+            value={multiplier * 100}
+            display="percentage"
+            showChrome={true}
+            className="computed"
+          />
+        </div>
         <div className="right half">
           <BuyButton
             resource={difficulty}

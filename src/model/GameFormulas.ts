@@ -37,3 +37,42 @@ export function resetTimeFormula({
     Math.sqrt(rows.value() * cols.value() * (difficulty.value() / 100) * 10)
   );
 }
+
+export function scoreMultiplier({
+  resourceManager: {
+    resources: { difficulty },
+  },
+}: Context): number {
+  return (difficulty.value() + 10) / 25;
+}
+
+export function stateChanged(
+  context: Context,
+  target: "board" | "cell",
+  state: string,
+  automatic: boolean,
+) {
+  const resName = _targetStates[target + ":" + state];
+  if (resName) {
+    const res = context.resourceManager.resources[resName];
+    const multiplier = scoreMultiplier(context);
+    const factor = 1;
+
+    res.count += factor * multiplier;
+    if (automatic) {
+      res.extra.auto += factor;
+    } else {
+      res.extra.manual += factor;
+    }
+  }
+}
+
+const _targetStates: Record<string, string> = {
+  "board:active": "resets",
+  "board:lost": "losses",
+  "board:won": "wins",
+  "cell:blown": "explosions",
+  "cell:hinted": "hints",
+  "cell:flagged": "flags",
+  "cell:revealed": "cells",
+};

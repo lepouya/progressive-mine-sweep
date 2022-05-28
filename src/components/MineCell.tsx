@@ -1,6 +1,8 @@
 import { MouseEvent, useCallback } from "react";
 
+import { genBoardState } from "../model/Board";
 import { actOnCell, Cell, CellAction } from "../model/Cell";
+import { scoreMultiplier, stateChanged } from "../model/GameFormulas";
 import useGameContext from "./GameContext";
 import Icon from "./Icon";
 
@@ -9,23 +11,15 @@ type Props = {
   size: number;
   enabled: boolean;
   tapMode: CellAction;
-  onAction: (cell: Cell) => void;
 };
 
-export default function MineCell({
-  cell,
-  size,
-  enabled,
-  tapMode,
-  onAction,
-}: Props) {
-  const {
-    resources: { clicks, cells, flags, hints, explosions },
-  } = useGameContext();
+export default function MineCell({ cell, size, enabled, tapMode }: Props) {
+  const { context, board, setBoard, resources, settings } = useGameContext();
 
   const handleClick = useCallback(
     (event: MouseEvent<Element>) => {
       event.preventDefault();
+      const clicks = resources.clicks;
       clicks.count++;
 
       if (!enabled) {
@@ -36,7 +30,8 @@ export default function MineCell({
       const prevState = cell.state;
 
       // To flag: Right click
-      //  On devices that don't have right click, hold any of the modifier keys and left click
+      //  On devices that don't have right click, hold any of the modifier keys
+      //  and left click
       if (
         event.button === 2 ||
         (event.button === 0 &&
@@ -57,42 +52,29 @@ export default function MineCell({
       if (prevState === cell.state) {
         clicks.extra.useless++;
       } else {
-        switch (cell.state) {
-          case "blown":
-            explosions.count++;
-            explosions.extra.manual++;
-            break;
-
-          case "hinted":
-            hints.count++;
-            hints.extra.manual++;
-            break;
-
-          case "flagged":
-            flags.count++;
-            flags.extra.manual++;
-            break;
-
-          case "revealed":
-            cells.count++;
-            cells.extra.manual++;
-            break;
-
-          case "hidden":
-            if (prevState === "flagged") {
-              flags.count--;
-              flags.extra.unflags++;
-            } else if (prevState === "revealed") {
-              cells.count--;
-              cells.extra.hidden++;
-            }
-            break;
+        if (cell.state === "hidden") {
+          const multiplier = scoreMultiplier(context);
+          if (prevState === "flagged") {
+            resources.flags.count -= multiplier;
+            resources.flags.extra.unflags++;
+          } else if (prevState === "revealed") {
+            resources.cells.count -= multiplier;
+            resources.cells.extra.hidden++;
+          }
         }
 
-        onAction(cell);
+        stateChanged(context, "cell", cell.state, false);
+
+        if (board.state === "active") {
+          let newBoard = genBoardState(board, settings.maxErrors);
+          setBoard({ ...newBoard });
+          if (newBoard.state !== "active") {
+            stateChanged(context, "board", newBoard.state, false);
+          }
+        }
       }
     },
-    [cell, enabled, tapMode, onAction],
+    [cell, enabled, tapMode],
   );
 
   const minPx = Math.floor((640 * size) / 100);

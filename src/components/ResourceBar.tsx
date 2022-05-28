@@ -13,6 +13,7 @@ export default function ResourceBar() {
     <div className={`panel board-state-${board.state}`}>
       <ResourceRender
         resource={wins}
+        precision={0}
         showRate={true}
         showZeroRates={true}
         showRatePercentages={false}
@@ -20,6 +21,7 @@ export default function ResourceBar() {
       />
       <ResourceRender
         resource={cells}
+        precision={0}
         showRate={true}
         showZeroRates={true}
         showRatePercentages={false}
