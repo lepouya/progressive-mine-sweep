@@ -57,3 +57,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource selling?
 - Resource minimums
 - Reset game should reset flagging mode
+- Autogen page title from package

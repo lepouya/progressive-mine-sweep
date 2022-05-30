@@ -1,5 +1,7 @@
 import { Cell, CellState } from "../model/Cell";
+import getHTMLElement from "../utils/document";
 import { default as cellIcons } from "../data/cell_icons.json";
+import tablerIcons from "../data/tabler-sprite-nostroke.svg";
 
 export type IconProps = {
   icon?: string;
@@ -45,17 +47,8 @@ export default function Icon(props: IconProps) {
   );
 }
 
-import tablerIcons from "../data/tabler-sprite-nostroke.svg";
 window.addEventListener(
   "load",
-  function () {
-    let div = document.getElementById("icon");
-    if (!div) {
-      div = document.createElement("div");
-      div.id = "icon";
-      document.body.appendChild(div);
-    }
-    div.innerHTML = tablerIcons;
-  },
+  () => (getHTMLElement("icon").innerHTML = tablerIcons),
   false,
 );
