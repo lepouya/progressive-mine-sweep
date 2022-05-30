@@ -1,7 +1,7 @@
 import "mocha";
 import { expect } from "chai";
 
-import { Board, genBoard } from "../Board";
+import { Board, genBoard } from "../src/model/Board";
 
 function setupBoard(
   rows: number,

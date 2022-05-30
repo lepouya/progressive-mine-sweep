@@ -1,7 +1,7 @@
 import "mocha";
 import { expect } from "chai";
 
-import { genResourceManager } from "../ResourceManager";
+import { genResourceManager } from "../src/model/ResourceManager";
 
 describe("Creating resources", () => {
   it("Empty resource manager set up correctly", () => {

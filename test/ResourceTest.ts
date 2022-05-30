@@ -7,7 +7,7 @@ import {
   combineResources,
   genEmptyResource,
   subtractResources,
-} from "../Resource";
+} from "../src/model/Resource";
 
 describe("genEmptyResource", () => {
   it("Empty resource set up correctly", () => {
