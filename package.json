@@ -12,7 +12,7 @@
   "scripts": {
     "start": "webpack serve",
     "debug": "webpack",
-    "build": "webpack --mode=production",
+    "build": "webpack --mode=production --env clean",
     "test": "env TS_NODE_PROJECT=test/tsconfig.json mocha -r ts-node/register test/**/*.ts",
     "update": "ncu -u && rm -rf node_modules && npm update"
   },

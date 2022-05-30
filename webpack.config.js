@@ -1,6 +1,7 @@
 const CopyPlugin = require("copy-webpack-plugin");
 const PugPlugin = require("pug-plugin");
 const package = require("./package.json");
+const webpack = require("webpack");
 
 module.exports = (env, argv) => {
   const debug = argv.mode !== "production" && !env.production;
@@ -10,19 +11,21 @@ module.exports = (env, argv) => {
     context: __dirname,
     mode: debug ? "development" : "production",
     devtool: debug ? "source-map" : undefined,
-    resolve: { extensions: [".ts", ".tsx", ".js", ".scss"] },
-    performance: { maxEntrypointSize: 4194304, maxAssetSize: 1048576 },
 
     entry: {
-      main: {
-        filename: "index" + min + ".html",
-        import: package.main,
-      },
+      index: package.main,
+    },
+
+    resolve: {
+      extensions: [".ts", ".tsx", ".js", ".scss"],
     },
 
     output: {
-      // clean: true,
-      filename: "[name]" + min + ".js",
+      clean: env.clean ?? false,
+      filename: (pd) =>
+        pd.chunk.name.split(".").shift().replace("index", package.name) +
+        min +
+        ".js",
       path: __dirname + "/dist",
       publicPath: "",
     },
@@ -49,36 +52,31 @@ module.exports = (env, argv) => {
       ],
     },
 
-    optimization: {
-      minimize: !debug,
-      splitChunks: {
-        chunks: "all",
-        cacheGroups: {
-          node_modules: {
-            test: /[\\/]node_modules[\\/]/i,
-            filename: "vendors" + min + ".js",
-          },
-          tabler_icons: {
-            test: /[\\/]src[\\/].*tabler-sprite/i,
-            filename: "tabler-icons" + min + ".js",
-          },
-          code: {
-            test: /[\\/]src[\\/].*(ts|tsx|js|jsx|json)/i,
-            filename: package.name + min + ".js",
-          },
-        },
-      },
-    },
-
     plugins: [
+      new webpack.ProgressPlugin(),
+      new CopyPlugin({ patterns: [{ from: "assets" }] }),
       new PugPlugin({
         pretty: debug,
         modules: [
           PugPlugin.extractCss({ filename: package.name + min + ".css" }),
         ],
       }),
-      new CopyPlugin({ patterns: [{ from: "assets" }] }),
     ],
+
+    optimization: {
+      minimize: !debug,
+      runtimeChunk: "single",
+      splitChunks: {
+        chunks: "all",
+        name: (m, _, key) =>
+          key === "default" ? m.identifier().split(/[\\/]/).pop() : "vendors",
+      },
+    },
+
+    performance: {
+      maxEntrypointSize: 4194304,
+      maxAssetSize: 1048576,
+    },
 
     devServer: {
       static: { directory: __dirname + "/dist" },
