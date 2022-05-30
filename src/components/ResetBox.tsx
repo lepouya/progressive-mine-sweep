@@ -15,6 +15,7 @@ export default function ResetBox() {
     context,
     board,
     setBoard,
+    settings,
     resources: { rows, cols, resetSpeed },
   } = useGameContext();
   const [title, setTitle] = useState<string>(board.state);
@@ -67,6 +68,7 @@ export default function ResetBox() {
 
     const m = numMinesFormula(context);
     setBoard(genBoard(rows.value(), cols.value(), Math.floor(m), Math.ceil(m)));
+    settings.tapMode = "reveal";
   }
 
   return (
