@@ -11,6 +11,7 @@ module.exports = (env, argv) => {
     mode: debug ? "development" : "production",
     devtool: debug ? "source-map" : undefined,
     resolve: { extensions: [".ts", ".tsx", ".js", ".scss"] },
+    performance: { maxEntrypointSize: 4194304, maxAssetSize: 1048576 },
 
     entry: {
       main: {
@@ -22,7 +23,6 @@ module.exports = (env, argv) => {
     output: {
       // clean: true,
       filename: "[name]" + min + ".js",
-      sourceMapFilename: "[file].map",
       path: __dirname + "/dist",
       publicPath: "",
     },
@@ -30,34 +30,24 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          test: /\.[tj]sx?$/i,
-          loader: "ts-loader",
+          test: /\.(ts|tsx|js|jsx)$/i,
           exclude: /node_modules/,
+          use: ["ts-loader"],
         },
         {
-          test: /\.s?[ca]ss$/i,
+          test: /\.(css|scss|sass|less|styl)$/i,
           use: ["css-loader", "sass-loader"],
         },
         {
           test: /\.pug$/,
-          loader: PugPlugin.loader,
+          use: [PugPlugin.loader],
+        },
+        {
+          test: /\.svg$/i,
+          type: "asset/source",
         },
       ],
     },
-
-    plugins: [
-      new PugPlugin({
-        pretty: debug,
-        modules: [
-          PugPlugin.extractCss({
-            filename: Package.name + min + ".css",
-          }),
-        ],
-      }),
-      new CopyPlugin({
-        patterns: [{ from: "assets", to: "assets" }],
-      }),
-    ],
 
     optimization: {
       minimize: !debug,
@@ -66,17 +56,29 @@ module.exports = (env, argv) => {
         cacheGroups: {
           node_modules: {
             test: /[\\/]node_modules[\\/]/i,
-            reuseExistingChunk: true,
-            filename: "vendor" + min + ".js",
+            filename: "vendors" + min + ".js",
+          },
+          tabler_icons: {
+            test: /[\\/]src[\\/].*tabler-sprite/i,
+            filename: "tabler-icons" + min + ".js",
           },
           code: {
-            test: /[\\/]src[\\/].*\.[tj]sx?/i,
-            reuseExistingChunk: true,
+            test: /[\\/]src[\\/].*(ts|tsx|js|jsx|json)/i,
             filename: Package.name + min + ".js",
           },
         },
       },
     },
+
+    plugins: [
+      new PugPlugin({
+        pretty: debug,
+        modules: [
+          PugPlugin.extractCss({ filename: Package.name + min + ".css" }),
+        ],
+      }),
+      new CopyPlugin({ patterns: [{ from: "assets" }] }),
+    ],
 
     devServer: {
       static: { directory: __dirname + "/dist" },

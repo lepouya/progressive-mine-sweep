@@ -40,7 +40,22 @@ export default function Icon(props: IconProps) {
       color={color}
       strokeWidth={stroke}
     >
-      <use xlinkHref={`assets/tabler-sprite-nostroke.svg#tabler-${icon}`} />
+      <use xlinkHref={`#tabler-${icon}`} />
     </svg>
   );
 }
+
+import tablerIcons from "../data/tabler-sprite-nostroke.svg";
+window.addEventListener(
+  "load",
+  function () {
+    let div = document.getElementById("icon");
+    if (!div) {
+      div = document.createElement("div");
+      div.id = "icon";
+      document.body.appendChild(div);
+    }
+    div.innerHTML = tablerIcons;
+  },
+  false,
+);
