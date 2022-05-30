@@ -1,12 +1,13 @@
 doctype strict
-html
-  head
-    title Progressive Mine Sweep
+html: head
+  - const package = require("../package.json")
+  - const pretty = x => x.replace(/\W/g, ' ').replace(/(?:^|\s)\S/g, c=>c.toUpperCase())
+  title=`${pretty(package.name)} v${package.version}`
+  meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
+  meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+  meta(name="author" content=package.author)
+  meta(name="description" content=package.description)
 
-    meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
-
-    !=require("data/favicon.json").favicon.html_code
-
-    link(href=require("index.scss") rel="stylesheet")
-    script(src=require("index.tsx"))
+  !=require("data/favicon.json").favicon.html_code.replace(/\n/g,"")
+  link( rel="stylesheet" href=require("index.scss"))
+  script(src=require("index.tsx"))

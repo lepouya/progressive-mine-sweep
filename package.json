@@ -1,24 +1,20 @@
 {
   "name": "progressive-mine-sweep",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Progressive (Incremental) take on classic Minesweeper puzzle",
-  "author": "Pouya Larjani",
+  "author": "Pouya Larjani <pouya.larjani@gmail.com> (https://github.com/lepouya)",
   "license": "MIT",
+  "main": "src/index.pug",
+  "private": true,
+  "repository": "github:lepouya/progressive-mine-sweep",
   "homepage": "https://github.com/lepouya/progressive-mine-sweep#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lepouya/progressive-mine-sweep.git"
-  },
-  "bugs": {
-    "url": "https://github.com/lepouya/progressive-mine-sweep/issues"
-  },
+  "bugs": "https://github.com/lepouya/progressive-mine-sweep/issues",
   "scripts": {
     "start": "webpack serve",
     "debug": "webpack",
-    "release": "webpack --mode=production",
+    "build": "webpack --mode=production",
     "test": "env TS_NODE_PROJECT=test/tsconfig.json mocha -r ts-node/register test/**/*.ts",
-    "update": "ncu -u",
-    "reset:packages": "rm -rf node_modules && npm update --save-dev && npm update --save"
+    "update": "ncu -u && rm -rf node_modules && npm update"
   },
   "dependencies": {
     "react": "^18.1.0",

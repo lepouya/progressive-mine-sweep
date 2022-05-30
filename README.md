@@ -52,9 +52,8 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Brainstorm on what can be done here
 
-### Bugs to fix
+### Bugs, Issues, and Ideas
 
 - Resource selling?
 - Resource minimums
 - Reset game should reset flagging mode
-- Autogen page title from package

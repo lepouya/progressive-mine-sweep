@@ -1,6 +1,6 @@
 const CopyPlugin = require("copy-webpack-plugin");
-const Package = require("./package.json");
 const PugPlugin = require("pug-plugin");
+const package = require("./package.json");
 
 module.exports = (env, argv) => {
   const debug = argv.mode !== "production" && !env.production;
@@ -16,7 +16,7 @@ module.exports = (env, argv) => {
     entry: {
       main: {
         filename: "index" + min + ".html",
-        import: "src/index.pug",
+        import: package.main,
       },
     },
 
@@ -64,7 +64,7 @@ module.exports = (env, argv) => {
           },
           code: {
             test: /[\\/]src[\\/].*(ts|tsx|js|jsx|json)/i,
-            filename: Package.name + min + ".js",
+            filename: package.name + min + ".js",
           },
         },
       },
@@ -74,7 +74,7 @@ module.exports = (env, argv) => {
       new PugPlugin({
         pretty: debug,
         modules: [
-          PugPlugin.extractCss({ filename: Package.name + min + ".css" }),
+          PugPlugin.extractCss({ filename: package.name + min + ".css" }),
         ],
       }),
       new CopyPlugin({ patterns: [{ from: "assets" }] }),
