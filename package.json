@@ -12,7 +12,8 @@
   "scripts": {
     "start": "webpack serve",
     "debug": "webpack",
-    "build": "webpack --mode=production --env clean",
+    "build": "webpack --mode=production",
+    "release": "webpack --mode=production --env clean -o ../lepouya.github.io/progressive-mine-sweep/",
     "test": "env TS_NODE_PROJECT=test/tsconfig.json mocha -r ts-node/register test/**/*.ts",
     "update": "ncu -u && rm -rf node_modules && npm update"
   },
