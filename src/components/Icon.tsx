@@ -1,7 +1,7 @@
 import { Cell, CellState } from "../model/Cell";
 import getHTMLElement from "../utils/document";
 import cellIcons from "../data/cell_icons.json";
-import tablerIcons from "../data/tabler-sprite-nostroke.svg";
+import tablerIcons from "../../assets/tabler-sprite-nostroke.svg";
 
 export type IconProps = {
   icon?: string;
@@ -52,3 +52,14 @@ window.addEventListener(
   () => (getHTMLElement("icon").innerHTML = tablerIcons),
   false,
 );
+
+/* Alternative method to dynamically load the svg:
+webpack:
+  output: { assetModuleFilename: "[name][ext]" }
+  module: { rules: [{ test: /\.svg$/i, type: "asset/resource" }] }
+
+ts:
+  fetch(tablerIcons)
+    .then((response) => response.text())
+    .then((data) => (getHTMLElement("icon").innerHTML = data));
+*/
