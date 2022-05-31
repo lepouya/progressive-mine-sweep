@@ -4,9 +4,11 @@ export type CellState = "hidden" | "hinted" | "flagged" | "revealed" | "blown";
 export type Cell = {
   row: number;
   col: number;
-  contents: CellContents;
 
+  contents: CellContents;
   state: CellState;
+  locked?: boolean;
+
   neighbors: number;
 };
 

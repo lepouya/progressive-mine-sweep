@@ -92,44 +92,34 @@ export function populateRandomMines(
   return board;
 }
 
-export function populateNeighboringCells(board: Board): Board {
+export function genBoardState(board: Board, maxErrors = 1): Board {
+  board.cellCounts = { ...emptyCellCounts };
+  board.numMines = 0;
   board.cells.forEach((cells) => cells.forEach((cell) => (cell.neighbors = 0)));
 
   for (let r = 0; r < board.rows; r++) {
     for (let c = 0; c < board.cols; c++) {
-      board.cells[r][c].row = r;
-      board.cells[r][c].col = c;
-      if (board.cells[r][c].contents === "mine") {
-        for (let dr = r - 1; dr <= r + 1; dr++) {
-          for (let dc = c - 1; dc <= c + 1; dc++) {
-            if (
-              dr >= 0 &&
-              dc >= 0 &&
-              dr < board.rows &&
-              dc < board.cols &&
-              !(dr === r && dc === c)
-            ) {
-              board.cells[dr][dc].neighbors++;
-            }
+      const cell = board.cells[r][c];
+      board.numMines += cell.contents === "mine" ? 1 : 0;
+      board.cellCounts[cell.state]++;
+      cell.row = r;
+      cell.col = c;
+      cell.locked = !!cell.locked || undefined;
+      setSaveProperties(cell, ["contents", "state", "locked"]);
+
+      cell.neighbors = 0;
+      for (let dr = r - 1; dr <= r + 1; dr++) {
+        for (let dc = c - 1; dc <= c + 1; dc++) {
+          if (
+            (board.cells[dr] ?? [])[dc]?.contents === "mine" &&
+            !(dr === r && dc === c)
+          ) {
+            cell.neighbors++;
           }
         }
       }
     }
   }
-
-  return board;
-}
-
-export function genBoardState(board: Board, maxErrors = 1): Board {
-  board.cellCounts = { ...emptyCellCounts };
-  board.numMines = 0;
-  board.cells.forEach((cells) =>
-    cells.forEach((cell) => {
-      board.cellCounts[cell.state]++;
-      board.numMines += cell.contents === "mine" ? 1 : 0;
-      setSaveProperties(cell, ["contents", "state"]);
-    }),
-  );
 
   if (board.state === "lost" || board.cellCounts["blown"] >= maxErrors) {
     board.state = "lost";
@@ -153,9 +143,7 @@ export function genBoardState(board: Board, maxErrors = 1): Board {
     board.state = "active";
   }
 
-  populateNeighboringCells(board);
-  setSaveProperties(board, ["rows", "cols", "cells"]);
-  return board;
+  return setSaveProperties(board, ["rows", "cols", "cells"]);
 }
 
 export function genBoard(

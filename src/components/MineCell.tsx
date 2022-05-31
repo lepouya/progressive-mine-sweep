@@ -22,7 +22,7 @@ export default function MineCell({ cell, size, enabled, tapMode }: Props) {
       const clicks = resources.clicks;
       clicks.count++;
 
-      if (!enabled) {
+      if (!enabled || cell.locked) {
         clicks.extra.useless++;
         return;
       }
