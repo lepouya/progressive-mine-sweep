@@ -28,7 +28,7 @@ export default function ResetBox() {
   }, [board, board.state]);
 
   if (board.rows === 0 || board.cols === 0 || board.state === "inactive") {
-    resetBoard();
+    resetBoard(true);
     return null;
   } else if (board.state === "active") {
     return null;
@@ -58,13 +58,8 @@ export default function ResetBox() {
     }
   }
 
-  function resetBoard() {
-    stateChanged(
-      context,
-      "board",
-      "active",
-      board.rows === 0 || board.cols === 0,
-    );
+  function resetBoard(auto = false) {
+    stateChanged(context, "board", "active", auto);
 
     const m = numMinesFormula(context);
     setBoard(genBoard(rows.value(), cols.value(), Math.floor(m), Math.ceil(m)));
@@ -72,8 +67,8 @@ export default function ResetBox() {
   }
 
   return (
-    <div className={`reset-box board-state-${board.state}`}>
-      <div className="panel">
+    <div className="reset-box">
+      <div className={`panel board-state-${board.state}`}>
         <div className="title-bar">{title}</div>
         <div className="full center">Game over!</div>
         <div className="full center">

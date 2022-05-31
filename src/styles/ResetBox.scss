@@ -6,6 +6,9 @@
   top: calc(50% - 160px);
   width: 320px;
   height: 320px;
+  z-index: 8;
+
+  background-color: transparent;
 
   span {
     display: block;
