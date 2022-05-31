@@ -1,6 +1,6 @@
 import { Cell, CellState } from "../model/Cell";
 import getHTMLElement from "../utils/document";
-import { default as cellIcons } from "../data/cell_icons.json";
+import cellIcons from "../data/cell_icons.json";
 import tablerIcons from "../data/tabler-sprite-nostroke.svg";
 
 export type IconProps = {

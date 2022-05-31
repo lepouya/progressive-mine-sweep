@@ -1,8 +1,7 @@
-import * as data from "../data/messages.json";
+import messages from "../data/messages.json";
 
-const messages = <Record<string, string | string[]>>data;
 export default function message(key: string, index?: number): string {
-  const msgs = messages[key];
+  const msgs = messages[key as keyof typeof messages];
   if (!msgs || msgs.length === 0) {
     return key;
   } else if (typeof msgs === "string") {

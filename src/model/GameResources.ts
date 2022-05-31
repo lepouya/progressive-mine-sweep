@@ -3,10 +3,10 @@ import { Resource } from "./Resource";
 import { genResourceManager, ResourceManager } from "./ResourceManager";
 import tickTimer from "../utils/tickTimer";
 
-import { default as resources_time } from "../data/resources_time.json";
-import { default as resources_board } from "../data/resources_board.json";
-import { default as resources_game } from "../data/resources_game.json";
-import { default as resources_cell } from "../data/resources_cell.json";
+import resources_time from "../data/resources_time.json";
+import resources_board from "../data/resources_board.json";
+import resources_game from "../data/resources_game.json";
+import resources_cell from "../data/resources_cell.json";
 const loadResources = <Partial<Resource>[][]>[
   resources_time,
   resources_board,
