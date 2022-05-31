@@ -73,15 +73,13 @@ export default function Game() {
           <Link to="/options">Settings</Link>
         </div>
       </nav>
-      <div className="main">
-        <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/upgrades" element={<Upgrades />} />
-          <Route path="/stats" element={<Stats />} />
-          <Route path="/help" element={<Help />} />
-          <Route path="/options" element={<Options />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/upgrades" element={<Upgrades />} />
+        <Route path="/stats" element={<Stats />} />
+        <Route path="/help" element={<Help />} />
+        <Route path="/options" element={<Options />} />
+      </Routes>
     </HashRouter>
   );
 }
