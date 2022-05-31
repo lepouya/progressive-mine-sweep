@@ -21,6 +21,7 @@ export type Settings = {
   timeDilation: number;
 
   // Game mode
+  tutorialStep: number;
   tapMode: "reveal" | "flag";
   buyAmount: string;
 };
@@ -43,6 +44,7 @@ export const defaultSettings: Settings = {
   maxErrors: 1,
   timeDilation: 1.0,
 
+  tutorialStep: 0,
   tapMode: "reveal",
   buyAmount: "x1",
 };

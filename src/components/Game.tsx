@@ -8,6 +8,7 @@ import useGameContext from "./GameContext";
 import Link from "./Link";
 import Stats from "../pages/Stats";
 import Upgrades from "../pages/Upgrades";
+import Tutorial from "../pages/Tutorial";
 
 export default function Game() {
   const {
@@ -73,6 +74,7 @@ export default function Game() {
           <Link to="/options">Settings</Link>
         </div>
       </nav>
+      <Tutorial />
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/upgrades" element={<Upgrades />} />
