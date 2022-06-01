@@ -1,19 +1,22 @@
 import { useMemo } from "react";
 
 import MineCell from "./MineCell";
-import clamp from "../utils/clamp";
 import useGameContext from "./GameContext";
+import { Board } from "../model/Board";
 
-export default function MineField() {
-  const {
-    board,
-    settings: { tapMode },
-  } = useGameContext();
+type Props = {
+  board?: Board;
+  setBoard?: (board: Board) => void;
+  boardWidth?: number;
+};
+
+export default function MineField(props: Props) {
+  const context = useGameContext();
+  const board = props.board ?? context.board;
 
   const mineField = useMemo(
     function () {
-      const estSize = Math.floor(95 / Math.max(board.rows, board.cols));
-      const cellSize = clamp(estSize, 2, 30);
+      const cellRatio = Math.floor(95 / Math.max(board.rows, board.cols));
       return (
         <table>
           <tbody>
@@ -23,9 +26,11 @@ export default function MineField() {
                   <MineCell
                     key={`cell:${r}:${c}`}
                     cell={cell}
-                    size={cellSize}
+                    cellRatio={cellRatio}
                     enabled={board.state === "active"}
-                    tapMode={tapMode}
+                    board={props.board}
+                    setBoard={props.setBoard}
+                    boardWidth={props.boardWidth}
                   />
                 ))}
               </tr>
@@ -34,7 +39,7 @@ export default function MineField() {
         </table>
       );
     },
-    [board, tapMode],
+    [board],
   );
 
   return <div className="minefield">{mineField}</div>;
