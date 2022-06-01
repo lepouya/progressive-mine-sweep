@@ -1,29 +1,38 @@
 import { MouseEvent, useCallback } from "react";
 
-import { genBoardState } from "../model/Board";
-import { actOnCell, Cell, CellAction } from "../model/Cell";
-import { stateChanged } from "../model/GameFormulas";
+import { genBoardState, Board } from "../model/Board";
+import { actOnCell, Cell } from "../model/Cell";
 import useGameContext from "./GameContext";
+import { stateChanged } from "../model/GameFormulas";
 import Icon from "./Icon";
 
 type Props = {
+  board?: Board;
   cell: Cell;
-  size: number;
-  enabled: boolean;
-  tapMode: CellAction;
+  enabled?: boolean;
+
+  boardWidth?: number;
+  cellRatio: number;
+
+  setBoard?: (board: Board) => void;
 };
 
-export default function MineCell({ cell, size, enabled, tapMode }: Props) {
-  const { context, board, setBoard, resources, settings } = useGameContext();
+export default function MineCell(props: Props) {
+  const context = useGameContext();
+  const board = props.board ?? context.board;
+  const cell = props.cell;
+  const shouldCountStats = !props.board;
 
   const handleClick = useCallback(
     (event: MouseEvent<Element>) => {
       event.preventDefault();
-      const clicks = resources.clicks;
+      const clicks = context.resources.clicks;
       clicks.count++;
 
-      if (!enabled || cell.locked) {
-        clicks.extra.useless++;
+      if (!(props.enabled ?? true) || cell.locked) {
+        if (shouldCountStats) {
+          clicks.extra.useless++;
+        }
         return;
       }
 
@@ -38,39 +47,49 @@ export default function MineCell({ cell, size, enabled, tapMode }: Props) {
           (event.altKey ||
             event.ctrlKey ||
             event.metaKey ||
-            tapMode === "flag"))
+            context.settings.tapMode === "flag"))
       ) {
-        clicks.extra.right++;
+        if (shouldCountStats) {
+          clicks.extra.right++;
+        }
         actOnCell(cell, "flag");
       }
       // To reveal: Left click
-      else if (event.button === 0 && tapMode === "reveal") {
-        clicks.extra.left++;
+      else if (event.button === 0 && context.settings.tapMode === "reveal") {
+        if (shouldCountStats) {
+          clicks.extra.left++;
+        }
         actOnCell(cell, "reveal");
       }
 
       if (prevState === cell.state) {
-        clicks.extra.useless++;
+        if (shouldCountStats) {
+          clicks.extra.useless++;
+        }
       } else {
-        stateChanged(context, "cell", cell.state, false);
-        if (cell.state === "hidden") {
-          stateChanged(context, "cell", "un" + prevState, false);
+        if (shouldCountStats) {
+          stateChanged(context, "cell", cell.state, false);
+          if (cell.state === "hidden") {
+            stateChanged(context, "cell", "un" + prevState, false);
+          }
         }
 
         if (board.state === "active") {
-          let newBoard = genBoardState(board, settings.maxErrors);
-          setBoard({ ...newBoard });
+          let newBoard = genBoardState(board, context.settings.maxErrors);
+          (props.setBoard ?? context.setBoard)({ ...newBoard });
           if (newBoard.state !== "active") {
-            stateChanged(context, "board", newBoard.state, false);
+            if (shouldCountStats) {
+              stateChanged(context, "board", newBoard.state, false);
+            }
           }
         }
       }
     },
-    [cell, enabled, tapMode],
+    [board, cell, props.enabled],
   );
 
-  const minPx = Math.floor((640 * size) / 100);
-  const cellSize = `min(${size}vmin, ${minPx}px)`;
+  const minPx = Math.floor(((props.boardWidth ?? 640) * props.cellRatio) / 100);
+  const cellSize = `min(${props.cellRatio}vmin, ${minPx}px)`;
 
   return (
     <td
