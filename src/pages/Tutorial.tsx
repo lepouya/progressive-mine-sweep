@@ -1,4 +1,7 @@
+import { MouseEvent } from "react";
+
 import useGameContext from "../components/GameContext";
+import round from "../utils/round";
 
 export default function Tutorial() {
   const { settings } = useGameContext();
@@ -8,8 +11,23 @@ export default function Tutorial() {
   let width = "200px";
   let height = "200px";
 
-  if (settings.tutorialStep === 0) {
+  if (settings.tutorialStep > 0) {
     return null;
+  }
+
+  switch (settings.tutorialStep) {
+    case 0:
+      greyedOut = true;
+      left = "50% - 300px";
+      top = "3rem";
+      width = "600px";
+      height = "600px";
+      break;
+  }
+
+  function skipStep(event: MouseEvent<Element>) {
+    event.preventDefault();
+    settings.tutorialStep = round(settings.tutorialStep + 100, -2, "floor");
   }
 
   const style = {
@@ -21,17 +39,27 @@ export default function Tutorial() {
 
   const ret = (
     <div className="tutorial" style={style}>
-      <div className="panel">Tutorial step: {settings.tutorialStep}</div>
+      <div className="panel">
+        <div className="title-bar">Tutorial step: {settings.tutorialStep}</div>
+        <div className="full">
+          Hello and welcome to Progressive Mine Sweep &mdash; also known as PMS.
+        </div>
+        <div className="skip">
+          <a href="" onClick={skipStep}>
+            skip &gt;&gt;&gt;
+          </a>
+        </div>
+      </div>
     </div>
   );
 
   if (greyedOut) {
-    return <div className="greyout">${ret}</div>;
+    return <div className="greyout">{ret}</div>;
   } else {
     return ret;
   }
 }
 
 function _calc(s?: string) {
-  return /\W/.test(s ?? "") ? `calc(${s})` : s;
+  return `max(5%, 1em, min(90%, calc(100% - 2em), calc(${s})))`;
 }

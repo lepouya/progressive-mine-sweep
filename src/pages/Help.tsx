@@ -1,7 +1,7 @@
 export default function Help() {
   return (
-    <div>
-      <div className="panel help">
+    <div className="help">
+      <div className="panel">
         <div className="title-bar">Progressive Mine Sweep</div>
         <div className="full">
           This game is my take on the classic Minesweeper puzzle and making
