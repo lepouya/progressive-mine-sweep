@@ -26,9 +26,9 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### M3: Tutorial
 
+- ~~Recover from failed loads~~
 - Add a tutorial for starting the game and how to progress
 - Tooltips and help options
-- ~~Recover from failed loads~~
 - Add color themes
 
 ### M4: Automation
@@ -56,3 +56,5 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Resource selling?
 - Resource minimums
+- Go through all the colors used and make a map
+- Figure out how to make a component glow or be highlighted for tutorials

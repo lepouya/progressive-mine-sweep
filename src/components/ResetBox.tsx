@@ -88,7 +88,7 @@ export default function ResetBox() {
               onClick={startReset}
             />
           )}
-          {isResetting && <span>{resetMessage}</span>}
+          {isResetting && <span>{resetMessage}...</span>}
         </ProgressCircle>
       </div>
     </div>
