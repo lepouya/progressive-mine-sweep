@@ -56,5 +56,8 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Resource selling?
 - Resource minimums
-- Go through all the colors used and make a map
+- Better unit testing for models and utils
+- Go through all the colors used and make a map under :root
 - Figure out how to make a component glow or be highlighted for tutorials
+- Add names and ids to important components
+- buttons for next and prev
