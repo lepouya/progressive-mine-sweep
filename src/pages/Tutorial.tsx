@@ -1,4 +1,4 @@
-import { MouseEvent, useState, useEffect } from "react";
+import { MouseEvent } from "react";
 
 import useGameContext from "../components/GameContext";
 import round from "../utils/round";
@@ -9,53 +9,53 @@ import map from "../utils/map";
 
 export default function Tutorial() {
   const { context, settings } = useGameContext();
-  const [tutorialStep, setTutorialStep] = useState<TutorialStep | undefined>();
+  const stepGen = tutorialSteps[settings.tutorialStep];
+  if (!stepGen) {
+    return null;
+  }
 
-  useEffect(() => {
-    const stepGen = tutorialSteps[settings.tutorialStep];
-    if (!stepGen) {
-      setTutorialStep(undefined);
-      return;
-    }
+  const stepIdx = sortedSteps.indexOf(settings.tutorialStep);
+  const tutorialStep: TutorialStep = generate(
+    stepGen,
+    {
+      step: settings.tutorialStep,
+      enabled: true,
 
-    const sortedSteps = Object.keys(tutorialSteps)
-      .map((n) => parseInt(n))
-      .sort((a, b) => a - b);
-    const stepIdx = sortedSteps.indexOf(settings.tutorialStep);
+      title: `Tutorial step #${settings.tutorialStep}`,
+      body: "...",
 
-    const gen = generate(
-      stepGen,
-      {
-        step: settings.tutorialStep,
-        title: `Tutorial step #${settings.tutorialStep}`,
-        body: "...",
-        enabled: true,
+      prevStep: sortedSteps[stepIdx - 1],
+      prevStepTitle: "< back",
+      nextStep: sortedSteps[stepIdx + 1],
+      nextStepTitle: "next >",
+      skipToStep: round(settings.tutorialStep + 100, -2, "floor"),
+      skipToStepTitle: "skip >>>",
 
-        prevStep: sortedSteps[stepIdx - 1],
-        prevStepTitle: "< back",
-        nextStep: sortedSteps[stepIdx + 1],
-        nextStepTitle: "next >",
-        skipToStep: round(settings.tutorialStep + 100, -2, "floor"),
-        skipToStepTitle: "skip >>>",
-
-        greyOut: false,
-        bounds: {
-          left: "50% - 100px",
-          top: "20px",
-          width: "200px",
-          height: "200px",
-        },
+      greyOut: false,
+      bounds: {
+        left: "50% - 100px",
+        top: "20px",
+        width: "200px",
+        height: "200px",
       },
-      context,
-    );
+    },
+    context,
+  );
 
-    gen.bounds = map(
-      gen.bounds,
-      (size) => `max(5%, 1em, min(90%, calc(100% - 2em), calc(${size})))`,
-    );
+  if (
+    !tutorialStep ||
+    !tutorialStep.enabled ||
+    tutorialStep.step !== settings.tutorialStep ||
+    tutorialStep.step < 0 ||
+    stepIdx < 0
+  ) {
+    return null;
+  }
 
-    setTutorialStep(gen);
-  }, [settings.tutorialStep]);
+  tutorialStep.bounds = map(
+    tutorialStep.bounds,
+    (size) => `max(5%, 1em, min(90%, calc(100% - 2em), calc(${size})))`,
+  );
 
   function validStep(step?: number) {
     return (
@@ -63,7 +63,7 @@ export default function Tutorial() {
       step != undefined &&
       step >= 0 &&
       step !== settings.tutorialStep &&
-      step !== tutorialStep?.step
+      step !== tutorialStep.step
     );
   }
 
@@ -74,50 +74,31 @@ export default function Tutorial() {
     }
   }
 
-  if (
-    !tutorialStep ||
-    tutorialStep.step !== settings.tutorialStep ||
-    tutorialStep.step < 0
-  ) {
-    // Either done with tutorials or ended up in an error state
-    return null;
-  } else if (!tutorialStep.enabled) {
-    // Need to re-evaluate the tutorial activation
-    const enableFunc = tutorialSteps[settings.tutorialStep].enabled;
-    if (typeof enableFunc === "function") {
-      tutorialStep.enabled = enableFunc(tutorialStep, context) ?? true;
-    }
-    if (!tutorialStep.enabled) {
-      return null;
-    }
-    setTutorialStep(tutorialStep);
-  }
-
   const tutorial = (
-    <div className="tutorial" style={tutorialStep?.bounds}>
+    <div className="tutorial" style={tutorialStep.bounds}>
       <div className="panel">
-        {tutorialStep?.title != null && tutorialStep?.title !== "" && (
-          <div className="title-bar">{tutorialStep?.title}</div>
+        {tutorialStep.title != null && tutorialStep.title !== "" && (
+          <div className="title-bar">{tutorialStep.title}</div>
         )}
-        {tutorialStep?.body}
-        {validStep(tutorialStep?.prevStep) && (
+        {tutorialStep.body}
+        {validStep(tutorialStep.prevStep) && (
           <div className="prev">
-            <a href="" onClick={(e) => gotoStep(e, tutorialStep?.prevStep)}>
-              {tutorialStep?.prevStepTitle}
+            <a href="" onClick={(e) => gotoStep(e, tutorialStep.prevStep)}>
+              {tutorialStep.prevStepTitle}
             </a>
           </div>
         )}
-        {validStep(tutorialStep?.nextStep) && (
+        {validStep(tutorialStep.nextStep) && (
           <div className="next">
-            <a href="" onClick={(e) => gotoStep(e, tutorialStep?.nextStep)}>
-              {tutorialStep?.nextStepTitle}
+            <a href="" onClick={(e) => gotoStep(e, tutorialStep.nextStep)}>
+              {tutorialStep.nextStepTitle}
             </a>
           </div>
         )}
-        {validStep(tutorialStep?.skipToStep) && (
+        {validStep(tutorialStep.skipToStep) && (
           <div className="skip">
-            <a href="" onClick={(e) => gotoStep(e, tutorialStep?.skipToStep)}>
-              {tutorialStep?.skipToStepTitle}
+            <a href="" onClick={(e) => gotoStep(e, tutorialStep.skipToStep)}>
+              {tutorialStep.skipToStepTitle}
             </a>
           </div>
         )}
@@ -125,7 +106,7 @@ export default function Tutorial() {
     </div>
   );
 
-  if (tutorialStep?.greyOut) {
+  if (tutorialStep.greyOut) {
     return <div className="greyout">{tutorial}</div>;
   } else {
     return tutorial;
@@ -134,10 +115,10 @@ export default function Tutorial() {
 
 type TutorialStep = {
   step: number;
+  enabled: boolean;
+
   title: string | JSX.Element;
   body: string | JSX.Element;
-
-  enabled: boolean;
 
   prevStep: number;
   prevStepTitle: string | JSX.Element;
@@ -146,6 +127,7 @@ type TutorialStep = {
   skipToStep: number;
   skipToStepTitle: string | JSX.Element;
 
+  highlightSelector: string;
   greyOut: boolean;
   bounds: {
     left: string;
@@ -158,9 +140,7 @@ type TutorialStep = {
 const tutorialSteps: Record<number, Generative<TutorialStep, [Context]>> = {
   0: {
     body: (
-      <div className="full">
-        Hello and welcome to Progressive Mine Sweep &mdash; also known as PMS.
-      </div>
+      <div className="full">Hi! this is the testing part of the tutorial.</div>
     ),
     greyOut: true,
     bounds: {
@@ -171,3 +151,7 @@ const tutorialSteps: Record<number, Generative<TutorialStep, [Context]>> = {
     },
   },
 };
+
+const sortedSteps = Object.keys(tutorialSteps)
+  .map((n) => parseInt(n))
+  .sort((a, b) => a - b);
