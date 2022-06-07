@@ -6,6 +6,8 @@ import { Context } from "../model/Context";
 import { Generative } from "../utils/generate";
 import generate from "../utils/generate";
 import map from "../utils/map";
+import { MineFieldWrapper } from "../components/MineField";
+import ResourceRender from "../components/ResourceRender";
 
 export default function Tutorial() {
   const { context, settings } = useGameContext();
@@ -14,7 +16,7 @@ export default function Tutorial() {
     return null;
   }
 
-  const stepIdx = sortedSteps.indexOf(settings.tutorialStep);
+  const stepIdx = sortedTutorialSteps.indexOf(settings.tutorialStep);
   const tutorialStep: TutorialStep = generate(
     stepGen,
     {
@@ -24,19 +26,19 @@ export default function Tutorial() {
       title: `Tutorial step #${settings.tutorialStep}`,
       body: "...",
 
-      prevStep: sortedSteps[stepIdx - 1],
+      prevStep: sortedTutorialSteps[stepIdx - 1],
       prevStepTitle: "< back",
-      nextStep: sortedSteps[stepIdx + 1],
+      nextStep: sortedTutorialSteps[stepIdx + 1],
       nextStepTitle: "next >",
       skipToStep: round(settings.tutorialStep + 100, -2, "floor"),
       skipToStepTitle: "skip >>>",
 
       greyOut: false,
       bounds: {
-        left: "50% - 100px",
-        top: "20px",
-        width: "200px",
-        height: "200px",
+        left: "50% - 200px",
+        top: "6rem",
+        width: "400px",
+        height: "400px",
       },
     },
     context,
@@ -139,19 +141,83 @@ type TutorialStep = {
 
 const tutorialSteps: Record<number, Generative<TutorialStep, [Context]>> = {
   0: {
+    title: "Progressive Mine Sweep",
     body: (
-      <div className="full">Hi! this is the testing part of the tutorial.</div>
+      <>
+        <div className="full">Hi! Welcome to progressive mine sweeper.</div>
+        <div className="full">
+          This is my special take on the classic minesweeper game with
+          progressive / incremental aspects built into it.
+        </div>
+        <div className="full">
+          The first part of this tutorial will walk you through how to play
+          minesweeper. At any point in tutorial you can move to the next or
+          previous pages. Feel free to skip to the next chapter if you already
+          know how to play!
+        </div>
+      </>
     ),
     greyOut: true,
-    bounds: {
-      left: "50% - 300px",
-      top: "3rem",
-      width: "600px",
-      height: "600px",
-    },
+  },
+  10: {
+    title: "What is minesweeper",
+    body: (
+      <>
+        <div className="full">
+          The game board consists of a playing field shaped like a grid of
+          squares. There are a certain number of mines buried under this field.
+          The objective of each game is to successfully clear all the empty
+          cells, and flag the cells containing mines without triggering
+          (exploding) them.
+        </div>
+        <div className="full center">Sample 4x4 board:</div>
+        <div className="full center">
+          <MineFieldWrapper rows={4} cols={4} randomMines={2} size={200} />
+        </div>
+      </>
+    ),
+    greyOut: true,
+  },
+  15: {
+    title: "Scoring",
+    body: (_, context) => (
+      <>
+        <div className="full">
+          Scores are awarded to the player based on how many cells have been
+          successfully marked and how many playing fields have been cleared.
+          These rewards can be used to purchase upgrades to the game to make it
+          more engaging or challenging.
+        </div>
+        <div className="half center">
+          <ResourceRender
+            resource={context.resourceManager.get("wins")}
+            value={69}
+            showChrome={true}
+          />
+        </div>
+        <div className="half left">
+          Shows how many fields you have successfully cleared
+        </div>
+        <div className="half center">
+          <ResourceRender
+            resource={context.resourceManager.get("cells")}
+            value={420}
+            showChrome={true}
+          />
+        </div>
+        <div className="half left">
+          Shows how many cells you have cleared without exploding
+        </div>
+        <div className="full">
+          There are many other scores and resources tracked in the game that you
+          can access via the STATISTICS tab above
+        </div>
+      </>
+    ),
+    greyOut: true,
   },
 };
 
-const sortedSteps = Object.keys(tutorialSteps)
+const sortedTutorialSteps = Object.keys(tutorialSteps)
   .map((n) => parseInt(n))
   .sort((a, b) => a - b);

@@ -61,5 +61,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Go through all the colors used and make a map under :root
 - Figure out how to make a component glow or be highlighted for tutorials
 - Add names and ids to important components
-- Buttons for next and prev
 - Tutorial step completion rewards?

@@ -7,6 +7,7 @@
 
   .panel {
     height: 100%;
+    gap: 1ex 0;
 
     background-color: #eeeeee;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
@@ -14,12 +15,33 @@
       rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   }
 
-  .skip {
+  .prev {
+    position: absolute;
+    bottom: 1ex;
+    left: 1ex;
+
+    font-size: smaller;
+    text-transform: uppercase;
+  }
+
+  .next {
     position: absolute;
     bottom: 1ex;
     right: 1ex;
 
     font-size: smaller;
+    text-transform: uppercase;
+  }
+
+  .skip {
+    position: absolute;
+    bottom: 1ex;
+    left: 50%;
+
+    transform: translate(-50%, 0);
+
+    font-size: smaller;
+    text-transform: uppercase;
   }
 }
 

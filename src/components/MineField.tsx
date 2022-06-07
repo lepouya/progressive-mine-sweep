@@ -1,8 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import MineCell from "./MineCell";
 import useGameContext from "./GameContext";
-import { Board } from "../model/Board";
+import { Board, genBoard, genBoardState } from "../model/Board";
 
 type Props = {
   board?: Board;
@@ -43,4 +43,24 @@ export default function MineField(props: Props) {
   );
 
   return <div className="minefield">{mineField}</div>;
+}
+
+export function MineFieldWrapper(props: {
+  rows: number;
+  cols: number;
+  randomMines?: number;
+  mines?: [number, number][];
+  size?: number;
+}) {
+  const [board, setBoard] = useState(() => {
+    const board = genBoard(props.rows, props.cols, props.randomMines);
+    (props.mines ?? []).forEach(
+      ([row, col]) => (board.cells[row][col].contents = "mine"),
+    );
+    return genBoardState(board);
+  });
+
+  return (
+    <MineField board={board} setBoard={setBoard} boardWidth={props.size} />
+  );
 }
