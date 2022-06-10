@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import MineCell from "./MineCell";
 import useGameContext from "./GameContext";
-import { Board, genBoard, genBoardState } from "../model/Board";
+import { Board, emptyBoard, genBoard, genBoardState } from "../model/Board";
 
 type Props = {
   board?: Board;
@@ -50,15 +50,32 @@ export function MineFieldWrapper(props: {
   cols: number;
   randomMines?: number;
   mines?: [number, number][];
+  hints?: [number, number][];
+  flags?: [number, number][];
+  reveals?: [number, number][];
+  blowns?: [number, number][];
+  locks?: [number, number][];
+  unlocks?: [number, number][];
   size?: number;
 }) {
-  const [board, setBoard] = useState(() => {
+  const [board, setBoard] = useState(emptyBoard);
+
+  useEffect(() => {
     const board = genBoard(props.rows, props.cols, props.randomMines);
-    (props.mines ?? []).forEach(
-      ([row, col]) => (board.cells[row][col].contents = "mine"),
-    );
-    return genBoardState(board);
-  });
+    if (props.unlocks && props.unlocks.length > 0) {
+      board.cells.forEach((r) => r.forEach((c) => (c.locked = true)));
+    }
+
+    props.mines?.forEach(([r, c]) => (board.cells[r][c].contents = "mine"));
+    props.hints?.forEach(([r, c]) => (board.cells[r][c].state = "hinted"));
+    props.flags?.forEach(([r, c]) => (board.cells[r][c].state = "flagged"));
+    props.reveals?.forEach(([r, c]) => (board.cells[r][c].state = "revealed"));
+    props.blowns?.forEach(([r, c]) => (board.cells[r][c].state = "blown"));
+    props.locks?.forEach(([r, c]) => (board.cells[r][c].locked = true));
+    props.unlocks?.forEach(([r, c]) => (board.cells[r][c].locked = false));
+
+    setBoard(genBoardState(board));
+  }, [props]);
 
   return (
     <MineField board={board} setBoard={setBoard} boardWidth={props.size} />

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import useGameContext from "./GameContext";
 import Icon from "./Icon";
 
@@ -11,12 +12,17 @@ export default function ModeControls({
   showBuyAmount = true,
 }: Props) {
   const { settings } = useGameContext();
+  const [_tapMode, setTapMode] = useState(settings.tapMode);
+  const [_buyAmount, setBuyAmount] = useState(settings.buyAmount);
+
   function toggleTapMode() {
     settings.tapMode = settings.tapMode === "reveal" ? "flag" : "reveal";
+    setTapMode(settings.tapMode);
   }
 
   function setBuyMode(event: React.MouseEvent) {
     settings.buyAmount = (event.target as HTMLInputElement).value;
+    setBuyAmount(settings.buyAmount);
   }
 
   function getClassName(buyMode: string) {
