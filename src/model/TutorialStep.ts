@@ -43,6 +43,9 @@ export function resolveTutorialStep(
     .map((n) => parseInt(n))
     .sort((a, b) => a - b);
   const stepIdx = sortedTutorialSteps.indexOf(tutorialStep);
+  const prevIdx = sortedTutorialSteps[stepIdx - 1];
+  const nextIdx = sortedTutorialSteps[stepIdx + 1];
+  const skipIdx = round(tutorialStep + 100, -2, "floor");
 
   const res = generate(
     stepGen,
@@ -53,11 +56,11 @@ export function resolveTutorialStep(
       title: `Tutorial step #${tutorialStep}`,
       body: "...",
 
-      prevStep: sortedTutorialSteps[stepIdx - 1],
+      prevStep: prevIdx,
       prevStepTitle: "< back",
-      nextStep: sortedTutorialSteps[stepIdx + 1],
-      nextStepTitle: "next >",
-      skipToStep: round(tutorialStep + 100, -2, "floor"),
+      nextStep: nextIdx >= 0 ? nextIdx : skipIdx,
+      nextStepTitle: nextIdx >= 0 ? "next >" : "done",
+      skipToStep: skipIdx,
       skipToStepTitle: "skip >>>",
 
       highlightSelector: "",
