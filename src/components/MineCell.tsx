@@ -96,8 +96,12 @@ export default function MineCell(props: Props) {
       className={`cell cell-${cell.state}`}
       onClick={handleClick}
       onContextMenu={handleClick}
+      id={`col-${cell.col}`}
     >
-      <div style={{ width: cellSize, height: cellSize }}>
+      <div
+        style={{ width: cellSize, height: cellSize }}
+        id={`cell-${cell.row}-${cell.col}`}
+      >
         <Icon cell={cell} size="80%" />
       </div>
     </td>

@@ -18,10 +18,13 @@ export default function MineField(props: Props) {
     function () {
       const cellRatio = Math.floor(95 / Math.max(board.rows, board.cols));
       return (
-        <table>
+        <table
+          id={board === context.board ? "board-main" : "board-custom"}
+          className="board"
+        >
           <tbody>
             {board.cells.flatMap((row, r) => (
-              <tr key={`row:${r}:*`}>
+              <tr key={`row:${r}:*`} id={`row-${r}`}>
                 {row.map((cell, c) => (
                   <MineCell
                     key={`cell:${r}:${c}`}

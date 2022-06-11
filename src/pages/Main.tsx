@@ -37,21 +37,21 @@ export default function Main() {
   }
 
   return (
-    <div className="main">
+    <div className="main" id="main">
       <ResourceBar />
       <ResetBox />
       <MineField />
       <ModeControls />
       <div className="game-controls panel">
         <div className="half">
-          <button className="buy-button" onClick={reset}>
+          <button className="buy-button" onClick={reset} id="button-reset">
             <ResourceRender
               resource={resets}
               value={1}
               showValue={false}
               showChrome={true}
-              infix={""}
-              suffix={"the Game"}
+              infix=""
+              suffix="the Game"
             />
           </button>
         </div>
@@ -64,7 +64,7 @@ export default function Main() {
           />
         </div>
         {boardSizeChanged && (
-          <div className="left full">
+          <div className="left full" id="reset-info">
             On reset, game board will change to size to
             {` ${rows.value()}x${cols.value()}`}
           </div>

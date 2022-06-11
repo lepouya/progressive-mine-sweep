@@ -39,7 +39,11 @@ export default function Tutorial() {
   }
 
   const tutorial = (
-    <div className="tutorial" style={tutorialStep.bounds}>
+    <div
+      className="tutorial"
+      style={tutorialStep.bounds}
+      id={`tutorial-step-${tutorialStep.step}`}
+    >
       <div className="panel">
         {tutorialStep.title != null && tutorialStep.title !== "" && (
           <div className="title-bar">{tutorialStep.title}</div>

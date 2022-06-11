@@ -29,6 +29,21 @@ export default function ModeControls({
     return buyMode === settings.buyAmount ? "selected" : "unselected";
   }
 
+  function renderButton(value: string, icon?: string, text?: string) {
+    return (
+      <button
+        type="button"
+        value={value}
+        className={getClassName(value)}
+        onClick={setBuyMode}
+        id={`button-${value.replace(/\W/g, "")}`}
+      >
+        {icon && <Icon icon={icon} size="1em" />}
+        {text}
+      </button>
+    );
+  }
+
   return (
     <div className="panel mode-controls">
       {showTapMode && (
@@ -38,6 +53,7 @@ export default function ModeControls({
             type="button"
             value={settings.tapMode}
             onClick={toggleTapMode}
+            id="button-tapmode"
           >
             <Icon
               state={settings.tapMode === "reveal" ? "revealed" : "flagged"}
@@ -52,56 +68,12 @@ export default function ModeControls({
       {showBuyAmount && (
         <div className="right">
           <span>Buy amount:</span>
-          <button
-            type="button"
-            value={"x1"}
-            className={getClassName("x1")}
-            onClick={setBuyMode}
-          >
-            <Icon icon="x" size="1em" />1
-          </button>
-          <button
-            type="button"
-            value={"x5"}
-            className={getClassName("x5")}
-            onClick={setBuyMode}
-          >
-            <Icon icon="arrow-bar-to-right" size="1em" />5
-          </button>
-          <button
-            type="button"
-            value={"+5"}
-            className={getClassName("+5")}
-            onClick={setBuyMode}
-          >
-            <Icon icon="x" size="1em" />5
-          </button>
-          <button
-            type="button"
-            value={"x10"}
-            className={getClassName("x10")}
-            onClick={setBuyMode}
-          >
-            <Icon icon="arrow-bar-to-right" size="1em" />
-            10
-          </button>
-          <button
-            type="button"
-            value={"+10"}
-            className={getClassName("+10")}
-            onClick={setBuyMode}
-          >
-            <Icon icon="x" size="1em" />
-            10
-          </button>
-          <button
-            type="button"
-            value={"max"}
-            className={getClassName("max")}
-            onClick={setBuyMode}
-          >
-            MAX
-          </button>
+          {renderButton("x1", "x", "1")}
+          {renderButton("x5", "arrow-bar-to-right", "5")}
+          {renderButton("+5", "x", "5")}
+          {renderButton("x10", "arrow-bar-to-right", "10")}
+          {renderButton("+10", "x", "10")}
+          {renderButton("max", undefined, "MAX")}
         </div>
       )}
     </div>

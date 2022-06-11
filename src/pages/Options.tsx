@@ -84,56 +84,86 @@ export default function Options() {
   }
 
   return (
-    <div>
-      <div className="panel options">
+    <div id="options">
+      <div className="panel options" id="options-data">
         <div className="title-bar">Game Data</div>
         <div className="full">
           <ResourceRender
             epoch={settings.lastReset / 1000}
             value={settings.lastUpdate / 1000}
-            display={"time"}
+            display="time"
             precision={0}
-            prefix={"You started this game "}
+            prefix="You started this game "
           />
         </div>
         <div className="full">
           <ResourceRender
             epoch={settings.lastLoaded / 1000}
             value={settings.lastUpdate / 1000}
-            display={"time"}
+            display="time"
             precision={0}
-            prefix={"This session started "}
+            prefix="This session started "
           />
         </div>
         <div className="full">
           <ResourceRender
             epoch={settings.lastSaved / 1000}
             value={settings.lastUpdate / 1000}
-            display={"time"}
+            display="time"
             precision={0}
-            prefix={"Game was last saved "}
+            prefix="Game was last saved "
           />
         </div>
         <hr className="separator" />
         <div className="half center">
-          <input type="button" value="Load" onClick={loadGame} />
+          <input
+            type="button"
+            value="Load"
+            onClick={loadGame}
+            id="button-load"
+          />
         </div>
         <div className="half center">
-          <input type="button" value="Save" onClick={saveGame} />
+          <input
+            type="button"
+            value="Save"
+            onClick={saveGame}
+            id="button-save"
+          />
         </div>
         <div className="half center">
-          <input type="button" value="Load from File" onClick={loadFile} />
+          <input
+            type="button"
+            value="Load from File"
+            onClick={loadFile}
+            id="button-file-load"
+          />
         </div>
         <div className="half center">
-          <input type="button" value="Save to File" onClick={saveFile} />
+          <input
+            type="button"
+            value="Save to File"
+            onClick={saveFile}
+            id="button-file-save"
+          />
         </div>
         <div className="half center">
-          <input type="button" value="Import" onClick={importGame} />
+          <input
+            type="button"
+            value="Import"
+            onClick={importGame}
+            id="button-import"
+          />
         </div>
         <div className="half center">
-          <input type="button" value="Export" onClick={exportGame} />
+          <input
+            type="button"
+            value="Export"
+            onClick={exportGame}
+            id="button-export"
+          />
         </div>
-        <div className="full center">
+        <div className="full center" id="export-text">
           <textarea
             value={textContents}
             onChange={(e) => setTextContents(e.target.value)}
@@ -141,7 +171,7 @@ export default function Options() {
         </div>
       </div>
 
-      <div className="panel options">
+      <div className="panel options" id="options-advanced">
         <div className="title-bar">Advanced Settings</div>
         <div className="full">
           If you are having performance issues, increase the time between
@@ -162,6 +192,7 @@ export default function Options() {
             onInput={(e: ChangeEvent<HTMLInputElement>) =>
               changeFrequency("tick", e.target.value)
             }
+            id="input-freq-tick"
           />
         </div>
 
@@ -180,6 +211,7 @@ export default function Options() {
             onInput={(e: ChangeEvent<HTMLInputElement>) =>
               changeFrequency("render", e.target.value)
             }
+            id="input-freq-render"
           />
         </div>
 
@@ -191,7 +223,7 @@ export default function Options() {
         <div className="half center">
           <ResourceRender
             value={settings.saveFrequencySecs}
-            display={"time"}
+            display="time"
             precision={0}
           />
         </div>
@@ -205,11 +237,12 @@ export default function Options() {
             onInput={(e: ChangeEvent<HTMLInputElement>) =>
               changeFrequency("save", e.target.value)
             }
+            id="input-freq-save"
           />
         </div>
       </div>
 
-      <div className="panel options reset">
+      <div className="panel options reset" id="options-reset">
         <div className="title-bar warning">Game Reset</div>
         <div className="full">
           WARNING: this will completely reset your game and delete all saved
@@ -223,6 +256,7 @@ export default function Options() {
               type="checkbox"
               checked={resetAcknowledged}
               onChange={() => setResetAcknowledged(!resetAcknowledged)}
+              id="acknowledge-box"
             />
             I understand what this means and still want to reset the game
           </label>
@@ -233,23 +267,28 @@ export default function Options() {
             value="Reset everything"
             disabled={!resetAcknowledged}
             onClick={resetGame}
+            id="button-wipeall"
           />
         </div>
       </div>
 
       {debug && (
-        <div className="panel options debug">
+        <div className="panel options debug" id="options-debug">
           <div className="title-bar">Debug Context</div>
           <div className="half">Settings:</div>
-          <div className="full">{JSON.stringify(settings, null, 2)}</div>
+          <div className="full" id="debug-settings">
+            {JSON.stringify(settings, null, 2)}
+          </div>
           <hr className="separator" />
           <div className="half">Resources:</div>
-          <div className="full">
+          <div className="full" id="debug-resources">
             {JSON.stringify(context.resourceManager, null, 2)}
           </div>
           <hr className="separator" />
           <div className="half">Board:</div>
-          <div className="full">{JSON.stringify(context.board, null, 2)}</div>
+          <div className="full" id="debug-board">
+            {JSON.stringify(context.board, null, 2)}
+          </div>
         </div>
       )}
     </div>

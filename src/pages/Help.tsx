@@ -21,7 +21,7 @@ export default function Help() {
 
     return (
       <div className="help" key={`help-panel-${step}`}>
-        <div className="panel">
+        <div className="panel" id={`help-step-${step}`}>
           {tutorialStep.title != null && tutorialStep.title !== "" && (
             <div className="title-bar">{tutorialStep.title}</div>
           )}
@@ -31,5 +31,5 @@ export default function Help() {
     );
   }
 
-  return <>{keys.map((n) => renderHelpPanel(n))}</>;
+  return <div id="help">{keys.map((n) => renderHelpPanel(n))}</div>;
 }

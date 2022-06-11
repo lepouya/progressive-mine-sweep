@@ -86,6 +86,7 @@ export default function ResetBox() {
               value="Reset!"
               disabled={isResetting}
               onClick={startReset}
+              id="button-reset"
             />
           )}
           {isResetting && <span>{resetMessage}...</span>}

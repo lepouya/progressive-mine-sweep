@@ -13,8 +13,13 @@ export default function Link(props: LinkProps) {
   }
 
   const location = useLocation();
+  let title = props.to.replace(/\W/g, "");
+  if (title === "") {
+    title = "main";
+  }
+
   return (
-    <div>
+    <div id={`tab-${title}`}>
       <NavLink
         className={({ isActive }) => (isActive ? "active" : "")}
         to={{ pathname: props.to, search: location.search }}

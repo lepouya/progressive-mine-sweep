@@ -21,14 +21,14 @@ export default function Stats() {
   }
 
   return (
-    <div>
-      <div className="panel stats">
+    <div id="stats">
+      <div className="panel stats" id="stats-time">
         <div className="title-bar">Time Info</div>
         {render("totalTime")}
         {render("activeTime")}
         {render("offlineTime")}
       </div>
-      <div className="panel stats">
+      <div className="panel stats" id="stats-board">
         <div className="title-bar">Board Info</div>
         {render("rows")}
         {render("cols")}
@@ -36,13 +36,13 @@ export default function Stats() {
         {render("resetSpeed")}
         {render("hintQuality")}
       </div>
-      <div className="panel stats">
+      <div className="panel stats" id="stats-game">
         <div className="title-bar">Game Info</div>
         {render("wins")}
         {render("losses")}
         {render("resets")}
       </div>
-      <div className="panel stats">
+      <div className="panel stats" id="stats-cell">
         <div className="title-bar">Cell Info</div>
         {render("cells")}
         {render("flags")}

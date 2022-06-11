@@ -10,7 +10,7 @@ export default function ResourceBar() {
   } = useGameContext();
 
   return (
-    <div className={`panel board-state-${board.state}`}>
+    <div className={`panel board-state-${board.state}`} id="resource-bar">
       <ResourceRender
         resource={wins}
         precision={0}
@@ -29,14 +29,14 @@ export default function ResourceBar() {
       />
       <hr className="separator" />
       <ResourceRender
-        name={"Board"}
+        name="Board"
         suffix={`${board.rows}x${board.cols}`}
         showChrome={true}
       />
       <ResourceRender
-        name={"progress"}
+        name="progress"
         value={boardProgressFormula(context)}
-        display={"percentage"}
+        display="percentage"
         showChrome={true}
       />
       <ResourceRender

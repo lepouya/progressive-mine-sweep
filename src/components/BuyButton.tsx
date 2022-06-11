@@ -80,13 +80,13 @@ export default function BuyButton({
         display={
           typeof rc.resource !== "string" ? rc.resource.display : "number"
         }
-        infix={""}
+        infix=""
         prefix={i > 0 ? and : ""}
         showLocked={true}
         showColors={true}
         showChrome={true}
         showPlusSign={showPlusSign}
-        className={"value-first"}
+        className="value-first"
         key={typeof rc.resource === "string" ? rc.resource : rc.resource.name}
         reversedDirection={reversedDirection}
       />
@@ -163,6 +163,7 @@ export default function BuyButton({
       disabled={!active || !enabled}
       className={classNames.join(" ")}
       style={style}
+      id={`button-buy-${res.name}`}
     >
       {prefix && <div className="prefix">{prefix}</div>}
       {renderResourceCounts(purchase.gain, gainMultiplier, true, false)}

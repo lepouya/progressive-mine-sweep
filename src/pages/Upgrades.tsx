@@ -12,7 +12,7 @@ export default function Upgrades() {
   } = useGameContext();
 
   return (
-    <div>
+    <div id="upgrades">
       <ResourceBar />
       <ModeControls />
       <div className="game-controls panel">
@@ -23,24 +23,24 @@ export default function Upgrades() {
           <ResourceRender
             resource={cols}
             showChrome={true}
-            infix={""}
-            className={"value-first"}
+            infix=""
+            className="value-first"
           />
         </div>
         <div className="right half">
-          <BuyButton resource={cols} prefix={"Expand"} maxCount={50} />
+          <BuyButton resource={cols} prefix="Expand" maxCount={50} />
         </div>
         <div className="quarter">Game Height:</div>
         <div className="quarter">
           <ResourceRender
             resource={rows}
             showChrome={true}
-            infix={""}
-            className={"value-first"}
+            infix=""
+            className="value-first"
           />
         </div>
         <div className="right half">
-          <BuyButton resource={rows} prefix={"Expand"} maxCount={50} />
+          <BuyButton resource={rows} prefix="Expand" maxCount={50} />
         </div>
 
         <div className="quarter">Game Difficulty:</div>
@@ -49,12 +49,12 @@ export default function Upgrades() {
             resource={difficulty}
             showChrome={true}
             showName={false}
-            infix={""}
-            className={"value-first"}
+            infix=""
+            className="value-first"
           />
         </div>
         <div className="right half">
-          <BuyButton resource={difficulty} prefix={"Increase"} maxCount={100} />
+          <BuyButton resource={difficulty} prefix="Increase" maxCount={100} />
         </div>
         <div className="quarter">
           <span className="computed">Score Multiplier:</span>
@@ -70,7 +70,7 @@ export default function Upgrades() {
         <div className="right half">
           <BuyButton
             resource={difficulty}
-            prefix={"Decrease"}
+            prefix="Decrease"
             gainMultiplier={-1}
             enabled={difficulty.count > 0}
             minNum={1}
@@ -85,12 +85,12 @@ export default function Upgrades() {
             resource={resetSpeed}
             showChrome={true}
             showName={false}
-            infix={""}
-            className={"value-first"}
+            infix=""
+            className="value-first"
           />
         </div>
         <div className="right half">
-          <BuyButton resource={resetSpeed} prefix={"Speed up"} maxCount={100} />
+          <BuyButton resource={resetSpeed} prefix="Speed up" maxCount={100} />
         </div>
 
         <div className="quarter">Hint Quality:</div>
@@ -99,12 +99,12 @@ export default function Upgrades() {
             resource={hintQuality}
             showChrome={true}
             showName={false}
-            infix={""}
-            className={"value-first"}
+            infix=""
+            className="value-first"
           />
         </div>
         <div className="right half">
-          <BuyButton resource={hintQuality} prefix={"Improve"} maxCount={100} />
+          <BuyButton resource={hintQuality} prefix="Improve" maxCount={100} />
         </div>
       </div>
     </div>

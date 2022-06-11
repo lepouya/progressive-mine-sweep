@@ -352,7 +352,7 @@ export default function ResourceRender({
         (showZeroRates || resource.rate.value !== 0)
       ) {
         output.push(
-          <div key={`extra-rate-${k}`} className={"rate"}>
+          <div key={`extra-rate-${k}`} className="rate">
             {placeholder}
           </div>,
         );
@@ -376,7 +376,11 @@ export default function ResourceRender({
     classNames.push(className);
   }
   const res = (
-    <div className={classNames.join(" ")} style={resStyle}>
+    <div
+      className={classNames.join(" ")}
+      style={resStyle}
+      id={`resource-${name ?? resource.name}`}
+    >
       {prefix && <div className="prefix">{prefix}</div>}
       {output}
       {suffix && <div className="suffix">{suffix}</div>}
@@ -385,7 +389,11 @@ export default function ResourceRender({
 
   if (showChrome) {
     return (
-      <div className={!className ? undefined : className} style={style}>
+      <div
+        className={!className ? undefined : className}
+        style={style}
+        id={`resource-chrome-${name ?? resource.name}`}
+      >
         {res}
       </div>
     );
