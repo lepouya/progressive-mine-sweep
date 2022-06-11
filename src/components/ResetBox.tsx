@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 
 import useGameContext from "./GameContext";
 import message from "../utils/message";
@@ -50,7 +50,8 @@ export default function ResetBox() {
     resetBoard();
   }
 
-  function startReset() {
+  function startReset(event: MouseEvent<HTMLInputElement>) {
+    event.preventDefault();
     if (!isResetting) {
       setResetting(true);
       setMessageTime(0);

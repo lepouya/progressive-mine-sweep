@@ -31,7 +31,7 @@ export default function Tutorial() {
     );
   }
 
-  function gotoStep(event: MouseEvent<Element>, step?: number) {
+  function gotoStep(event: MouseEvent, step?: number) {
     event.preventDefault();
     if (validStep(step)) {
       settings.tutorialStep = step!;

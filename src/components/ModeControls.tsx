@@ -15,12 +15,14 @@ export default function ModeControls({
   const [_tapMode, setTapMode] = useState(settings.tapMode);
   const [_buyAmount, setBuyAmount] = useState(settings.buyAmount);
 
-  function toggleTapMode() {
+  function toggleTapMode(event: React.MouseEvent) {
+    event.preventDefault();
     settings.tapMode = settings.tapMode === "reveal" ? "flag" : "reveal";
     setTapMode(settings.tapMode);
   }
 
   function setBuyMode(event: React.MouseEvent) {
+    event.preventDefault();
     settings.buyAmount = (event.target as HTMLInputElement).value;
     setBuyAmount(settings.buyAmount);
   }
