@@ -6,15 +6,13 @@ import tutorialSteps from "../tutorial/TutorialSteps";
 
 export default function Tutorial() {
   const { context, settings } = useGameContext();
-  const [highlightedElement, setHighlightedElement] = useState<Element | null>(
-    null,
-  );
+  const [highlightElement, setHighlightElement] = useState<Element | null>();
 
   useEffect(() => {
-    const elem = highlightedElement;
+    const elem = highlightElement;
     elem?.classList.add("highlight");
     return () => elem?.classList.remove("highlight");
-  }, [highlightedElement]);
+  }, [highlightElement]);
 
   const tutorialStep = resolveTutorialStep(
     settings.tutorialStep,
@@ -28,8 +26,8 @@ export default function Tutorial() {
     tutorialStep.step !== settings.tutorialStep ||
     tutorialStep.step < 0
   ) {
-    if (highlightedElement) {
-      setHighlightedElement(null);
+    if (highlightElement) {
+      setHighlightElement(null);
     }
     return null;
   }
@@ -51,12 +49,19 @@ export default function Tutorial() {
     }
   }
 
-  const highlight =
+  let highlight: Element | null = null;
+  if (
+    tutorialStep.highlightSelector &&
     tutorialStep.highlightSelector.length > 0
-      ? document.querySelector(tutorialStep.highlightSelector)
-      : null;
-  if (highlight !== highlightedElement) {
-    setHighlightedElement(highlight);
+  ) {
+    try {
+      highlight = document.querySelector(tutorialStep.highlightSelector);
+    } catch (_) {
+      highlight = null;
+    }
+  }
+  if (highlight !== highlightElement) {
+    setHighlightElement(highlight);
   }
 
   const tutorial = (
