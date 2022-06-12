@@ -59,4 +59,3 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource minimums
 - Better unit testing for models and utils
 - Go through all the colors used and make a map under :root
-- Tutorial step completion rewards?

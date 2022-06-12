@@ -4,6 +4,7 @@ import useGameContext from "../components/GameContext";
 import { resolveTutorialStep } from "../model/TutorialStep";
 import tutorialSteps from "../tutorial/TutorialSteps";
 import apply from "../utils/apply";
+import { Nullable } from "../utils/types";
 
 export default function Tutorial() {
   const { context, settings } = useGameContext();
@@ -15,15 +16,25 @@ export default function Tutorial() {
   );
 
   useEffect(() => {
+    const onMount = tutorialStep?.onMount;
+    const onUnmount = tutorialStep?.onUnmount;
+    let elems: Nullable<NodeListOf<Element>>;
     try {
-      const elems = document.querySelectorAll(
-        tutorialStep?.highlightSelector ?? "",
-      );
-      elems.forEach((elem) => elem.classList.add("highlight"));
-      return () => elems.forEach((elem) => elem.classList.remove("highlight"));
+      elems = document.querySelectorAll(tutorialStep?.highlightSelector ?? "");
     } catch (_) {}
-    return undefined;
-  }, [tutorialStep?.highlightSelector]);
+
+    elems?.forEach((elem) => elem.classList.add("highlight"));
+    if (onMount) {
+      onMount();
+    }
+
+    return () => {
+      elems?.forEach((elem) => elem.classList.remove("highlight"));
+      if (onUnmount) {
+        onUnmount();
+      }
+    };
+  }, [tutorialStep?.step]);
 
   if (
     !tutorialStep ||

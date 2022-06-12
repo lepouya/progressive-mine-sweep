@@ -1,13 +1,11 @@
 import assign from "./assign";
 import { FunctionType, Optional } from "./types";
 
-export type Generator<T, Self, GenArgs extends unknown[] = any[]> =
-  | Optional<T>
-  | (T extends FunctionType
-      ? never
-      : (self: Self, ...args: GenArgs) => Optional<T>);
+export type Generator<T, Self = T, GenArgs extends unknown[] = []> =
+  | (NonNullable<T> extends FunctionType ? never : Optional<T>)
+  | ((self: Self, ...args: GenArgs) => Optional<T>);
 
-export type Generative<T, GenArgs extends unknown[]> = {
+export type Generative<T, GenArgs extends unknown[] = []> = {
   [Key in keyof T]?: Generator<T[Key], Optional<T>, GenArgs>;
 };
 

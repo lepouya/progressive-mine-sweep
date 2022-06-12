@@ -173,6 +173,12 @@ export const tsPlaying: TutorialSteps = {
       </>
     ),
     greyOut: true,
+    onMount: (_, context) => () => {
+      _tempTapMode = context.settings.tapMode;
+    },
+    onUnmount: (_, context) => () => {
+      context.settings.tapMode = _tempTapMode;
+    },
   },
   35: {
     title: "Winning a game",
@@ -199,3 +205,5 @@ export const tsPlaying: TutorialSteps = {
     greyOut: true,
   },
 };
+
+let _tempTapMode: "reveal" | "flag" = "reveal";

@@ -27,6 +27,9 @@ export type TutorialStep = {
     width: string;
     height: string;
   };
+
+  onMount?: () => void;
+  onUnmount?: () => void;
 };
 
 export function resolveTutorialStep(
