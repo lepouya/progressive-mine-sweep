@@ -14,20 +14,14 @@ export default function Tutorial() {
   );
 
   useEffect(() => {
-    let highlight: Element | null = null;
-    if (
-      tutorialStep?.highlightSelector &&
-      tutorialStep?.highlightSelector.length > 0
-    ) {
-      try {
-        highlight = document.querySelector(tutorialStep?.highlightSelector);
-      } catch (_) {
-        highlight = null;
-      }
-    }
-
-    highlight?.classList.add("highlight");
-    return () => highlight?.classList.remove("highlight");
+    try {
+      const elems = document.querySelectorAll(
+        tutorialStep?.highlightSelector ?? "",
+      );
+      elems.forEach((elem) => elem.classList.add("highlight"));
+      return () => elems.forEach((elem) => elem.classList.remove("highlight"));
+    } catch (_) {}
+    return undefined;
   }, [tutorialStep?.highlightSelector]);
 
   if (
