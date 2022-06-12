@@ -150,9 +150,6 @@ export const tsPlaying: TutorialSteps = {
           revealing:
         </div>
         <div className="full center">
-          <ModeControls showBuyAmount={false} />
-        </div>
-        <div className="full center">
           <MineFieldWrapper
             rows={3}
             cols={3}
@@ -169,6 +166,9 @@ export const tsPlaying: TutorialSteps = {
               [2, 1],
             ]}
           />
+        </div>
+        <div className="full center">
+          <ModeControls showBuyAmount={false} />
         </div>
       </>
     ),

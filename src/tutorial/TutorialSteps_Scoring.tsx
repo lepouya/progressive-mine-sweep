@@ -38,6 +38,10 @@ export const tsScoring: TutorialSteps = {
         </div>
       </>
     ),
-    greyOut: true,
+    highlightSelector: "div.panel#resource-bar",
+    bounds: {
+      top: "6rem + 50px",
+      height: "400px",
+    },
   },
 };

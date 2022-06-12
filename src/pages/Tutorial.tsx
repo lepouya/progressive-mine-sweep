@@ -1,4 +1,4 @@
-import { MouseEvent } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 
 import useGameContext from "../components/GameContext";
 import { resolveTutorialStep } from "../model/TutorialStep";
@@ -6,6 +6,16 @@ import tutorialSteps from "../tutorial/TutorialSteps";
 
 export default function Tutorial() {
   const { context, settings } = useGameContext();
+  const [highlightedElement, setHighlightedElement] = useState<Element | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const elem = highlightedElement;
+    elem?.classList.add("highlight");
+    return () => elem?.classList.remove("highlight");
+  }, [highlightedElement]);
+
   const tutorialStep = resolveTutorialStep(
     settings.tutorialStep,
     tutorialSteps,
@@ -18,6 +28,9 @@ export default function Tutorial() {
     tutorialStep.step !== settings.tutorialStep ||
     tutorialStep.step < 0
   ) {
+    if (highlightedElement) {
+      setHighlightedElement(null);
+    }
     return null;
   }
 
@@ -36,6 +49,14 @@ export default function Tutorial() {
     if (validStep(step)) {
       settings.tutorialStep = step!;
     }
+  }
+
+  const highlight =
+    tutorialStep.highlightSelector.length > 0
+      ? document.querySelector(tutorialStep.highlightSelector)
+      : null;
+  if (highlight !== highlightedElement) {
+    setHighlightedElement(highlight);
   }
 
   const tutorial = (

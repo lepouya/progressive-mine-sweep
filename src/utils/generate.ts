@@ -1,11 +1,11 @@
 import assign from "./assign";
-import { Nullable, Optional } from "./types";
+import { Optional } from "./types";
 
 export type Generator<T, Self, GenArgs extends unknown[]> =
-  | Nullable<T>
+  | Optional<T>
   | (T extends (...args: unknown[]) => unknown
       ? never
-      : (self: Self, ...args: GenArgs) => Nullable<T>);
+      : (self: Self, ...args: GenArgs) => Optional<T>);
 
 export type Generative<T, GenArgs extends unknown[]> = {
   [Key in keyof T]?: Generator<T[Key], Optional<T>, GenArgs>;
