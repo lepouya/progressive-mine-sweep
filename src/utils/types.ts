@@ -38,6 +38,7 @@ export type Optional<T> = Nullable<
     ? OptionalArray<T>
     : { [P in keyof T]?: Optional<T[P]> }
 >;
+
 type OptionalArray<T> = T extends [infer Head]
   ? [Optional<Head>]
   : T extends [infer Head, ...infer Rest]
@@ -53,6 +54,7 @@ export type Replace<T, From, To> = T extends From
   : T extends any[]
   ? ReplaceArray<T, From, To>
   : { [P in keyof T]: Replace<T[P], From, To> };
+
 type ReplaceArray<T, From, To> = T extends [infer Head]
   ? [Replace<Head, From, To>]
   : T extends [infer Head, ...infer Rest]

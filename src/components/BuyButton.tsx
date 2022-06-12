@@ -1,6 +1,7 @@
 import { MouseEvent } from "react";
 import { getBuyAmount } from "../model/GameFormulas";
 import { Resource, ResourceCount, scaleResources } from "../model/Resource";
+import apply from "../utils/apply";
 import clamp from "../utils/clamp";
 import useGameContext from "./GameContext";
 import ResourceRender from "./ResourceRender";
@@ -94,7 +95,7 @@ export default function BuyButton({
     ));
   }
 
-  function doPurchase(event: MouseEvent, count = 0) {
+  function doPurchase(count: number, event: MouseEvent) {
     event.preventDefault();
     if (!enabled || count < 1) {
       return;
@@ -161,9 +162,7 @@ export default function BuyButton({
 
   return (
     <button
-      onClick={(event) =>
-        doPurchase(event, active && enabled ? purchase.count : 0)
-      }
+      onClick={apply(doPurchase, active && enabled ? purchase.count : 0)}
       disabled={!active || !enabled}
       className={classNames.join(" ")}
       style={style}

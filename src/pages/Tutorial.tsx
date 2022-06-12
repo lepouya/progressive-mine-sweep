@@ -3,6 +3,7 @@ import { MouseEvent, useEffect } from "react";
 import useGameContext from "../components/GameContext";
 import { resolveTutorialStep } from "../model/TutorialStep";
 import tutorialSteps from "../tutorial/TutorialSteps";
+import apply from "../utils/apply";
 
 export default function Tutorial() {
   const { context, settings } = useGameContext();
@@ -43,7 +44,7 @@ export default function Tutorial() {
     );
   }
 
-  function gotoStep(event: MouseEvent, step?: number) {
+  function gotoStep(step: number | undefined, event: MouseEvent) {
     event.preventDefault();
     if (validStep(step)) {
       settings.tutorialStep = step!;
@@ -63,21 +64,21 @@ export default function Tutorial() {
         {tutorialStep.body}
         {validStep(tutorialStep.prevStep) && (
           <div className="prev">
-            <a href="" onClick={(e) => gotoStep(e, tutorialStep.prevStep)}>
+            <a href="" onClick={apply(gotoStep, tutorialStep.prevStep)}>
               {tutorialStep.prevStepTitle}
             </a>
           </div>
         )}
         {validStep(tutorialStep.nextStep) && (
           <div className="next">
-            <a href="" onClick={(e) => gotoStep(e, tutorialStep.nextStep)}>
+            <a href="" onClick={apply(gotoStep, tutorialStep.nextStep)}>
               {tutorialStep.nextStepTitle}
             </a>
           </div>
         )}
         {validStep(tutorialStep.skipToStep) && (
           <div className="skip">
-            <a href="" onClick={(e) => gotoStep(e, tutorialStep.skipToStep)}>
+            <a href="" onClick={apply(gotoStep, tutorialStep.skipToStep)}>
               {tutorialStep.skipToStepTitle}
             </a>
           </div>
