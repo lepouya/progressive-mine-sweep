@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useEffect } from "react";
 
 import useGameContext from "../components/GameContext";
 import { resolveTutorialStep } from "../model/TutorialStep";
@@ -6,13 +6,6 @@ import tutorialSteps from "../tutorial/TutorialSteps";
 
 export default function Tutorial() {
   const { context, settings } = useGameContext();
-  const [highlightElement, setHighlightElement] = useState<Element | null>();
-
-  useEffect(() => {
-    const elem = highlightElement;
-    elem?.classList.add("highlight");
-    return () => elem?.classList.remove("highlight");
-  }, [highlightElement]);
 
   const tutorialStep = resolveTutorialStep(
     settings.tutorialStep,
@@ -20,15 +13,29 @@ export default function Tutorial() {
     context,
   );
 
+  useEffect(() => {
+    let highlight: Element | null = null;
+    if (
+      tutorialStep?.highlightSelector &&
+      tutorialStep?.highlightSelector.length > 0
+    ) {
+      try {
+        highlight = document.querySelector(tutorialStep?.highlightSelector);
+      } catch (_) {
+        highlight = null;
+      }
+    }
+
+    highlight?.classList.add("highlight");
+    return () => highlight?.classList.remove("highlight");
+  }, [tutorialStep?.highlightSelector]);
+
   if (
     !tutorialStep ||
     !tutorialStep.enabled ||
     tutorialStep.step !== settings.tutorialStep ||
     tutorialStep.step < 0
   ) {
-    if (highlightElement) {
-      setHighlightElement(null);
-    }
     return null;
   }
 
@@ -47,21 +54,6 @@ export default function Tutorial() {
     if (validStep(step)) {
       settings.tutorialStep = step!;
     }
-  }
-
-  let highlight: Element | null = null;
-  if (
-    tutorialStep.highlightSelector &&
-    tutorialStep.highlightSelector.length > 0
-  ) {
-    try {
-      highlight = document.querySelector(tutorialStep.highlightSelector);
-    } catch (_) {
-      highlight = null;
-    }
-  }
-  if (highlight !== highlightElement) {
-    setHighlightElement(highlight);
   }
 
   const tutorial = (
