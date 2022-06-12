@@ -1,9 +1,9 @@
 import assign from "./assign";
-import { Optional } from "./types";
+import { FunctionType, Optional } from "./types";
 
-export type Generator<T, Self, GenArgs extends unknown[]> =
+export type Generator<T, Self, GenArgs extends unknown[] = any[]> =
   | Optional<T>
-  | (T extends (...args: unknown[]) => unknown
+  | (T extends FunctionType
       ? never
       : (self: Self, ...args: GenArgs) => Optional<T>);
 
@@ -13,7 +13,7 @@ export type Generative<T, GenArgs extends unknown[]> = {
 
 export default function generate<
   T extends Record<any, unknown>,
-  GenArgs extends unknown[],
+  GenArgs extends unknown[] = any[],
 >(
   generator?: Generative<T, GenArgs>,
   defaultValue?: Optional<T>,

@@ -1,6 +1,6 @@
 import { Context } from "./Context";
 import generate, { Generative } from "../utils/generate";
-import map from "../utils/map";
+import recordMap from "../utils/recordMap";
 import round from "../utils/round";
 
 export type TutorialSteps = Record<number, Generative<TutorialStep, [Context]>>;
@@ -75,7 +75,7 @@ export function resolveTutorialStep(
     context,
   );
 
-  res.bounds = map(
+  res.bounds = recordMap(
     res.bounds,
     (size) => `max(5%, 1em, min(90%, calc(100% - 2em), calc(${size})))`,
   );

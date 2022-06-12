@@ -1,4 +1,4 @@
-export default function map<
+export default function recordMap<
   Key1 extends string | number | symbol,
   Value1,
   Key2 extends string | number | symbol = Key1,

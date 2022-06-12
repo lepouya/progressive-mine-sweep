@@ -1,4 +1,4 @@
-import map from "../utils/map";
+import recordMap from "../utils/recordMap";
 import useGameContext from "../components/GameContext";
 import tutorialSteps from "../tutorial/TutorialSteps";
 import { resolveTutorialStep } from "../model/TutorialStep";
@@ -6,7 +6,7 @@ import { resolveTutorialStep } from "../model/TutorialStep";
 export default function Help() {
   const context = useGameContext();
 
-  const resolvedSteps = map(tutorialSteps, (_, idx) =>
+  const resolvedSteps = recordMap(tutorialSteps, (_, idx) =>
     resolveTutorialStep(idx ?? 0, tutorialSteps, context),
   );
   const keys = Object.keys(tutorialSteps)
