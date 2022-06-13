@@ -69,7 +69,7 @@ export default function ResetBox() {
 
   return (
     <div className="reset-box">
-      <div className={`panel board-state-${board.state}`}>
+      <div className={`panel shadow board-state-${board.state}`}>
         <div className="title-bar">{title}</div>
         <div className="full center">Game over!</div>
         <div className="full center">

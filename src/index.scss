@@ -1,7 +1,7 @@
 // Globals
 @use "styles/Root";
+@use "styles/Effects";
 @use "styles/App";
-@use "styles/Highlight";
 
 // Utility widgets
 @use "styles/Icon";
@@ -20,6 +20,7 @@
 @use "styles/ResetBox";
 
 // Pages
+@use "styles/Main";
 @use "styles/Help";
 @use "styles/Options";
 @use "styles/Stats";

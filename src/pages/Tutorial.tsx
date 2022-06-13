@@ -68,7 +68,7 @@ export default function Tutorial() {
       style={tutorialStep.bounds}
       id={`tutorial-step-${tutorialStep.step}`}
     >
-      <div className="panel">
+      <div className="panel shadow">
         {tutorialStep.title != null && tutorialStep.title !== "" && (
           <div className="title-bar">{tutorialStep.title}</div>
         )}
