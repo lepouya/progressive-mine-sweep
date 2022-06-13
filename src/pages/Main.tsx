@@ -37,7 +37,7 @@ export default function Main() {
   }
 
   return (
-    <div className="main" id="main">
+    <div id="main">
       <ResourceBar />
       <ResetBox />
       <MineField />

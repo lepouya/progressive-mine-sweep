@@ -1,10 +1,47 @@
-.icon {
-  pointer-events: none;
-}
-
 #icon {
   width: 0;
   height: 0;
   display: none;
   visibility: hidden;
+}
+
+.icon {
+  pointer-events: none;
+  stroke-width: 2;
+
+  &-hidden {
+    color: transparent;
+  }
+
+  &-revealed {
+    color: darkgreen;
+  }
+
+  &-hinted {
+    color: green;
+  }
+
+  &-flagged {
+    color: darkblue;
+  }
+
+  &-blown {
+    color: red;
+  }
+
+  &-inactive {
+    color: grey;
+  }
+
+  &-active {
+    color: black;
+  }
+
+  &-won {
+    color: darkgreen;
+  }
+
+  &-lost {
+    color: darkred;
+  }
 }

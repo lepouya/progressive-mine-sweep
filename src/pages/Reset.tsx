@@ -13,7 +13,7 @@ export default function Reset() {
   }
 
   return (
-    <div>
+    <div id="reset">
       <div className="panel options">
         <div className="title-bar">Load Failure!</div>
         <div className="full">

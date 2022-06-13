@@ -1,6 +1,6 @@
 import assign from "./assign";
 
-export default function getHTMLElement(
+export function getHTMLElement(
   param: Partial<HTMLElement> | string,
 ): HTMLElement {
   const opts = typeof param === "string" ? { id: param } : param;
@@ -17,4 +17,12 @@ export default function getHTMLElement(
   }
 
   return elem;
+}
+
+export function setTheme(theme?: string) {
+  if (theme) {
+    document.documentElement.setAttribute("theme", theme);
+  } else {
+    document.documentElement.removeAttribute("theme");
+  }
 }

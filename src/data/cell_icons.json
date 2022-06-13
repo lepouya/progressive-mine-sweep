@@ -1,18 +1,18 @@
 {
-  "hidden": "transparent question-mark",
-  "hinted": "green eye",
-  "flagged": "darkblue flag-2",
-  "blown": "red alert-triangle",
+  "hidden": "question-mark",
+  "hinted": "eye",
+  "flagged": "flag-2",
+  "blown": "alert-triangle",
   "revealed": [
-    "darkgreen square-dot",
-    "darkgreen square-1",
-    "darkgreen square-2",
-    "darkgreen square-3",
-    "darkgreen square-4",
-    "darkgreen square-5",
-    "darkgreen square-6",
-    "darkgreen square-7",
-    "darkgreen square-8",
-    "darkgreen square"
+    "square-dot",
+    "square-1",
+    "square-2",
+    "square-3",
+    "square-4",
+    "square-5",
+    "square-6",
+    "square-7",
+    "square-8",
+    "square"
   ]
 }

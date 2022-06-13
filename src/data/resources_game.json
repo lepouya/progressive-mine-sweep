@@ -2,7 +2,7 @@
   {
     "name": "wins",
     "singularName": "win",
-    "icon": "darkgreen square-check",
+    "icon": "icon-won square-check",
     "extra": {
       "auto": 0,
       "manual": 0
@@ -11,7 +11,7 @@
   {
     "name": "losses",
     "singularName": "lose",
-    "icon": "darkred square-x",
+    "icon": "icon-lost square-x",
     "extra": {
       "auto": 0,
       "manual": 0

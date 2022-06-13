@@ -12,7 +12,7 @@
   {
     "name": "cells",
     "singularName": "cell",
-    "icon": "darkgreen square",
+    "icon": "icon-revealed square",
     "extra": {
       "auto": 0,
       "manual": 0,
@@ -22,7 +22,7 @@
   {
     "name": "hints",
     "singularName": "hint",
-    "icon": "green eye",
+    "icon": "icon-hinted eye",
     "extra": {
       "auto": 0,
       "manual": 0
@@ -31,7 +31,7 @@
   {
     "name": "flags",
     "singularName": "flag",
-    "icon": "darkblue flag-2",
+    "icon": "icon-flagged flag-2",
     "extra": {
       "auto": 0,
       "manual": 0,
@@ -41,7 +41,7 @@
   {
     "name": "explosions",
     "singularName": "explosion",
-    "icon": "red alert-triangle",
+    "icon": "icon-blown alert-triangle",
     "extra": {
       "auto": 0,
       "manual": 0

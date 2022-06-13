@@ -1,4 +1,5 @@
 // Globals
+@use "styles/Root";
 @use "styles/App";
 @use "styles/Highlight";
 
@@ -20,7 +21,6 @@
 
 // Pages
 @use "styles/Help";
-@use "styles/Main";
 @use "styles/Options";
 @use "styles/Stats";
 @use "styles/Tutorial";
