@@ -1,3 +1,5 @@
+@use "./Theme";
+
 .buy-button {
   width: 100%;
 
@@ -13,10 +15,10 @@
   }
 
   &-affordable {
-    color: rgba(0, 0, 0, 1);
+    color: rgba(Theme.$textColor);
   }
 
   &-unaffordable {
-    color: rgba(63, 63, 63, 0.75);
+    color: rgba(Theme.$textColor / 66%);
   }
 }

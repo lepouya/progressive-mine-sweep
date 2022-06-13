@@ -15,17 +15,17 @@ body {
   height: 100%;
   overflow: visible;
 
-  background-color: Theme.$backgroundColor;
-  color: Theme.$primaryColor;
+  background-color: rgba(Theme.$backgroundColor);
+  color: rgba(Theme.$textColor);
 }
 
 :root,
 :root[theme="default"] {
-  --background-color: white;
-  --primary-color: black;
+  --background-color: 255 255 255;
+  --text-color: 0 0 0;
 }
 
 :root[theme="inverted"] {
-  --background-color: black;
-  --primary-color: white;
+  --background-color: 0 0 0;
+  --text-color: 255 255 255;
 }
