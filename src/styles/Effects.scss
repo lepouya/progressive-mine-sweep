@@ -8,24 +8,31 @@
 }
 
 .shadow {
-  box-shadow: rgba(Theme.$textColor / 25%) 0px 54px 55px,
-    rgba(Theme.$textColor / 17%) 0px 12px 13px,
-    rgba(Theme.$textColor / 12%) 0px -12px 30px,
-    rgba(Theme.$textColor / 12%) 0px 4px 6px,
-    rgba(Theme.$textColor / 9%) 0px -3px 5px;
+  box-shadow: 0px 54px 55px Theme.color(primary, 25%),
+    0px 12px 13px Theme.color(primary, 17%),
+    0px -12px 30px Theme.color(primary, 12%),
+    0px 4px 6px Theme.color(primary, 12%), 0px -3px 5px Theme.color(primary, 9%);
 }
 
 @keyframes glow {
   from {
-    box-shadow: 0px 0px 7px rgba(255 255 255), 0px 0px 10px rgba(255 255 255),
-      0px 0px 21px rgba(255 255 255), 0px 0px 42px rgba(0 255 170),
-      0px 0px 82px rgba(0 255 170), 0px 0px 92px rgba(0 255 170),
-      0px 0px 102px rgba(0 255 170), 0px 0px 151px rgba(0 255 170);
+    box-shadow: 0px 0px 7px Theme.color(secondary, 50%),
+      0px 0px 10px Theme.color(secondary, 50%),
+      0px 0px 21px Theme.color(secondary, 50%),
+      0px 0px 42px Theme.color(positive, 50%),
+      0px 0px 82px Theme.color(positive, 50%),
+      0px 0px 92px Theme.color(positive, 50%),
+      0px 0px 102px Theme.color(positive, 50%),
+      0px 0px 151px Theme.color(positive, 50%);
   }
   to {
-    box-shadow: 0px 0px 2px rgba(255 255 255), 0px 0px 4px rgba(255 255 255),
-      0px 0px 6px rgba(255 255 255), 0px 0px 10px rgba(0 255 170),
-      0px 0px 45px rgba(0 255 170), 0px 0px 55px rgba(0 255 170),
-      0px 0px 70px rgba(0 255 170), 0px 0px 80px rgba(0 255 170);
+    box-shadow: 0px 0px 2px Theme.color(secondary, 50%),
+      0px 0px 4px Theme.color(secondary, 50%),
+      0px 0px 6px Theme.color(secondary, 50%),
+      0px 0px 10px Theme.color(positive, 50%),
+      0px 0px 45px Theme.color(positive, 50%),
+      0px 0px 55px Theme.color(positive, 50%),
+      0px 0px 70px Theme.color(positive, 50%),
+      0px 0px 80px Theme.color(positive, 50%);
   }
 }

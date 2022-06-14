@@ -1,3 +1,5 @@
+@use "./Theme";
+
 #icon {
   width: 0;
   height: 0;
@@ -14,34 +16,34 @@
   }
 
   &-revealed {
-    color: darkgreen;
+    color: Theme.color(positive);
   }
 
   &-hinted {
-    color: green;
+    color: Theme.color(positive, 50%);
   }
 
   &-flagged {
-    color: darkblue;
+    color: Theme.color(neutral);
   }
 
   &-blown {
-    color: red;
+    color: Theme.color(negative);
   }
 
   &-inactive {
-    color: grey;
+    color: Theme.color(primary, 50%);
   }
 
   &-active {
-    color: black;
+    color: Theme.color(primary);
   }
 
   &-won {
-    color: darkgreen;
+    color: Theme.color(positive);
   }
 
   &-lost {
-    color: darkred;
+    color: Theme.color(negative);
   }
 }

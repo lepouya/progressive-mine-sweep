@@ -1,3 +1,5 @@
+@use "./Theme";
+
 .options {
   font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
@@ -22,15 +24,21 @@
     width: 100%;
     height: 5em;
     margin: 0 1em;
+
+    color: Theme.color(primary);
+    background-color: Theme.color(secondary);
+
+    border: 1px solid Theme.color(primary, 66%);
+    border-radius: 0.5em;
   }
 
   &.reset {
     .warning {
-      color: darkred;
+      color: Theme.color(negative);
     }
 
     label {
-      color: gray;
+      color: Theme.color(primary, 50%);
     }
 
     input {
@@ -38,7 +46,7 @@
         width: auto;
         padding: 1ex 1em;
         font-size: small;
-        color: darkred;
+        color: Theme.color(negative);
       }
     }
   }

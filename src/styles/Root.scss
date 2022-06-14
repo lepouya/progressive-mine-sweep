@@ -11,21 +11,29 @@ body {
   line-height: 1;
   text-rendering: optimizeLegibility;
 
-  margin: 0;
+  margin: 0%;
   height: 100%;
   overflow: visible;
 
-  background-color: rgba(Theme.$backgroundColor);
-  color: rgba(Theme.$textColor);
+  background-color: Theme.color(secondary);
+  color: Theme.color(primary);
 }
 
 :root,
 :root[theme="default"] {
-  --background-color: 255 255 255;
-  --text-color: 0 0 0;
+  --primary-color: 0% 0% 0%;
+  --secondary-color: 100% 100% 100%;
+
+  --positive-color: 0% 50% 0%;
+  --negative-color: 50% 0% 0%;
+  --neutral-color: 0% 0% 50%;
 }
 
-:root[theme="inverted"] {
-  --background-color: 0 0 0;
-  --text-color: 255 255 255;
+:root[theme="dark"] {
+  --primary-color: 100% 100% 100%;
+  --secondary-color: 0% 0% 0%;
+
+  --positive-color: 50% 100% 50%;
+  --negative-color: 100% 50% 50%;
+  --neutral-color: 50% 50% 100%;
 }

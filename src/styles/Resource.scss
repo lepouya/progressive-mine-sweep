@@ -1,3 +1,5 @@
+@use "./Theme";
+
 .resource {
   width: 100%;
   margin: auto;
@@ -10,13 +12,13 @@
   align-content: flex-start;
 
   .zero {
-    color: #444444;
+    color: Theme.color(neutral);
   }
   .positive {
-    color: #447744;
+    color: Theme.color(positive);
   }
   .negative {
-    color: #774444;
+    color: Theme.color(negative);
   }
 
   > div {
@@ -60,7 +62,7 @@
   > .extra-name,
   > .extra-value,
   > .raw-extra-value {
-    color: #333333;
+    color: Theme.color(primary, 75%);
     font-size: 80%;
   }
 }

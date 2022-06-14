@@ -1,3 +1,5 @@
+@use "./Theme";
+
 .tutorial {
   position: absolute;
   display: block;
@@ -9,7 +11,11 @@
     height: 100%;
     gap: 1ex 0;
 
-    background-color: #eeeeee;
+    background: Theme.colors($primary: 7%, $secondary: 100%);
+  }
+
+  a {
+    color: Theme.color(neutral);
   }
 
   .prev {
@@ -52,5 +58,5 @@
   height: 100%;
   z-index: 9;
 
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: Theme.color(primary, 66%);
 }

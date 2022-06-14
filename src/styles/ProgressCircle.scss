@@ -1,3 +1,5 @@
+@use "./Theme";
+
 .progress-circle {
   display: flex;
   flex-flow: row wrap;
@@ -22,10 +24,10 @@
   }
 
   .primary {
-    stroke: cyan;
+    stroke: Theme.color(positive);
   }
 
   .secondary {
-    stroke: lightcyan;
+    stroke: Theme.color(neutral);
   }
 }

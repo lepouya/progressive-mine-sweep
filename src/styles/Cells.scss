@@ -1,3 +1,5 @@
+@use "./Theme";
+
 .cell {
   background-size: contain;
   background-position: 50% 50%;
@@ -22,22 +24,22 @@
   }
 
   &-hidden {
-    background-color: #dddddd;
+    background: Theme.colors($primary: 13%, $secondary: 100%);
   }
 
   &-revealed {
-    background-color: #eeeeee;
+    background: Theme.colors($primary: 7%, $secondary: 100%);
   }
 
   &-hinted {
-    background-color: #ddeedd;
+    background: Theme.colors($positive: 20%, $secondary: 100%);
   }
 
   &-flagged {
-    background-color: #cccccc;
+    background: Theme.colors($primary: 20%, $secondary: 100%);
   }
 
   &-blown {
-    background-color: #999999;
+    background: Theme.colors($primary: 40%, $secondary: 100%);
   }
 }

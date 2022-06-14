@@ -1,3 +1,5 @@
+@use "./Theme";
+
 .minefield {
   display: flow-root;
   box-sizing: content-box;
@@ -18,7 +20,7 @@
   td {
     padding: 0;
     margin: 0;
-    border: 1px solid #aaaaaa;
+    border: 1px solid Theme.color(primary, 33%);
 
     vertical-align: middle;
     text-align: center;

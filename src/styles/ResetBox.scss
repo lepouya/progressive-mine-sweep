@@ -1,3 +1,5 @@
+@use "./Theme";
+
 .reset-box {
   position: absolute;
   display: block;
@@ -33,7 +35,7 @@
   }
 
   .primary {
-    stroke: rgba(127, 255, 255, 0.5);
+    stroke: Theme.color(neutral, 50%);
   }
 
   .secondary {

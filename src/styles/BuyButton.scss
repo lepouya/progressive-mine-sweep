@@ -1,6 +1,4 @@
-@use "./Theme";
-
-.buy-button {
+button.buy-button {
   width: 100%;
 
   display: flex;
@@ -12,13 +10,5 @@
 
   .resource {
     flex-wrap: nowrap;
-  }
-
-  &-affordable {
-    color: rgba(Theme.$textColor);
-  }
-
-  &-unaffordable {
-    color: rgba(Theme.$textColor / 66%);
   }
 }

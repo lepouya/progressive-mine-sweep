@@ -1,2 +1,27 @@
-$textColor: var(--text-color);
-$backgroundColor: var(--background-color);
+@use "sass:meta";
+@use "sass:string";
+
+@function color($name, $alpha: "") {
+  @if $alpha == "" or $alpha == 100% {
+    @return rgba(var(--#{$name}-color));
+  } @else {
+    @return rgba(var(--#{$name}-color) / $alpha);
+  }
+}
+
+@function grad($name, $alpha: "") {
+  @return linear-gradient(to right, color($name, $alpha), color($name, $alpha));
+}
+
+@function colors($args...) {
+  $str: "";
+
+  @each $color, $alpha in meta.keywords($args) {
+    @if $str != "" {
+      $str: $str + " , ";
+    }
+    $str: $str + grad($color, $alpha);
+  }
+
+  @return string.unquote($str);
+}
