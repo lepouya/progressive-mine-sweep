@@ -1,0 +1,25 @@
+[theme="light"],
+[theme="jumbo-light"] {
+  --primary-color: 0% 0% 0%;
+  --secondary-color: 100% 100% 100%;
+
+  --positive-color: 0% 50% 0%;
+  --negative-color: 50% 0% 0%;
+  --neutral-color: 0% 0% 50%;
+}
+
+[theme="dark"],
+[theme="jumbo-dark"] {
+  --primary-color: 100% 100% 100%;
+  --secondary-color: 0% 0% 0%;
+
+  --positive-color: 50% 100% 50%;
+  --negative-color: 100% 50% 50%;
+  --neutral-color: 50% 50% 100%;
+}
+
+[theme="jumbo-light"],
+[theme="jumbo-dark"] {
+  --font-size: x-large;
+  --font-weight: bold;
+}

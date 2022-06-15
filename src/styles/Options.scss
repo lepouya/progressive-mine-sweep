@@ -1,18 +1,17 @@
 @use "./Theme";
 
 .options {
-  font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
-    "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
-    "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+  font-family: var(--font-fixed);
 
   gap: 10px 0;
   margin-bottom: 10px;
 
   input {
     &[type="button"] {
+      font-size: larger;
+
       width: 75%;
       padding: 1em;
-      font-size: large;
     }
 
     &[type="range"] {
@@ -43,10 +42,12 @@
 
     input {
       &[type="button"] {
+        font-size: smaller;
+
+        color: Theme.color(negative);
+
         width: auto;
         padding: 1ex 1em;
-        font-size: small;
-        color: Theme.color(negative);
       }
     }
   }
@@ -63,7 +64,7 @@
 
   &.debug {
     .full {
-      font-size: small;
+      font-size: smaller;
       white-space: pre;
     }
   }

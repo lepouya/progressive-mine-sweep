@@ -30,6 +30,8 @@
 
   button,
   input[type="button"] {
+    font-size: smaller;
+
     color: Theme.color(primary);
     background: Theme.colors($primary: 15%, $secondary: 100%);
 
