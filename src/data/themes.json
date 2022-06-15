@@ -1,6 +1,10 @@
 {
-  "light": "Light Mode (default)",
+  "light": "Light Mode",
   "dark": "Dark Mode",
+  "cyan": "Chocolate",
+  "salmon": "Ocean",
+  "gold": "Gold",
+  "aqua": "Bloody Hell",
   "jumbo-light": "Jumbo Light",
   "jumbo-dark": "Jumbo Dark"
 }

@@ -27,6 +27,21 @@
   }
 }
 
+@mixin gen-color-theme($primary) {
+  $middle: color.scale(
+    $primary,
+    $saturation: if(color.saturation($primary) > 50%, -50%, 50%),
+    $lightness: if(color.lightness($primary) > 50%, -50%, 50%)
+  );
+  @include color-theme(
+    $primary: $primary,
+    $secondary: color.invert($primary),
+    $positive: color.adjust($middle, $hue: 120deg),
+    $negative: color.adjust($middle, $hue: 0deg),
+    $neutral: color.adjust($middle, $hue: 240deg)
+  );
+}
+
 [theme] {
   --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",

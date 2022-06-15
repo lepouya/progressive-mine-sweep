@@ -1,29 +1,33 @@
 @use "./Theme";
 
-[theme="light"],
-[theme="jumbo-light"] {
-  @include Theme.color-theme(
-    $primary: black,
-    $secondary: white,
-    $positive: green,
-    $negative: maroon,
-    $neutral: navy
-  );
-}
-
-[theme="dark"],
-[theme="jumbo-dark"] {
-  @include Theme.color-theme(
-    $primary: white,
-    $secondary: black,
-    $positive: lightgreen,
-    $negative: lightpink,
-    $neutral: lightcyan
-  );
-}
-
 [theme="jumbo-light"],
 [theme="jumbo-dark"] {
   --font-size: x-large;
   --font-weight: bold;
+}
+
+[theme="light"],
+[theme="jumbo-light"] {
+  @include Theme.gen-color-theme(black);
+}
+
+[theme="dark"],
+[theme="jumbo-dark"] {
+  @include Theme.gen-color-theme(white);
+}
+
+[theme="cyan"] {
+  @include Theme.gen-color-theme(lightcyan);
+}
+
+[theme="salmon"] {
+  @include Theme.gen-color-theme(lightsalmon);
+}
+
+[theme="gold"] {
+  @include Theme.gen-color-theme(gold);
+}
+
+[theme="aqua"] {
+  @include Theme.gen-color-theme(aqua);
 }
