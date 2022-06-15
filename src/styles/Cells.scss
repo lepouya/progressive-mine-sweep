@@ -24,22 +24,22 @@
   }
 
   &-hidden {
-    background: Theme.colors($primary: 13%, $secondary: 100%);
+    @include Theme.background($primary: 13%, $secondary: 100%);
   }
 
   &-revealed {
-    background: Theme.colors($primary: 7%, $secondary: 100%);
+    @include Theme.background($primary: 7%, $secondary: 100%);
   }
 
   &-hinted {
-    background: Theme.colors($positive: 20%, $secondary: 100%);
+    @include Theme.background($positive: 20%, $secondary: 100%);
   }
 
   &-flagged {
-    background: Theme.colors($primary: 20%, $secondary: 100%);
+    @include Theme.background($primary: 20%, $secondary: 100%);
   }
 
   &-blown {
-    background: Theme.colors($primary: 40%, $secondary: 100%);
+    @include Theme.background($primary: 40%, $secondary: 100%);
   }
 }

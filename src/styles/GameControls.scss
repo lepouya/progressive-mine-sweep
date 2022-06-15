@@ -4,7 +4,7 @@
   margin-top: 5px;
   gap: 5px 0;
 
-  background: Theme.colors($neutral: 7%, $positive: 7%, $secondary: 100%);
+  @include Theme.background($neutral: 7%, $positive: 7%, $secondary: 100%);
 
   button {
     margin: 0 0.5em;

@@ -5,7 +5,7 @@
   flex-flow: row wrap;
   position: relative;
 
-  background: Theme.colors($primary: 7%, $secondary: 100%);
+  @include Theme.background($primary: 7%, $secondary: 100%);
   color: Theme.color(primary);
 
   > div {
@@ -28,7 +28,7 @@
   }
 
   .active {
-    background: Theme.color(neutral, 15%);
+    @include Theme.background($neutral: 15%);
   }
 
   a {

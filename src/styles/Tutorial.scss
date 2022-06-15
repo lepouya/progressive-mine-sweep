@@ -11,7 +11,7 @@
     height: 100%;
     gap: 1ex 0;
 
-    background: Theme.colors($primary: 7%, $secondary: 100%);
+    @include Theme.background($primary: 7%, $secondary: 100%);
   }
 
   a {
@@ -58,5 +58,5 @@
   height: 100%;
   z-index: 9;
 
-  background-color: Theme.color(primary, 66%);
+  @include Theme.background($primary: 66%);
 }

@@ -1,5 +1,31 @@
+@use "sass:color";
 @use "sass:meta";
-@use "sass:string";
+
+@function color($name, $alpha: "") {
+  @if $alpha == "" or $alpha == 100% or alpha == 1 {
+    @return rgba(var(--#{$name}-color));
+  } @else {
+    @return rgba(var(--#{$name}-color) / $alpha);
+  }
+}
+
+@mixin background($top: "", $args...) {
+  @each $color, $alpha in meta.keywords($args) {
+    $color: color($color, $alpha);
+    $top: if($top == "", "", $top + ", ") + linear-gradient(0, $color, $color);
+  }
+  background: #{$top};
+}
+
+@function expand($color) {
+  @return color.red($color) color.green($color) color.blue($color);
+}
+
+@mixin color-theme($args...) {
+  @each $name, $color in meta.keywords($args) {
+    --#{$name}-color: #{expand($color)};
+  }
+}
 
 [theme] {
   --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -11,35 +37,13 @@
   --font-size: medium;
   --font-weight: normal;
 
-  --primary-color: 0% 0% 0%;
-  --secondary-color: 100% 100% 100%;
-
-  --positive-color: 0% 50% 0%;
-  --negative-color: 50% 0% 0%;
-  --neutral-color: 0% 0% 50%;
-}
-
-@function color($name, $alpha: "") {
-  @if $alpha == "" or $alpha == 100% {
-    @return rgba(var(--#{$name}-color));
-  } @else {
-    @return rgba(var(--#{$name}-color) / $alpha);
-  }
-}
-
-@function colors($args...) {
-  $str: "";
-
-  @each $color, $alpha in meta.keywords($args) {
-    $color: color($color, $alpha);
-
-    @if $str != "" {
-      $str: $str + " , ";
-    }
-    $str: $str + linear-gradient(to right, $color, $color);
-  }
-
-  @return string.unquote($str);
+  @include color-theme(
+    $primary: black,
+    $secondary: white,
+    $positive: green,
+    $negative: maroon,
+    $neutral: navy
+  );
 }
 
 .themed {

@@ -2,18 +2,18 @@
 
 .board-state {
   &-inactive {
-    background: Theme.colors($primary: 15%, $secondary: 100%);
+    @include Theme.background($primary: 15%, $secondary: 100%);
   }
 
   &-active {
-    background: Theme.colors($neutral: 15%, $secondary: 100%);
+    @include Theme.background($neutral: 15%, $secondary: 100%);
   }
 
   &-won {
-    background: Theme.colors($positive: 15%, $secondary: 100%);
+    @include Theme.background($positive: 15%, $secondary: 100%);
   }
 
   &-lost {
-    background: Theme.colors($negative: 15%, $secondary: 100%);
+    @include Theme.background($negative: 15%, $secondary: 100%);
   }
 }

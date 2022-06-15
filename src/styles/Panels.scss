@@ -33,22 +33,22 @@
     font-size: smaller;
 
     color: Theme.color(primary);
-    background: Theme.colors($primary: 15%, $secondary: 100%);
+    @include Theme.background($primary: 15%, $secondary: 100%);
 
     border: 1px solid Theme.color(primary);
     border-radius: 0.5em;
 
     &:active {
-      background: Theme.colors($primary: 20%, $secondary: 100%);
+      @include Theme.background($primary: 20%, $secondary: 100%);
     }
 
     &:hover {
-      background: Theme.colors($primary: 10%, $secondary: 100%);
+      @include Theme.background($primary: 10%, $secondary: 100%);
     }
 
     &:disabled {
       color: Theme.color(primary, 66%);
-      background: Theme.colors($primary: 5%, $secondary: 50%);
+      @include Theme.background($primary: 5%, $secondary: 50%);
 
       border: 1px solid Theme.color(primary, 50%);
     }

@@ -1,14 +1,14 @@
 @use "./Theme";
 
 .mode-controls {
-  background: Theme.colors($neutral: 15%, $secondary: 100%);
+  @include Theme.background($neutral: 15%, $secondary: 100%);
 
   button {
     margin: 2px;
     padding: 2px;
 
     &.selected {
-      background: Theme.colors($positive: 20%, $secondary: 100%);
+      @include Theme.background($positive: 20%, $secondary: 100%);
     }
   }
 

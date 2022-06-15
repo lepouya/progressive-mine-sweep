@@ -18,5 +18,5 @@ body {
   overflow: visible;
 
   color: Theme.color(primary);
-  background-color: Theme.color(secondary);
+  @include Theme.background($secondary: 100%);
 }
