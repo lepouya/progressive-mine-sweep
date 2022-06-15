@@ -24,13 +24,12 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### ~~M2: Make it incremental~~
 
-### M3: Tutorial
+### M3: Tutorial and themes
 
 - ~~Recover from failed loads~~
 - Add a tutorial for starting the game and how to progress
-- Tooltips and help options
-- Add color themes
-- Offline progress summary
+- ~~Tooltips and help options~~
+- ~~Add color themes~~
 
 ### M4: Automation
 
@@ -40,6 +39,7 @@ Perhaps I could do prestige/reset options once this is ready
 - Auto hint + improvements + interval
 - Auto mine + improvements? + interval
 - Auto reason + improvements + interval
+- Offline progress summary
 
 ### M5: Achievements
 

@@ -6,9 +6,24 @@
   gap: 10px 0;
   margin-bottom: 10px;
 
+  .themed {
+    width: 75%;
+
+    button {
+      width: 100%;
+      padding: 0.5rem;
+    }
+  }
+
   input {
+    font-family: var(--font-fixed);
+
     &[type="button"] {
       font-size: larger;
+      font-weight: bolder;
+
+      white-space: normal;
+      word-wrap: normal;
 
       width: 75%;
       padding: 1em;

@@ -24,6 +24,9 @@ export type Settings = {
   tutorialStep: number;
   tapMode: "reveal" | "flag";
   buyAmount: string;
+
+  // Visuals
+  theme?: string;
 };
 
 export const defaultSettings: Settings = {

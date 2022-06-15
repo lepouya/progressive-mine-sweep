@@ -15,6 +15,7 @@ import {
   resetOnBrowser,
   saveToBrowser,
 } from "../utils/localStorage";
+import { setTheme } from "../utils/document";
 
 export type Context = {
   settings: Settings;
@@ -66,6 +67,7 @@ function _load(context: Context, loadStr: string | null): boolean {
       ...context.settings,
       lastLoaded: Date.now(),
     };
+    setTheme(context.settings.theme);
 
     context.board = genBoardState({ ...oldContext.board, ...context.board });
 

@@ -1,9 +1,11 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, MouseEvent, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 import useGameContext from "../components/GameContext";
 import ResourceRender from "../components/ResourceRender";
 import { loadFromFile, saveToFile } from "../utils/fileStorage";
+import { setTheme } from "../utils/document";
+import themeData from "../data/themes.json";
 
 export default function Options() {
   const context = useGameContext();
@@ -13,6 +15,7 @@ export default function Options() {
   const location = useLocation();
 
   const settings = context.settings;
+  const themes = themeData as Record<string, string>;
   const debug =
     `${location.pathname} ${location.search} ${location.hash} ${location.key}`
       .toLowerCase()
@@ -72,6 +75,12 @@ export default function Options() {
     }
   }
 
+  function changeTheme(event: MouseEvent) {
+    settings.theme =
+      (event.target as HTMLElement).getAttribute("theme") ?? undefined;
+    setTheme(settings.theme);
+  }
+
   function resetGame() {
     if (resetAcknowledged) {
       if (confirm("Are you sure you want to reset? This cannot be undone.")) {
@@ -85,6 +94,26 @@ export default function Options() {
 
   return (
     <div id="options">
+      <div className="panel options" id="options-theme">
+        <div className="title-bar">Theme Options</div>
+        <div className="full">
+          Current theme is: {themes[settings.theme ?? ""] ?? "default"}
+        </div>
+        {Object.keys(themes).map((theme) => (
+          <div key={`theme-${theme}`} className="half center">
+            <div className="themed" id={`theme-${theme}`} theme={theme}>
+              <button
+                id={`button-theme-${theme}`}
+                theme={theme}
+                onClick={changeTheme}
+              >
+                {themes[theme]}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <div className="panel options" id="options-data">
         <div className="title-bar">Game Data</div>
         <div className="full">
