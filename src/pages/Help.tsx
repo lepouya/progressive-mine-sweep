@@ -1,7 +1,7 @@
-import recordMap from "../utils/recordMap";
 import useGameContext from "../components/GameContext";
-import tutorialSteps from "../tutorial/TutorialSteps";
 import { resolveTutorialStep } from "../model/TutorialStep";
+import tutorialSteps from "../tutorial/TutorialSteps";
+import recordMap from "../utils/recordMap";
 
 export default function Help() {
   const context = useGameContext();

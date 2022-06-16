@@ -1,9 +1,9 @@
 import { MouseEvent, useCallback } from "react";
 
-import { genBoardState, Board } from "../model/Board";
+import { Board, genBoardState } from "../model/Board";
 import { actOnCell, Cell } from "../model/Cell";
-import useGameContext from "./GameContext";
 import { stateChanged } from "../model/GameFormulas";
+import useGameContext from "./GameContext";
 import Icon from "./Icon";
 
 type Props = {

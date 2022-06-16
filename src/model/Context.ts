@@ -1,20 +1,19 @@
 import assign from "../utils/assign";
-import * as Store from "../utils/store";
-
-import { Settings, defaultSettings } from "./Settings";
-import { Board, emptyBoard, genBoardState } from "./Board";
-import {
-  genResourceManager,
-  mergeResourceManagers,
-  ResourceManager,
-} from "./ResourceManager";
-import { Resource } from "./Resource";
-import { initGameResources } from "./GameResources";
 import {
   loadFromBrowser,
   resetOnBrowser,
   saveToBrowser,
 } from "../utils/localStorage";
+import * as Store from "../utils/store";
+import { Board, emptyBoard, genBoardState } from "./Board";
+import { initGameResources } from "./GameResources";
+import { Resource } from "./Resource";
+import {
+  genResourceManager,
+  mergeResourceManagers,
+  ResourceManager,
+} from "./ResourceManager";
+import { defaultSettings, Settings } from "./Settings";
 
 export type Context = {
   settings: Settings;

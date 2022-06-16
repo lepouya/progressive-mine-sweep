@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 
-import Loader from "./components/Loader";
 import { GameContextProvider } from "./components/GameContext";
+import Loader from "./components/Loader";
 import { getHTMLElement } from "./utils/document";
 
 window.addEventListener(

@@ -1,12 +1,12 @@
+import resources_board from "../data/resources_board.json";
+import resources_cell from "../data/resources_cell.json";
+import resources_game from "../data/resources_game.json";
+import resources_time from "../data/resources_time.json";
 import clamp from "../utils/clamp";
+import tickTimer from "../utils/tickTimer";
 import { Resource } from "./Resource";
 import { genResourceManager, ResourceManager } from "./ResourceManager";
-import tickTimer from "../utils/tickTimer";
 
-import resources_time from "../data/resources_time.json";
-import resources_board from "../data/resources_board.json";
-import resources_game from "../data/resources_game.json";
-import resources_cell from "../data/resources_cell.json";
 const loadResources = <Partial<Resource>[][]>[
   resources_time,
   resources_board,

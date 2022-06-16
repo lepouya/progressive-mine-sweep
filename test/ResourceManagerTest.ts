@@ -1,4 +1,5 @@
 import "mocha";
+
 import { expect } from "chai";
 
 import { genResourceManager } from "../src/model/ResourceManager";

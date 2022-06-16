@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 
-import Main from "../pages/Main";
 import Help from "../pages/Help";
+import Main from "../pages/Main";
 import Options from "../pages/Options";
+import Stats from "../pages/Stats";
+import Tutorial from "../pages/Tutorial";
+import Upgrades from "../pages/Upgrades";
+import { setTheme } from "../utils/document";
 import useGameContext from "./GameContext";
 import Link from "./Link";
-import Stats from "../pages/Stats";
-import Upgrades from "../pages/Upgrades";
-import Tutorial from "../pages/Tutorial";
-import { setTheme } from "../utils/document";
 
 export default function Game() {
   const {

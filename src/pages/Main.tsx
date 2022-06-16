@@ -1,10 +1,10 @@
 import BuyButton from "../components/BuyButton";
-import MineField from "../components/MineField";
-import ResourceBar from "../components/ResourceBar";
-import ResetBox from "../components/ResetBox";
-import ModeControls from "../components/ModeControls";
-import ResourceRender from "../components/ResourceRender";
 import useGameContext from "../components/GameContext";
+import MineField from "../components/MineField";
+import ModeControls from "../components/ModeControls";
+import ResetBox from "../components/ResetBox";
+import ResourceBar from "../components/ResourceBar";
+import ResourceRender from "../components/ResourceRender";
 import { genBoardState, genHints } from "../model/Board";
 import {
   hintFormula,

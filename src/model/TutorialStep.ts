@@ -1,6 +1,6 @@
-import { Context } from "./Context";
 import generate, { Generative } from "../utils/generate";
 import round from "../utils/round";
+import { Context } from "./Context";
 
 export type TutorialSteps = Record<number, Generative<TutorialStep, [Context]>>;
 

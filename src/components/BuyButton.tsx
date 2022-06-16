@@ -1,4 +1,5 @@
 import { MouseEvent } from "react";
+
 import { getBuyAmount } from "../model/GameFormulas";
 import { Resource, ResourceCount, scaleResources } from "../model/Resource";
 import apply from "../utils/apply";

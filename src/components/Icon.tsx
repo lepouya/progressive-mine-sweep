@@ -1,7 +1,7 @@
+import tablerIcons from "../../assets/tabler-sprite-nostroke.svg";
+import cellIcons from "../data/cell_icons.json";
 import { Cell, CellState } from "../model/Cell";
 import { getHTMLElement } from "../utils/document";
-import cellIcons from "../data/cell_icons.json";
-import tablerIcons from "../../assets/tabler-sprite-nostroke.svg";
 
 export type IconProps = {
   icon?: string;

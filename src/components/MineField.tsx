@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 
-import MineCell from "./MineCell";
-import useGameContext from "./GameContext";
 import { Board, emptyBoard, genBoard, genBoardState } from "../model/Board";
+import useGameContext from "./GameContext";
+import MineCell from "./MineCell";
 
 type Props = {
   board?: Board;

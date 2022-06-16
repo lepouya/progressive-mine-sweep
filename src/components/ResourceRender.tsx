@@ -1,7 +1,7 @@
-import Icon from "./Icon";
 import { Resource } from "../model/Resource";
 import { formatNumber, formatTime } from "../utils/format";
 import round, { roundMethods } from "../utils/round";
+import Icon from "./Icon";
 
 const maxLengths = { tiny: 4, compact: 9, expanded: 21 };
 const multipliers = { number: 1.0, percentage: 1.0, time: 1000.0 };

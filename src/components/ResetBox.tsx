@@ -1,14 +1,14 @@
 import { MouseEvent, useEffect, useState } from "react";
 
-import useGameContext from "./GameContext";
-import message from "../utils/message";
-import ProgressCircle from "./ProgressCircle";
 import { genBoard } from "../model/Board";
 import {
   numMinesFormula,
   resetTimeFormula,
   stateChanged,
 } from "../model/GameFormulas";
+import message from "../utils/message";
+import useGameContext from "./GameContext";
+import ProgressCircle from "./ProgressCircle";
 
 export default function ResetBox() {
   const {
