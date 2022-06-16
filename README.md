@@ -30,6 +30,7 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### M4: Automation
 
+- Task orchestration
 - Auto reset puzzle + interval
 - Auto fill blank squares + upgrade interval
 - Auto guess when stuck? + interval
@@ -57,3 +58,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Better unit testing for models and utils
 - The progress circle on mac has sharp corners sometimes
 - Have a way of reviewing the board on loss
+- investigate using ThisType for resources and tasks
