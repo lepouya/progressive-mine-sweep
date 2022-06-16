@@ -1,18 +1,15 @@
 {
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist", "test"],
-
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "typeRoots": ["./src/@types", "./node_modules/@types"],
-
     "jsx": "react-jsx",
     "lib": ["DOM", "ESNext", "ScriptHost"],
     "module": "ES6",
     "moduleResolution": "node",
     "target": "ES6",
-
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "allowUmdGlobalAccess": true,
