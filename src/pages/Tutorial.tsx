@@ -62,13 +62,27 @@ export default function Tutorial() {
     }
   }
 
+  function calcStyle(size?: string) {
+    return `max(5%, 1em, min(90%, calc(100% - 2em), calc(${size})))`;
+  }
+
+  const bounds = {
+    left: calcStyle(tutorialStep.bounds.left),
+    top: calcStyle(tutorialStep.bounds.top),
+    width: calcStyle(tutorialStep.bounds.width),
+    minHeight: calcStyle(tutorialStep.bounds.height),
+  };
+
   const tutorial = (
     <div
       className="tutorial"
-      style={tutorialStep.bounds}
+      style={bounds}
       id={`tutorial-step-${tutorialStep.step}`}
     >
-      <div className="panel shadow">
+      <div
+        className="panel shadow"
+        style={{ minHeight: tutorialStep.bounds.height }}
+      >
         {tutorialStep.title != null && tutorialStep.title !== "" && (
           <div className="title-bar">{tutorialStep.title}</div>
         )}

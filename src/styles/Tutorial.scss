@@ -4,11 +4,13 @@
   position: absolute;
   display: block;
   z-index: 10;
+  border: 1px dotted red; /////////
 
   background-color: transparent;
 
   > .panel {
-    height: 100%;
+    height: auto;
+    padding-bottom: 2em;
     gap: 1ex 0;
 
     @include Theme.background($primary: 7%, $secondary: 100%);
