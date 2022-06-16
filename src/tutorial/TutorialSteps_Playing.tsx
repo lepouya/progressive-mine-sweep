@@ -189,7 +189,7 @@ export const tsPlaying: TutorialSteps = {
         </div>
         <div className="full">
           Once you reveal all the squares and flag all the mines correctly, you
-          win the playing field, and the game announced it to you.
+          win the playing field, and the game announces it to you.
         </div>
         <div className="full">
           Similarly, if you set off a mine, you lose the playing field and need

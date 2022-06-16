@@ -24,12 +24,7 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### ~~M2: Make it incremental~~
 
-### M3: Tutorial and themes
-
-- ~~Recover from failed loads~~
-- ~~Add a tutorial for starting the game and how to progress~~
-- ~~Tooltips and help options~~
-- ~~Add color themes~~
+### ~~M3: Tutorial and themes~~
 
 ### M4: Automation
 
@@ -58,3 +53,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource selling?
 - Resource minimums
 - Better unit testing for models and utils
+- The progress circle on mac has sharp corners sometimes
