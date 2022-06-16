@@ -54,3 +54,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource minimums
 - Better unit testing for models and utils
 - The progress circle on mac has sharp corners sometimes
+- Have a way of reviewing the board on loss

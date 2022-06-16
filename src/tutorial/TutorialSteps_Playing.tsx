@@ -60,7 +60,7 @@ export const tsPlaying: TutorialSteps = {
             The revealed contents of &nbsp;
             <Icon state="revealed" neighbors={0} size="1em" />
             &nbsp; tells us there are no mines in the squares surrounding it, so
-            it's safe to go ahead and reveal the 3 surrounding squars as well!
+            it's safe to go ahead and reveal the 3 surrounding squares as well!
           </span>
         </div>
         <div className="full center">
@@ -185,7 +185,7 @@ export const tsPlaying: TutorialSteps = {
     body: (
       <>
         <div className="full">
-          No sweating if you accidentally set off the mine in the previous step.
+          No sweat if you accidentally set off the mine in the previous step.
         </div>
         <div className="full">
           Once you reveal all the squares and flag all the mines correctly, you
@@ -196,7 +196,7 @@ export const tsPlaying: TutorialSteps = {
           to reset the board.
         </div>
         <div className="full">
-          In either case, you will be represented with an option to reset the
+          In either case, you will be presented with an option to reset the
           board and receive a brand new game to play. We can upgrade this box
           and its functions later on.
         </div>

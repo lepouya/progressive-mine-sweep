@@ -46,7 +46,7 @@ export const tsScoring: TutorialSteps = {
       <>
         <div className="full">
           There are many other scores and resources tracked in the game that you
-          can access via the STATISTICS tab above
+          can access via the STATISTICS tab above.
         </div>
       </>
     ),
