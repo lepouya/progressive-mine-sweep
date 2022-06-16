@@ -50,4 +50,6 @@ export const defaultSettings: Settings = {
   tutorialStep: 0,
   tapMode: "reveal",
   buyAmount: "x1",
+
+  theme: "",
 };

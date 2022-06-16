@@ -23,9 +23,11 @@ export default function Tutorial() {
       elems = document.querySelectorAll(tutorialStep?.highlightSelector ?? "");
     } catch (_) {}
 
-    elems?.forEach((elem) => elem.classList.add("highlight"));
-    if (onMount) {
-      onMount();
+    if (tutorialStep?.enabled) {
+      elems?.forEach((elem) => elem.classList.add("highlight"));
+      if (onMount) {
+        onMount();
+      }
     }
 
     return () => {
@@ -34,7 +36,7 @@ export default function Tutorial() {
         onUnmount();
       }
     };
-  }, [tutorialStep?.step]);
+  }, [tutorialStep?.step, tutorialStep?.enabled]);
 
   if (
     !tutorialStep ||

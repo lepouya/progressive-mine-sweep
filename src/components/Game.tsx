@@ -9,6 +9,7 @@ import Link from "./Link";
 import Stats from "../pages/Stats";
 import Upgrades from "../pages/Upgrades";
 import Tutorial from "../pages/Tutorial";
+import { setTheme } from "../utils/document";
 
 export default function Game() {
   const {
@@ -27,6 +28,7 @@ export default function Game() {
       clearInterval(timerId);
     }
     setTimerId(setInterval(tick, 1000.0 / settings.ticksPerSecond));
+    setTheme(settings.theme);
 
     return () => {
       if (timerId) {
@@ -34,7 +36,7 @@ export default function Game() {
         setTimerId(undefined);
       }
     };
-  }, [settings, settings.ticksPerSecond]);
+  }, [settings, settings.ticksPerSecond, settings.theme]);
 
   function tick() {
     // Update resources

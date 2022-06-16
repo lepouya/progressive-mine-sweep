@@ -27,7 +27,7 @@ Perhaps I could do prestige/reset options once this is ready
 ### M3: Tutorial and themes
 
 - ~~Recover from failed loads~~
-- Add a tutorial for starting the game and how to progress
+- ~~Add a tutorial for starting the game and how to progress~~
 - ~~Tooltips and help options~~
 - ~~Add color themes~~
 
