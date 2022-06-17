@@ -48,7 +48,7 @@ export function genResourceManager(): ResourceManager {
     purchase: (toBuy, style) => purchase(rm, toBuy, style),
     canAfford: (cost) => canAfford(rm, cost),
     update: (now, context, source) =>
-      update(rm, now, context, source ?? "unknown"),
+      update(rm, now ?? Date.now(), context, source ?? "unknown"),
   };
 
   return rm;
@@ -105,7 +105,7 @@ function upsert(
 
 function update(
   rm: ResourceManager,
-  now: number | undefined,
+  now: number,
   context: Context,
   source: string,
 ) {
@@ -116,10 +116,6 @@ function update(
     maxResourceTickSecs = 1.0,
     timeDilation = 1.0,
   } = context.settings;
-
-  if (!now) {
-    now = Date.now();
-  }
 
   let dt = clamp(
     (now - (context.settings.lastUpdate ?? now)) / 1000.0,
@@ -140,8 +136,7 @@ function update(
   }
 
   Object.values(rm.resources).forEach((res) => {
-    const rateDt =
-      ((context.settings.lastUpdate ?? 0) - (res.rate.lastCheck ?? 0)) / 1000.0;
+    const rateDt = (now - (res.rate.lastCheck ?? 0)) / 1000.0;
     if (rateDt >= rateUpdateSecs) {
       if (res.rate.lastCount !== undefined) {
         res.rate.value = (res.count - res.rate.lastCount) / rateDt;
@@ -155,7 +150,7 @@ function update(
       res.rate.lastCount === undefined ||
       rateDt >= rateUpdateSecs
     ) {
-      res.rate.lastCheck = context.settings.lastUpdate;
+      res.rate.lastCheck = now;
       res.rate.lastCount = res.count;
     }
   });
