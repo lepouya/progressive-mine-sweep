@@ -2,7 +2,10 @@ import "mocha";
 
 import { expect } from "chai";
 
+import { emptyContext } from "../src/model/Context";
 import { genResourceManager } from "../src/model/ResourceManager";
+
+const _context = emptyContext();
 
 describe("Creating resources", () => {
   it("Empty resource manager set up correctly", () => {
@@ -54,26 +57,35 @@ describe("Creating resources", () => {
 describe("Updating resources", () => {
   it("Time is updated correctly", () => {
     const rm = genResourceManager();
-    const settings = { lastUpdate: 1000 };
+    const context = {
+      ..._context,
+      settings: { ..._context.settings, lastUpdate: 1000 },
+    };
 
-    rm.update(2000, settings);
-    expect(settings.lastUpdate).to.be.equal(2000);
+    rm.update(2000, context);
+    expect(context.settings.lastUpdate).to.be.equal(2000);
 
-    rm.update(3000, settings);
-    expect(settings.lastUpdate).to.be.equal(3000);
+    rm.update(3000, context);
+    expect(context.settings.lastUpdate).to.be.equal(3000);
   });
 
   it("Time below min delta doesn't change anything", () => {
     const rm = genResourceManager();
-    const settings = { lastUpdate: 1000 };
+    const context = {
+      ..._context,
+      settings: { ..._context.settings, lastUpdate: 1000 },
+    };
 
-    rm.update(1000.1, settings);
-    expect(settings.lastUpdate).to.be.equal(1000);
+    rm.update(1000.1, context);
+    expect(context.settings.lastUpdate).to.be.equal(1000);
   });
 
   it("Resource ticks called corectly", () => {
     const rm = genResourceManager();
-    const settings = { lastUpdate: 0 };
+    const context = {
+      ..._context,
+      settings: { ..._context.settings, lastUpdate: 0 },
+    };
 
     rm.upsert({
       name: "test1",
@@ -84,20 +96,23 @@ describe("Updating resources", () => {
       tick: () => rm.get("test2").count++,
     });
 
-    rm.update(500, settings);
-    expect(settings.lastUpdate).to.be.equal(500);
+    rm.update(500, context);
+    expect(context.settings.lastUpdate).to.be.equal(500);
     expect(rm.resources["test1"].count).to.be.equal(0.5);
     expect(rm.resources["test2"].count).to.be.equal(1);
 
-    rm.update(1500, settings);
-    expect(settings.lastUpdate).to.be.equal(1500);
+    rm.update(1500, context);
+    expect(context.settings.lastUpdate).to.be.equal(1500);
     expect(rm.resources["test1"].count).to.be.equal(1.5);
     expect(rm.resources["test2"].count).to.be.equal(2);
   });
 
   it("Tick granularity works as expected", () => {
     const rm = genResourceManager();
-    const settings = { lastUpdate: 0 };
+    const context = {
+      ..._context,
+      settings: { ..._context.settings, lastUpdate: 0 },
+    };
 
     const R1 = rm.upsert({ name: "test1" });
     R1.tick = (dt) => {
@@ -108,30 +123,33 @@ describe("Updating resources", () => {
       R2.count++;
     };
 
-    rm.update(0.5, settings);
-    expect(settings.lastUpdate).to.be.equal(0);
+    rm.update(0.5, context);
+    expect(context.settings.lastUpdate).to.be.equal(0);
     expect(rm.resources["test1"].count).to.be.equal(0);
     expect(rm.resources["test2"].count).to.be.equal(0);
 
-    rm.update(500, settings);
-    expect(settings.lastUpdate).to.be.equal(500);
+    rm.update(500, context);
+    expect(context.settings.lastUpdate).to.be.equal(500);
     expect(rm.resources["test1"].count).to.be.equal(0.5);
     expect(rm.resources["test2"].count).to.be.equal(1);
 
-    rm.update(1000, settings);
-    expect(settings.lastUpdate).to.be.equal(1000);
+    rm.update(1000, context);
+    expect(context.settings.lastUpdate).to.be.equal(1000);
     expect(rm.resources["test1"].count).to.be.equal(1);
     expect(rm.resources["test2"].count).to.be.equal(2);
 
-    rm.update(10000, settings);
-    expect(settings.lastUpdate).to.be.equal(10000);
+    rm.update(10000, context);
+    expect(context.settings.lastUpdate).to.be.equal(10000);
     expect(rm.resources["test1"].count).to.be.equal(10);
     expect(rm.resources["test2"].count).to.be.equal(11);
   });
 
   it("Max tick update works", () => {
     const rm = genResourceManager();
-    const settings = { lastUpdate: 0 };
+    const context = {
+      ..._context,
+      settings: { ..._context.settings, lastUpdate: 0 },
+    };
 
     rm.upsert({
       name: "test1",
@@ -142,20 +160,23 @@ describe("Updating resources", () => {
       tick: () => rm.get("test2").count++,
     });
 
-    rm.update(500, settings);
-    expect(settings.lastUpdate).to.be.equal(500);
+    rm.update(500, context);
+    expect(context.settings.lastUpdate).to.be.equal(500);
     expect(rm.resources["test1"].count).to.be.equal(0.5);
     expect(rm.resources["test2"].count).to.be.equal(1);
 
-    rm.update(100000000, settings);
-    expect(settings.lastUpdate).to.be.equal(100000000);
+    rm.update(100000000, context);
+    expect(context.settings.lastUpdate).to.be.equal(100000000);
     expect(rm.resources["test1"].count).to.be.equal(86400.5);
     expect(rm.resources["test2"].count).to.be.equal(86401);
   });
 
   it("Rate update works", () => {
     const rm = genResourceManager();
-    const settings = { lastUpdate: 0 };
+    const context = {
+      ..._context,
+      settings: { ..._context.settings, lastUpdate: 0 },
+    };
 
     rm.upsert({
       name: "test1",
@@ -166,17 +187,17 @@ describe("Updating resources", () => {
       tick: () => (rm.get("test2").count += rm.get("test1").value()),
     });
 
-    rm.update(1000, settings);
+    rm.update(1000, context);
     expect(rm.resources["test1"].count).to.be.equal(1);
     expect(rm.resources["test2"].count).to.be.equal(1);
 
-    rm.update(2000, settings);
+    rm.update(2000, context);
     expect(rm.resources["test1"].count).to.be.equal(2);
     expect(rm.resources["test1"].rate.value).to.be.equal(1);
     expect(rm.resources["test2"].count).to.be.equal(3);
     expect(rm.resources["test2"].rate.value).to.be.equal(2);
 
-    rm.update(5000, settings);
+    rm.update(5000, context);
     expect(rm.resources["test1"].count).to.be.equal(5);
     expect(rm.resources["test1"].rate.value).to.be.equal(1);
     expect(rm.resources["test2"].count).to.be.equal(15);

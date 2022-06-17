@@ -74,7 +74,7 @@ function _load(context: Context, loadStr: string | null): boolean {
     );
     context.resourceManager.update(
       context.settings.lastLoaded,
-      context.settings,
+      context,
       "load",
     );
   } else {

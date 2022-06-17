@@ -1,5 +1,6 @@
 import assign from "../utils/assign";
 import clamp from "../utils/clamp";
+import { Context } from "./Context";
 import {
   applyToResource,
   checkHasResources,
@@ -8,7 +9,6 @@ import {
   Resource,
   ResourceCount,
 } from "./Resource";
-import { Settings } from "./Settings";
 
 export type ResourceManager = {
   resources: Record<string, Resource & ResourceHelper>;
@@ -18,7 +18,7 @@ export type ResourceManager = {
   purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => PurchaseCost;
   canAfford: (cost: ResourceCount[]) => boolean;
 
-  update: (now?: number, settings?: Partial<Settings>, source?: string) => void;
+  update: (now: number | undefined, context: Context, source?: string) => void;
 };
 
 export type PurchaseStyle =
@@ -47,8 +47,8 @@ export function genResourceManager(): ResourceManager {
     get: (resource) => resolve(rm, resource),
     purchase: (toBuy, style) => purchase(rm, toBuy, style),
     canAfford: (cost) => canAfford(rm, cost),
-    update: (now, settings, source) =>
-      update(rm, now, settings ?? {}, source ?? "unknown"),
+    update: (now, context, source) =>
+      update(rm, now, context, source ?? "unknown"),
   };
 
   return rm;
@@ -106,7 +106,7 @@ function upsert(
 function update(
   rm: ResourceManager,
   now: number | undefined,
-  settings: Partial<Settings>,
+  context: Context,
   source: string,
 ) {
   const {
@@ -115,21 +115,21 @@ function update(
     maxResourceUpdateSecs = 86400.0,
     maxResourceTickSecs = 1.0,
     timeDilation = 1.0,
-  } = settings;
+  } = context.settings;
 
   if (!now) {
     now = Date.now();
   }
 
   let dt = clamp(
-    (now - (settings.lastUpdate ?? now)) / 1000.0,
+    (now - (context.settings.lastUpdate ?? now)) / 1000.0,
     0,
     maxResourceUpdateSecs,
   );
   if (dt < minResourceUpdateSecs) {
     return;
   }
-  settings.lastUpdate = now;
+  context.settings.lastUpdate = now;
 
   while (dt > 0) {
     const tick = clamp(dt, minResourceUpdateSecs, maxResourceTickSecs);
@@ -141,7 +141,7 @@ function update(
 
   Object.values(rm.resources).forEach((res) => {
     const rateDt =
-      ((settings.lastUpdate ?? 0) - (res.rate.lastCheck ?? 0)) / 1000.0;
+      ((context.settings.lastUpdate ?? 0) - (res.rate.lastCheck ?? 0)) / 1000.0;
     if (rateDt >= rateUpdateSecs) {
       if (res.rate.lastCount !== undefined) {
         res.rate.value = (res.count - res.rate.lastCount) / rateDt;
@@ -155,7 +155,7 @@ function update(
       res.rate.lastCount === undefined ||
       rateDt >= rateUpdateSecs
     ) {
-      res.rate.lastCheck = settings.lastUpdate;
+      res.rate.lastCheck = context.settings.lastUpdate;
       res.rate.lastCount = res.count;
     }
   });

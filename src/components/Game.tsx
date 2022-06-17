@@ -13,6 +13,7 @@ import Link from "./Link";
 
 export default function Game() {
   const {
+    context,
     settings,
     resourceManager,
     save,
@@ -40,7 +41,7 @@ export default function Game() {
 
   function tick() {
     // Update resources
-    resourceManager.update(undefined, settings, "tick");
+    resourceManager.update(undefined, context, "tick");
 
     // Save game
     if (

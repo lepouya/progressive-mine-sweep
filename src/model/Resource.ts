@@ -22,7 +22,7 @@ export type Resource = {
 
   value: (kind?: string) => number;
   cost: (n: number, kind?: string) => ResourceCount[];
-  tick?: (dt: number, source?: string) => void;
+  tick?: (dt: number, source: string) => void;
 
   rate: {
     value: number;

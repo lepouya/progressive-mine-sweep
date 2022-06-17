@@ -40,7 +40,7 @@ export default function tickTimer(
   };
   const tick =
     oldTick && combineWithCurrentTick
-      ? (dt: number, src?: string) => {
+      ? (dt: number, src: string) => {
           oldTick(dt, src);
           newTick(dt, src);
         }

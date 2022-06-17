@@ -58,4 +58,3 @@ Perhaps I could do prestige/reset options once this is ready
 - Better unit testing for models and utils
 - The progress circle on mac has sharp corners sometimes
 - Have a way of reviewing the board on loss
-- investigate using ThisType for resources and tasks
