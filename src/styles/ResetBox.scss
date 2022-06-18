@@ -22,8 +22,9 @@
     font-size: larger;
   }
 
-  circle {
-    stroke-width: 5 !important;
+  .progress-circle {
+    z-index: 9;
+    margin: 5px 0;
   }
 
   .panel {
@@ -36,10 +37,12 @@
 
   .primary {
     stroke: Theme.color(neutral, 50%);
+    stroke-width: 6;
   }
 
   .secondary {
     stroke: transparent;
+    stroke-width: 0;
   }
 
   .board-state {

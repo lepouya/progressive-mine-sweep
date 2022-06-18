@@ -36,8 +36,8 @@ export default function ProgressCircle({
           className="primary"
           r={50}
           transform="rotate(-90)"
-          strokeDasharray={Math.PI * 100}
-          strokeDashoffset={Math.PI * 100 * (1 - pct)}
+          strokeDasharray={Math.ceil(Math.PI * 100)}
+          strokeDashoffset={Math.ceil(Math.PI * 100 * (1 - pct))}
         />
       </svg>
     </div>
