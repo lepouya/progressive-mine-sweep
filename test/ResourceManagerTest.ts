@@ -450,13 +450,6 @@ describe("ResourceHelper", () => {
   });
 });
 
-/*
-    const settings = { lastUpdate: 0 };
-    const rm = genResourceManager(null, settings);
-
-    rm.upsert("test1").tick = (dt) => (rm.get("test1").count += dt);
-    rm.upsert("test2").tick = () => rm.get("test2").count++;
-*/
 describe("Task execution", () => {
   it("Task executor enables and disabled task runs", () => {
     const settings = { lastUpdate: 0 };

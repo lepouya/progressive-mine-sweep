@@ -6,8 +6,8 @@ import Icon from "./Icon";
 const maxLengths = { tiny: 4, compact: 9, expanded: 21 };
 const multipliers = { number: 1.0, percentage: 1.0, time: 1000.0 };
 
-export type ResourceRenderProps<Context, Result> = {
-  resource?: Partial<Resource<Context, Result>>;
+export type ResourceRenderProps = {
+  resource?: Partial<Resource<any, any>>;
   name?: string;
   value?: number;
   epoch?: number;
@@ -59,7 +59,7 @@ export type ResourceRenderProps<Context, Result> = {
   style?: React.CSSProperties;
 };
 
-export default function ResourceRender<Context, Result>({
+export default function ResourceRender({
   value,
   epoch,
   name,
@@ -110,7 +110,7 @@ export default function ResourceRender<Context, Result>({
 
   className = "",
   style,
-}: ResourceRenderProps<Context, Result>) {
+}: ResourceRenderProps) {
   const output: JSX.Element[] = [];
   function addValueDiv(
     num = NaN,

@@ -16,8 +16,6 @@ export type ResourceManager<Context, Result> = {
   settings: Partial<ResourceManagerSettings>;
   resources: Record<string, ManagedResource<Context, Result>>;
 
-  _resourceType?: Resource<Context, Result>;
-
   upsert: (
     props: Partial<Resource<Context, Result>> | string,
   ) => ManagedResource<Context, Result>;

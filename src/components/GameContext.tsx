@@ -13,7 +13,3 @@ export const GameContextProvider: FC<PropsWithChildren<{}>> = (props) => (
 export default function useGameContext() {
   return wrapContext(useContext(GameReactContext));
 }
-
-export type GameResource = NonNullable<
-  ReturnType<typeof useGameContext>["resourceManager"]["_resourceType"]
->;

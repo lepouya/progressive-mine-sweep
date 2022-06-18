@@ -31,6 +31,7 @@ Perhaps I could do prestige/reset options once this is ready
 ### M4: Automation
 
 - Task orchestration
+- Double tap to reveal neighbors
 - Auto reset puzzle + interval
 - Auto fill blank squares + upgrade interval
 - Auto guess when stuck? + interval
@@ -59,3 +60,4 @@ Perhaps I could do prestige/reset options once this is ready
 - The progress circle on mac has sharp corners sometimes
 - Have a way of reviewing the board on loss
 - test resource execution rates
+- track win and lose streaks
