@@ -510,7 +510,6 @@ describe("Task execution", () => {
     });
 
     expect(rm.update(1000)).to.deep.equal([]);
-    console.log(t2);
     expect(rm.update(1100)).to.deep.equal([]);
     expect(rm.update(1200)).to.deep.equal([]);
     expect(rm.update(1500)).to.deep.equal(["2/sec-0.5"]);
@@ -520,5 +519,53 @@ describe("Task execution", () => {
     expect(rm.update(5000)).to.deep.equal(["1/sec-2", "2/sec-2"]);
     expect(rm.update(5555)).to.deep.equal(["2/sec-0.555"]);
     expect(rm.update(15555)).to.deep.equal(["1/sec-5", "2/sec-5"]);
+  });
+
+  it("Task executor updates rates", () => {
+    const settings = { maxResourceTickSecs: 5 };
+    const rm = genResourceManager(null, settings);
+
+    const t1 = rm.upsert({
+      name: "1/sec",
+      shouldTick: (dt) => dt >= 1,
+      tick: (dt) => t1.name + "-" + dt.toString(),
+    });
+    const t2 = rm.upsert({
+      name: "2/sec",
+      shouldTick: (dt) => dt >= 0.5,
+      tick: (dt) => t2.name + "-" + dt.toString(),
+    });
+
+    expect(t1.rate.ticks).to.equal(0);
+    expect(t2.rate.ticks).to.equal(0);
+    rm.update(1000);
+    expect(t1.rate.ticks).to.equal(0);
+    expect(t2.rate.ticks).to.equal(0);
+    rm.update(1100);
+    rm.update(1200);
+    rm.update(1500);
+    expect(t1.rate.ticks).to.equal(0);
+    expect(t2.rate.ticks).to.equal(0);
+    rm.update(1750);
+    expect(t1.rate.ticks).to.equal(0);
+    expect(t2.rate.ticks).to.equal(0);
+    rm.update(2000);
+    expect(t1.rate.ticks).to.equal(1);
+    expect(t2.rate.ticks).to.equal(2);
+    rm.update(3000);
+    expect(t1.rate.ticks).to.equal(1);
+    expect(t2.rate.ticks).to.equal(1);
+    rm.update(5000);
+    expect(t1.rate.ticks).to.equal(0.5);
+    expect(t2.rate.ticks).to.equal(0.5);
+    rm.update(5555);
+    expect(t1.rate.ticks).to.equal(0.5);
+    expect(t2.rate.ticks).to.equal(0.5);
+    rm.update(6500);
+    expect(t1.rate.ticks).to.equal(1 / 1.5);
+    expect(t2.rate.ticks).to.equal(2 / 1.5);
+    rm.update(16500);
+    expect(t1.rate.ticks).to.equal(0.2);
+    expect(t2.rate.ticks).to.equal(0.2);
   });
 });

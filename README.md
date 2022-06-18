@@ -59,5 +59,5 @@ Perhaps I could do prestige/reset options once this is ready
 - Better unit testing for models and utils
 - The progress circle on mac has sharp corners sometimes
 - Have a way of reviewing the board on loss
-- test resource execution rates
-- track win and lose streaks
+- Track win and lose streaks
+- Themes by BG color
