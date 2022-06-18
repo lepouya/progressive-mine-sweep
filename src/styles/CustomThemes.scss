@@ -2,32 +2,58 @@
 
 [theme="jumbo-light"],
 [theme="jumbo-dark"] {
-  --font-size: x-large;
+  --font-size: large;
   --font-weight: bold;
 }
 
 [theme="light"],
 [theme="jumbo-light"] {
-  @include Theme.gen-color-theme(black);
+  @include Theme.gen-color-theme($primary: black);
 }
 
 [theme="dark"],
 [theme="jumbo-dark"] {
-  @include Theme.gen-color-theme(white);
+  @include Theme.gen-color-theme($primary: white);
 }
 
 [theme="cyan"] {
-  @include Theme.gen-color-theme(lightcyan);
+  @include Theme.gen-color-theme($primary: lightcyan);
 }
 
-[theme="salmon"] {
-  @include Theme.gen-color-theme(lightsalmon);
+[theme="ocean"] {
+  @include Theme.gen-color-theme($secondary: paleturquoise);
 }
 
 [theme="gold"] {
-  @include Theme.gen-color-theme(gold);
+  @include Theme.gen-color-theme($primary: gold);
 }
 
-[theme="aqua"] {
-  @include Theme.gen-color-theme(aqua);
+[theme="tomato"] {
+  @include Theme.gen-color-theme($secondary: lightsalmon);
+}
+
+@font-face {
+  font-family: WashYourHand;
+  src: url(/assets/fonts/WashYourHand.ttf);
+}
+
+[theme="comic"] {
+  @include Theme.gen-color-theme($primary: deeppink, $secondary: lightgrey);
+
+  --font-family: WashYourHand;
+  --font-fixed: WashYourHand;
+  --font-size: large;
+}
+
+@font-face {
+  font-family: HelpMe;
+  src: url(/assets/fonts/HelpMe.ttf);
+}
+
+[theme="murder"] {
+  @include Theme.gen-color-theme($primary: maroon, $secondary: black);
+
+  --font-family: HelpMe;
+  --font-fixed: HelpMe;
+  --font-weight: bold;
 }

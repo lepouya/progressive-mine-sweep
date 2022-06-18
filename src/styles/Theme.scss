@@ -27,15 +27,22 @@
   }
 }
 
-@mixin gen-color-theme($primary) {
+@mixin gen-color-theme($primary: "", $secondary: "") {
+  @if $secondary == "" {
+    $secondary: color.invert($primary);
+  } @else if $primary == "" {
+    $primary: color.invert($secondary);
+  }
+
   $middle: color.scale(
     $primary,
     $saturation: if(color.saturation($primary) > 50%, -50%, 50%),
     $lightness: if(color.lightness($primary) > 50%, -50%, 50%)
   );
+
   @include color-theme(
     $primary: $primary,
-    $secondary: color.invert($primary),
+    $secondary: $secondary,
     $positive: color.adjust($middle, $hue: 120deg),
     $negative: color.adjust($middle, $hue: 0deg),
     $neutral: color.adjust($middle, $hue: 240deg)

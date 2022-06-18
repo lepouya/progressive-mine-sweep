@@ -30,6 +30,8 @@
 
   button,
   input[type="button"] {
+    font-family: var(--font-family);
+    font-weight: var(--font-weight);
     font-size: smaller;
 
     color: Theme.color(primary);

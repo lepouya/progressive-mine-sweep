@@ -1,10 +1,12 @@
 {
   "light": "Light Mode",
   "dark": "Dark Mode",
-  "cyan": "Chocolate",
-  "salmon": "Ocean",
-  "gold": "Gold",
-  "aqua": "Bloody Hell",
   "jumbo-light": "Jumbo Light",
-  "jumbo-dark": "Jumbo Dark"
+  "jumbo-dark": "Jumbo Dark",
+  "ocean": "Ocean",
+  "gold": "Gold",
+  "tomato": "Tomato",
+  "cyan": "Chocolate",
+  "comic": "Cute",
+  "murder": "Murder"
 }
