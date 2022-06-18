@@ -68,6 +68,7 @@ module.exports = (env, argv) => {
       runtimeChunk: "single",
       splitChunks: {
         chunks: "all",
+        minSize: 131072,
         name: (m, _, key) =>
           key === "default" ? m.identifier().split(/[\\/]/).pop() : "vendors",
       },
