@@ -1,23 +1,21 @@
 import { setSaveProperties } from "../utils/store";
-import { genEmptyResource, Resource, ResourceCount } from "./Resource";
 
-export type TaskRunResults<Tracker = never> = {
-  status?: string;
-  updates?: Tracker;
-  resourceCounts?: ResourceCount[];
-};
+export type TaskRunResults = string[] | undefined;
 
-export type Task<Tracker = never> = Resource & {
+export type Task = {
+  readonly name: string;
   enabled?: boolean;
   lastRun?: number;
 
-  runDelay: () => number;
-  shouldRun: (dt: number, source?: string) => boolean;
-  run: (dt: number, source?: string) => TaskRunResults<Tracker>;
+  icon?: string;
+  description?: string;
+
+  shouldRun?: (dt: number, source?: string) => boolean;
+  run: (dt: number, source?: string) => TaskRunResults;
 
   execution: {
     runRate: number;
-    lastUpdate?: number;
+    lastRateUpdate?: number;
     deltaRuns?: number;
 
     lastAttempt?: number;
@@ -25,15 +23,13 @@ export type Task<Tracker = never> = Resource & {
   };
 };
 
-export function genEmptyTask<Tracker>(name: string): Task<Tracker> {
+export function genEmptyTask(name: string): Task {
   const res: Task = {
-    ...genEmptyResource(name),
-    runDelay: () => 0,
-    shouldRun: () => true,
-    run: () => ({}),
+    name,
+    run: () => undefined,
     execution: { runRate: 0 },
   };
 
-  setSaveProperties(res, ["enabled", "lastRun"]);
+  setSaveProperties(res, ["name", "enabled", "lastRun"]);
   return res;
 }
