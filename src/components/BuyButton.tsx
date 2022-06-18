@@ -8,7 +8,7 @@ import useGameContext from "./GameContext";
 import ResourceRender from "./ResourceRender";
 
 export type BuyButtonProps = {
-  resource: string | Resource;
+  resource: string | Resource<any, any>;
   kind?: string;
   enabled?: boolean;
 
@@ -30,7 +30,11 @@ export type BuyButtonProps = {
   className?: string;
   style?: React.CSSProperties;
 
-  onPurchase?: (resource: Resource, kind?: string, bought?: number) => void;
+  onPurchase?: (
+    resource: Resource<any, any>,
+    kind?: string,
+    bought?: number,
+  ) => void;
 };
 
 export default function BuyButton({
@@ -68,7 +72,7 @@ export default function BuyButton({
   increment ??= buyAmounts.inc;
 
   function renderResourceCounts(
-    rcs: ResourceCount[],
+    rcs: ResourceCount<any, any>[],
     multiplier: number,
     showPlusSign?: boolean,
     reversedDirection?: boolean,

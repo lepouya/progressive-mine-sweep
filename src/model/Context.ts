@@ -15,33 +15,38 @@ import {
 } from "./ResourceManager";
 import { defaultSettings, Settings } from "./Settings";
 
-export type Context = {
+export type Context<Update = any> = {
   settings: Settings;
   board: Board;
-  resourceManager: ResourceManager;
+  resourceManager: ResourceManager<Context<Update>, Update>;
 };
 
-export function emptyContext() {
-  return {
-    settings: {
-      ...defaultSettings,
-      lastReset: Date.now(),
-      lastUpdate: Date.now(),
-      lastLoaded: Date.now(),
-    },
-    board: { ...emptyBoard },
-    resourceManager: initGameResources(genResourceManager()),
+export function emptyContext<Update>(): Context<Update> {
+  const context: any = {};
+
+  context.settings = {
+    ...defaultSettings,
+    lastReset: Date.now(),
+    lastUpdate: Date.now(),
+    lastLoaded: Date.now(),
   };
+  context.board = { ...emptyBoard };
+  context.resourceManager = initGameResources(
+    genResourceManager(context, context.settings),
+  );
+
+  return context;
 }
 
-export function wrapContext(context: Context) {
+export function wrapContext<Update>(context: Context<Update>) {
   return {
-    context,
-    ...context,
     ...context.resourceManager,
+    ...context,
+    context,
 
     setBoard: (board: Board) => (context.board = board),
-    resource: (res: string | Resource) => context.resourceManager.get(res),
+    resource: (res: string | Resource<Context<Update>, Update>) =>
+      context.resourceManager.get(res),
 
     load: () => _load(context, loadFromBrowser(_store)),
     loadAs: (loadStr: string) => _load(context, loadStr),
@@ -55,7 +60,10 @@ export function wrapContext(context: Context) {
 
 const _store = "Context";
 
-function _load(context: Context, loadStr: string | null): boolean {
+function _load<Update>(
+  context: Context<Update>,
+  loadStr: string | null,
+): boolean {
   const oldContext = { ...context };
   const loaded = !!loadStr && Store.loadAs(context, loadStr);
 
@@ -72,13 +80,10 @@ function _load(context: Context, loadStr: string | null): boolean {
       oldContext.resourceManager,
       context.resourceManager,
     );
-    context.resourceManager.update(
-      context.settings.lastLoaded,
-      context,
-      "load",
-    );
+    context.resourceManager.settings = context.settings;
+    context.resourceManager.update(undefined, "load");
   } else {
-    let k: keyof Context;
+    let k: keyof Context<Update>;
     for (k in oldContext) {
       assign(context, k, oldContext[k]);
     }
@@ -87,15 +92,15 @@ function _load(context: Context, loadStr: string | null): boolean {
   return loaded;
 }
 
-function _save(context: Context, pretty?: boolean): string {
+function _save<Update>(context: Context<Update>, pretty?: boolean): string {
   context.settings.lastSaved = Date.now();
   return Store.saveAs(context, pretty);
 }
 
-function _reset(context: Context): void {
+function _reset<Update>(context: Context<Update>): void {
   resetOnBrowser(_store);
-  const newContext = emptyContext();
-  let k: keyof Context;
+  const newContext = emptyContext<Update>();
+  let k: keyof Context<Update>;
   for (k in newContext) {
     assign(context, k, newContext[k]);
   }

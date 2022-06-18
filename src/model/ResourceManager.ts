@@ -1,6 +1,7 @@
 import assign from "../utils/assign";
 import clamp from "../utils/clamp";
-import { Context } from "./Context";
+import dedupe from "../utils/dedupe";
+import { setSaveProperties } from "../utils/store";
 import {
   applyToResource,
   checkHasResources,
@@ -10,15 +11,26 @@ import {
   ResourceCount,
 } from "./Resource";
 
-export type ResourceManager = {
-  resources: Record<string, Resource & ResourceHelper>;
+export type ResourceManager<Context, Result> = {
+  context: Context;
+  settings: Partial<ResourceManagerSettings>;
+  resources: Record<string, ManagedResource<Context, Result>>;
 
-  upsert: (props: Partial<Resource> | string) => Resource & ResourceHelper;
-  get: (resource: Resource | string) => Resource & ResourceHelper;
-  purchase: (toBuy: ResourceCount[], style?: PurchaseStyle) => PurchaseCost;
-  canAfford: (cost: ResourceCount[]) => boolean;
+  _resourceType?: Resource<Context, Result>;
 
-  update: (now: number | undefined, context: Context, source?: string) => void;
+  upsert: (
+    props: Partial<Resource<Context, Result>> | string,
+  ) => ManagedResource<Context, Result>;
+  get: (
+    resource: Resource<Context, Result> | string,
+  ) => ManagedResource<Context, Result>;
+  purchase: (
+    toBuy: ResourceCount<Context, Result>[],
+    style?: PurchaseStyle,
+  ) => PurchaseCost<Context, Result>;
+  canAfford: (cost: ResourceCount<Context, Result>[]) => boolean;
+
+  update: (now?: number, source?: string) => Result[];
 };
 
 export type PurchaseStyle =
@@ -28,37 +40,55 @@ export type PurchaseStyle =
   | "dry-full"
   | "dry-partial";
 
-export type PurchaseCost = {
+export type PurchaseCost<Context, Result> = {
   count: number;
-  gain: ResourceCount[];
-  cost: ResourceCount[];
+  gain: ResourceCount<Context, Result>[];
+  cost: ResourceCount<Context, Result>[];
 };
 
-export type ResourceHelper = {
-  buy: (count?: number, style?: PurchaseStyle, kind?: string) => PurchaseCost;
-  add: (count?: number, kind?: string) => PurchaseCost;
-  canBuy: (count?: number, kind?: string) => PurchaseCost;
+export type ManagedResource<Context, Result> = Resource<Context, Result> & {
+  buy: (
+    count?: number,
+    style?: PurchaseStyle,
+    kind?: string,
+  ) => PurchaseCost<Context, Result>;
+  add: (count?: number, kind?: string) => PurchaseCost<Context, Result>;
+  canBuy: (count?: number, kind?: string) => PurchaseCost<Context, Result>;
 };
 
-export function genResourceManager(): ResourceManager {
-  const rm: ResourceManager = {
+export type ResourceManagerSettings = {
+  lastUpdate: number;
+  rateUpdateSecs: number;
+  minResourceUpdateSecs: number;
+  maxResourceUpdateSecs: number;
+  maxResourceTickSecs: number;
+  timeDilation: number;
+};
+
+export function genResourceManager<Context, Result>(
+  context: Context,
+  settings: Partial<ResourceManagerSettings>,
+): ResourceManager<Context, Result> {
+  const rm: ResourceManager<Context, Result> = {
+    context,
+    settings,
     resources: {},
     upsert: (props) => upsert(rm, props),
     get: (resource) => resolve(rm, resource),
     purchase: (toBuy, style) => purchase(rm, toBuy, style),
     canAfford: (cost) => canAfford(rm, cost),
-    update: (now, context, source) =>
-      update(rm, now ?? Date.now(), context, source ?? "unknown"),
+    update: (now, source) => update(rm, now ?? Date.now(), source ?? "unknown"),
   };
 
+  setSaveProperties(rm, ["resources"]);
   return rm;
 }
 
-export function mergeResourceManagers(
-  rm: ResourceManager,
-  toLoad: Partial<ResourceManager>,
-): ResourceManager {
-  let k: keyof ResourceManager;
+export function mergeResourceManagers<Context, Result>(
+  rm: ResourceManager<Context, Result>,
+  toLoad: Partial<ResourceManager<Context, Result>>,
+): ResourceManager<Context, Result> {
+  let k: keyof ResourceManager<Context, Result>;
   for (k in toLoad) {
     if (k === "resources") {
       Object.values(toLoad[k] ?? {}).forEach((res) => rm.upsert(res));
@@ -70,22 +100,22 @@ export function mergeResourceManagers(
   return rm;
 }
 
-function resolve(
-  rm: ResourceManager,
-  resource: Resource | string,
-): Resource & ResourceHelper {
+function resolve<Context, Result>(
+  rm: ResourceManager<Context, Result>,
+  resource: Resource<Context, Result> | string,
+): ManagedResource<Context, Result> {
   return rm.resources[typeof resource === "string" ? resource : resource.name];
 }
 
-function upsert(
-  rm: ResourceManager,
-  props: Partial<Resource> | string,
-): Resource & ResourceHelper {
+function upsert<Context, Result>(
+  rm: ResourceManager<Context, Result>,
+  props: Partial<Resource<Context, Result>> | string,
+): ManagedResource<Context, Result> {
   const name = typeof props === "string" ? props : props.name ?? "";
-  const res = rm.resources[name] ?? genEmptyResource(name);
+  const res = rm.resources[name] ?? genEmptyResource(name, rm.context);
 
   if (typeof props !== "string") {
-    let k: keyof Resource;
+    let k: keyof Resource<Context, Result>;
     for (k in props) {
       assign(res, k, props[k]);
     }
@@ -103,64 +133,99 @@ function upsert(
   return res;
 }
 
-function update(
-  rm: ResourceManager,
+function update<Context, Result>(
+  rm: ResourceManager<Context, Result>,
   now: number,
-  context: Context,
   source: string,
-) {
+): Result[] {
   const {
     rateUpdateSecs = 1.0,
     minResourceUpdateSecs = 0.001,
     maxResourceUpdateSecs = 86400.0,
     maxResourceTickSecs = 1.0,
     timeDilation = 1.0,
-  } = context.settings;
+  } = rm.settings;
 
   let dt = clamp(
-    (now - (context.settings.lastUpdate ?? now)) / 1000.0,
+    (now - (rm.settings.lastUpdate ?? now)) / 1000.0,
     0,
     maxResourceUpdateSecs,
   );
-  if (dt < minResourceUpdateSecs) {
-    return;
+  if (dt < minResourceUpdateSecs && rm.settings.lastUpdate != undefined) {
+    return [];
   }
-  context.settings.lastUpdate = now;
 
-  while (dt > 0) {
-    const tick = clamp(dt, minResourceUpdateSecs, maxResourceTickSecs);
-    Object.values(rm.resources).forEach(
-      (res) => res.tick && res.tick(tick / timeDilation, source),
+  rm.settings.lastUpdate = now;
+  const epoch = now - dt * 1000.0;
+  const resources = Object.values(rm.resources).filter(
+    (res) => res.unlocked ?? true,
+  );
+  const tickResources = resources.filter((res) => res.tick);
+
+  resources.forEach((res) => {
+    res.rate.lastCountUpdate ??= epoch;
+    res.rate.lastCount ??= res.count;
+    res.execution.lastTick = clamp(
+      res.execution.lastTick ?? epoch,
+      now - maxResourceUpdateSecs * 1000.0,
+      now,
     );
-    dt -= tick;
+    res.execution.lastAttempt = now;
+  });
+
+  let results: Record<string, Result> = {};
+  const tickScale = 1 / 1000.0 / timeDilation;
+  while (dt > 0) {
+    dt -= clamp(dt, minResourceUpdateSecs, maxResourceTickSecs);
+    const slice = now - dt * 1000.0;
+
+    tickResources.forEach((res) => {
+      const tick = (slice - res.execution.lastTick!) * tickScale;
+
+      if (tick > 0 && (!res.shouldTick || res.shouldTick(tick, source))) {
+        res.execution.lastResult = res.tick!(tick, source) ?? undefined;
+        res.execution.lastTick = slice;
+        res.rate.deltaTicks = (res.rate.deltaTicks ?? 0) + 1;
+        res.rate.lastTickUpdate ??= slice;
+        if (res.execution.lastResult) {
+          results[res.name] = res.execution.lastResult;
+        }
+      }
+    });
   }
 
-  Object.values(rm.resources).forEach((res) => {
-    const rateDt = (now - (res.rate.lastCheck ?? 0)) / 1000.0;
-    if (rateDt >= rateUpdateSecs) {
-      if (res.rate.lastCount !== undefined) {
-        res.rate.value = (res.count - res.rate.lastCount) / rateDt;
-      } else {
-        res.rate.value = 0;
-      }
-    }
-
+  resources.forEach((res) => {
+    const rateDt = (now - (res.rate.lastCountUpdate ?? 0)) / 1000.0;
     if (
-      res.rate.lastCheck === undefined ||
-      res.rate.lastCount === undefined ||
+      res.rate.lastCountUpdate == undefined ||
+      res.rate.lastCount == undefined ||
       rateDt >= rateUpdateSecs
     ) {
-      res.rate.lastCheck = now;
+      res.rate.count = (res.count - (res.rate.lastCount ?? 0)) / rateDt;
+      res.rate.lastCountUpdate = now;
       res.rate.lastCount = res.count;
     }
+
+    const tickRateDt = (now - (res.rate.lastTickUpdate ?? 0)) / 1000.0;
+    if (
+      res.rate.lastTickUpdate == undefined ||
+      res.rate.deltaTicks == undefined ||
+      tickRateDt >= rateUpdateSecs
+    ) {
+      res.rate.ticks = (res.rate.deltaTicks ?? 0) / tickRateDt;
+      res.rate.deltaTicks = 0;
+      res.rate.lastTickUpdate = now;
+    }
   });
+
+  return dedupe(Object.values(results));
 }
 
-function purchase(
-  rm: ResourceManager,
-  toBuy: ResourceCount[],
+function purchase<Context, Result>(
+  rm: ResourceManager<Context, Result>,
+  toBuy: ResourceCount<Context, Result>[],
   style?: PurchaseStyle,
-): PurchaseCost {
+): PurchaseCost<Context, Result> {
   const costs = resolveAll(rm, toBuy).map((rc) => {
     const rcCost = getPurchaseCost(
       rm,
@@ -193,11 +258,11 @@ function purchase(
   };
 }
 
-function resolveAll(
-  rm: ResourceManager,
-  rcs: ResourceCount[],
+function resolveAll<Context, Result>(
+  rm: ResourceManager<Context, Result>,
+  rcs: ResourceCount<Context, Result>[],
 ): {
-  resource: Resource;
+  resource: Resource<Context, Result>;
   count: number;
   kind: string;
 }[] {
@@ -210,8 +275,8 @@ function resolveAll(
     .filter(({ resource, count }) => resource && count);
 }
 
-function getCountOf(
-  rcs: ResourceCount[],
+function getCountOf<Context, Result>(
+  rcs: ResourceCount<Context, Result>[],
   resName: string,
   resKind?: string,
 ): number {
@@ -227,19 +292,22 @@ function getCountOf(
   );
 }
 
-function canAfford(rm: ResourceManager, cost: ResourceCount[]): boolean {
+function canAfford<Context, Result>(
+  rm: ResourceManager<Context, Result>,
+  cost: ResourceCount<Context, Result>[],
+): boolean {
   return resolveAll(rm, combineResources(cost)).every((rc) =>
     checkHasResources(rc.resource, [rc]),
   );
 }
 
-function getPurchaseCost(
-  rm: ResourceManager,
-  resource: Resource,
+function getPurchaseCost<Context, Result>(
+  rm: ResourceManager<Context, Result>,
+  resource: Resource<Context, Result>,
   count: number,
   kind: string,
   style: PurchaseStyle,
-): PurchaseCost {
+): PurchaseCost<Context, Result> {
   if (!resource || count === 0 || !(resource.unlocked ?? true)) {
     return { count: 0, gain: [], cost: [] };
   }
@@ -258,7 +326,7 @@ function getPurchaseCost(
     };
   }
 
-  let cost: ResourceCount[] = [];
+  let cost: ResourceCount<Context, Result>[] = [];
   let partialCost = cost;
   let partialCount = 0;
   for (let i = start; i < target; i++) {

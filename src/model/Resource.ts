@@ -1,13 +1,14 @@
 import { setSaveProperties } from "../utils/store";
 
-export type ResourceCount = {
-  resource: Resource | string;
+export type ResourceCount<Context, Result> = {
+  resource: Resource<Context, Result> | string;
   count: number;
   kind?: string;
 };
 
-export type Resource = {
+export type Resource<Context, Result> = {
   readonly name: string;
+  context: Context;
   unlocked?: boolean;
 
   icon?: string;
@@ -21,62 +22,86 @@ export type Resource = {
   extra: Record<string, number>;
 
   value: (kind?: string) => number;
-  cost: (n: number, kind?: string) => ResourceCount[];
-  tick?: (dt: number, source: string) => void;
+  cost: (n: number, kind?: string) => ResourceCount<Context, Result>[];
+
+  shouldTick?: (dt: number, source?: string) => boolean;
+  tick?: (dt: number, source?: string) => Result | null;
+
+  execution: {
+    lastTick?: number;
+    lastResult?: Result;
+    lastAttempt?: number;
+  };
 
   rate: {
-    value: number;
-    lastCheck?: number;
+    count: number;
+    ticks: number;
+
+    lastCountUpdate?: number;
     lastCount?: number;
+
+    lastTickUpdate?: number;
+    deltaTicks?: number;
   };
 };
 
-export function genEmptyResource(name: string): Resource {
-  const res: Resource = {
+export function genEmptyResource<Context, Result>(
+  name: string,
+  context: Context,
+): Resource<Context, Result> {
+  const res: Resource<Context, Result> = {
     name,
+    context,
     count: 0,
     extra: {},
     value: (kind) => (!kind ? res.count : res.extra[kind] ?? 0),
     cost: () => [],
-    rate: { value: 0 },
+    execution: {},
+    rate: { count: 0, ticks: 0 },
   };
 
   setSaveProperties(res, ["name", "unlocked", "count", "maxCount", "extra"]);
   return res;
 }
 
-export function combineResources(
-  rcs: ResourceCount[],
-  ...rcss: ResourceCount[][]
-): ResourceCount[] {
+export function combineResources<Context, Result>(
+  rcs: ResourceCount<Context, Result>[],
+  ...rcss: ResourceCount<Context, Result>[][]
+): ResourceCount<Context, Result>[] {
   return [rcs, ...rcss]
     .flat()
-    .reduce((res: ResourceCount[], rc: ResourceCount) => {
-      const frc = res.find(
-        (orc) =>
-          (orc.resource === rc.resource ||
-            (typeof orc.resource === "string"
-              ? orc.resource
-              : orc.resource.name) ===
-              (typeof rc.resource === "string"
-                ? rc.resource
-                : rc.resource.name)) &&
-          (orc.kind ?? "") === (rc.kind ?? ""),
-      );
-      if (frc) {
-        frc.count += rc.count;
-        return res;
-      } else {
-        return [...res, rc];
-      }
-    }, [])
+    .reduce(
+      (
+        res: ResourceCount<Context, Result>[],
+        rc: ResourceCount<Context, Result>,
+      ) => {
+        const frc = res.find(
+          (orc) =>
+            (orc.resource === rc.resource ||
+              (typeof orc.resource === "string"
+                ? orc.resource
+                : orc.resource.name) ===
+                (typeof rc.resource === "string"
+                  ? rc.resource
+                  : rc.resource.name)) &&
+            (orc.kind ?? "") === (rc.kind ?? ""),
+        );
+        if (frc) {
+          frc.count += rc.count;
+          return res;
+        } else {
+          return [...res, rc];
+        }
+      },
+      [],
+    )
     .filter(({ count }) => count !== 0);
 }
 
-export function scaleResources(
-  rcs: ResourceCount[],
+export function scaleResources<Context, Result>(
+  rcs: ResourceCount<Context, Result>[],
   scalar: number,
-): ResourceCount[] {
+): ResourceCount<Context, Result>[] {
   return rcs.map(({ resource, count, kind }) => ({
     resource,
     count: scalar * count,
@@ -84,14 +109,16 @@ export function scaleResources(
   }));
 }
 
-export function subtractResources(
-  rcs1: ResourceCount[],
-  rcs2: ResourceCount[],
-): ResourceCount[] {
+export function subtractResources<Context, Result>(
+  rcs1: ResourceCount<Context, Result>[],
+  rcs2: ResourceCount<Context, Result>[],
+): ResourceCount<Context, Result>[] {
   return combineResources(rcs1, scaleResources(rcs2, -1));
 }
 
-export function getResourceCounts(resource: Resource): ResourceCount[] {
+export function getResourceCounts<Context, Result>(
+  resource: Resource<Context, Result>,
+): ResourceCount<Context, Result>[] {
   return [
     { resource, count: resource.count },
     ...Object.entries(resource.extra).map(([kind, count]) => ({
@@ -102,9 +129,9 @@ export function getResourceCounts(resource: Resource): ResourceCount[] {
   ].filter(({ count }) => count !== 0);
 }
 
-export function checkHasResources(
-  res: Resource,
-  rcs: ResourceCount[],
+export function checkHasResources<Context, Result>(
+  res: Resource<Context, Result>,
+  rcs: ResourceCount<Context, Result>[],
 ): boolean {
   return (
     (res.unlocked ?? true) &&
@@ -119,10 +146,10 @@ export function checkHasResources(
   );
 }
 
-export function applyToResource(
-  res: Resource,
-  rcs: ResourceCount[],
-): ResourceCount[] {
+export function applyToResource<Context, Result>(
+  res: Resource<Context, Result>,
+  rcs: ResourceCount<Context, Result>[],
+): ResourceCount<Context, Result>[] {
   return combineResources(
     rcs
       .filter(

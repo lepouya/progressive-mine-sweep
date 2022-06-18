@@ -2,19 +2,16 @@ import "mocha";
 
 import { expect } from "chai";
 
-import { emptyContext } from "../src/model/Context";
 import { genResourceManager } from "../src/model/ResourceManager";
-
-const _context = emptyContext();
 
 describe("Creating resources", () => {
   it("Empty resource manager set up correctly", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     expect(rm.resources).to.deep.equal({});
   });
 
   it("Creating new resource works", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const R1 = rm.upsert({ name: "test1" });
 
     expect(rm.resources["test1"]).to.equal(R1);
@@ -22,7 +19,7 @@ describe("Creating resources", () => {
   });
 
   it("Adding multiple fields", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const R1 = rm.upsert({ name: "test1", count: 5, maxCount: 1 });
     const R2 = rm.upsert({ name: "test2", extra: { bonus: 1 } });
 
@@ -41,7 +38,7 @@ describe("Creating resources", () => {
   });
 
   it("Overwriting fields", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const R1 = rm.upsert({ name: "test1", count: 5 });
     const R2 = rm.upsert({ name: "test1", extra: { auto: 7 }, maxCount: 1 });
 
@@ -56,36 +53,27 @@ describe("Creating resources", () => {
 
 describe("Updating resources", () => {
   it("Time is updated correctly", () => {
-    const rm = genResourceManager();
-    const context = {
-      ..._context,
-      settings: { ..._context.settings, lastUpdate: 1000 },
-    };
+    const settings = { lastUpdate: 1000 };
+    const rm = genResourceManager(null, settings);
 
-    rm.update(2000, context);
-    expect(context.settings.lastUpdate).to.be.equal(2000);
+    rm.update(2000);
+    expect(settings.lastUpdate).to.be.equal(2000);
 
-    rm.update(3000, context);
-    expect(context.settings.lastUpdate).to.be.equal(3000);
+    rm.update(3000);
+    expect(settings.lastUpdate).to.be.equal(3000);
   });
 
   it("Time below min delta doesn't change anything", () => {
-    const rm = genResourceManager();
-    const context = {
-      ..._context,
-      settings: { ..._context.settings, lastUpdate: 1000 },
-    };
+    const settings = { lastUpdate: 1000 };
+    const rm = genResourceManager(null, settings);
 
-    rm.update(1000.1, context);
-    expect(context.settings.lastUpdate).to.be.equal(1000);
+    rm.update(1000.1);
+    expect(settings.lastUpdate).to.be.equal(1000);
   });
 
   it("Resource ticks called corectly", () => {
-    const rm = genResourceManager();
-    const context = {
-      ..._context,
-      settings: { ..._context.settings, lastUpdate: 0 },
-    };
+    const settings = { lastUpdate: 0 };
+    const rm = genResourceManager(null, settings);
 
     rm.upsert({
       name: "test1",
@@ -96,23 +84,20 @@ describe("Updating resources", () => {
       tick: () => rm.get("test2").count++,
     });
 
-    rm.update(500, context);
-    expect(context.settings.lastUpdate).to.be.equal(500);
+    rm.update(500);
+    expect(settings.lastUpdate).to.be.equal(500);
     expect(rm.resources["test1"].count).to.be.equal(0.5);
     expect(rm.resources["test2"].count).to.be.equal(1);
 
-    rm.update(1500, context);
-    expect(context.settings.lastUpdate).to.be.equal(1500);
+    rm.update(1500);
+    expect(settings.lastUpdate).to.be.equal(1500);
     expect(rm.resources["test1"].count).to.be.equal(1.5);
     expect(rm.resources["test2"].count).to.be.equal(2);
   });
 
   it("Tick granularity works as expected", () => {
-    const rm = genResourceManager();
-    const context = {
-      ..._context,
-      settings: { ..._context.settings, lastUpdate: 0 },
-    };
+    const settings = { lastUpdate: 0 };
+    const rm = genResourceManager(null, settings);
 
     const R1 = rm.upsert({ name: "test1" });
     R1.tick = (dt) => {
@@ -123,60 +108,48 @@ describe("Updating resources", () => {
       R2.count++;
     };
 
-    rm.update(0.5, context);
-    expect(context.settings.lastUpdate).to.be.equal(0);
+    rm.update(0.5);
+    expect(settings.lastUpdate).to.be.equal(0);
     expect(rm.resources["test1"].count).to.be.equal(0);
     expect(rm.resources["test2"].count).to.be.equal(0);
 
-    rm.update(500, context);
-    expect(context.settings.lastUpdate).to.be.equal(500);
+    rm.update(500);
+    expect(settings.lastUpdate).to.be.equal(500);
     expect(rm.resources["test1"].count).to.be.equal(0.5);
     expect(rm.resources["test2"].count).to.be.equal(1);
 
-    rm.update(1000, context);
-    expect(context.settings.lastUpdate).to.be.equal(1000);
+    rm.update(1000);
+    expect(settings.lastUpdate).to.be.equal(1000);
     expect(rm.resources["test1"].count).to.be.equal(1);
     expect(rm.resources["test2"].count).to.be.equal(2);
 
-    rm.update(10000, context);
-    expect(context.settings.lastUpdate).to.be.equal(10000);
+    rm.update(10000);
+    expect(settings.lastUpdate).to.be.equal(10000);
     expect(rm.resources["test1"].count).to.be.equal(10);
     expect(rm.resources["test2"].count).to.be.equal(11);
   });
 
   it("Max tick update works", () => {
-    const rm = genResourceManager();
-    const context = {
-      ..._context,
-      settings: { ..._context.settings, lastUpdate: 0 },
-    };
+    const settings = { lastUpdate: 0 };
+    const rm = genResourceManager(null, settings);
 
-    rm.upsert({
-      name: "test1",
-      tick: (dt) => (rm.get("test1").count += dt),
-    });
-    rm.upsert({
-      name: "test2",
-      tick: () => rm.get("test2").count++,
-    });
+    rm.upsert("test1").tick = (dt) => (rm.get("test1").count += dt);
+    rm.upsert("test2").tick = () => rm.get("test2").count++;
 
-    rm.update(500, context);
-    expect(context.settings.lastUpdate).to.be.equal(500);
+    rm.update(500);
+    expect(settings.lastUpdate).to.be.equal(500);
     expect(rm.resources["test1"].count).to.be.equal(0.5);
     expect(rm.resources["test2"].count).to.be.equal(1);
 
-    rm.update(100000000, context);
-    expect(context.settings.lastUpdate).to.be.equal(100000000);
+    rm.update(100000000);
+    expect(settings.lastUpdate).to.be.equal(100000000);
     expect(rm.resources["test1"].count).to.be.equal(86400.5);
     expect(rm.resources["test2"].count).to.be.equal(86401);
   });
 
   it("Rate update works", () => {
-    const rm = genResourceManager();
-    const context = {
-      ..._context,
-      settings: { ..._context.settings, lastUpdate: 0 },
-    };
+    const settings = { lastUpdate: 0 };
+    const rm = genResourceManager(null, settings);
 
     rm.upsert({
       name: "test1",
@@ -187,27 +160,27 @@ describe("Updating resources", () => {
       tick: () => (rm.get("test2").count += rm.get("test1").value()),
     });
 
-    rm.update(1000, context);
+    rm.update(1000);
     expect(rm.resources["test1"].count).to.be.equal(1);
     expect(rm.resources["test2"].count).to.be.equal(1);
 
-    rm.update(2000, context);
+    rm.update(2000);
     expect(rm.resources["test1"].count).to.be.equal(2);
-    expect(rm.resources["test1"].rate.value).to.be.equal(1);
+    expect(rm.resources["test1"].rate.count).to.be.equal(1);
     expect(rm.resources["test2"].count).to.be.equal(3);
-    expect(rm.resources["test2"].rate.value).to.be.equal(2);
+    expect(rm.resources["test2"].rate.count).to.be.equal(2);
 
-    rm.update(5000, context);
+    rm.update(5000);
     expect(rm.resources["test1"].count).to.be.equal(5);
-    expect(rm.resources["test1"].rate.value).to.be.equal(1);
+    expect(rm.resources["test1"].rate.count).to.be.equal(1);
     expect(rm.resources["test2"].count).to.be.equal(15);
-    expect(rm.resources["test2"].rate.value).to.be.equal(4);
+    expect(rm.resources["test2"].rate.count).to.be.equal(4);
   });
 });
 
 describe("Purchasing", () => {
   it("Simple purchases", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const r1 = rm.upsert({ name: "r1", count: 10 });
     const r2 = rm.upsert({ name: "r2", count: 0 });
     r2.cost = () => [{ resource: "r1", count: 1 }];
@@ -222,7 +195,7 @@ describe("Purchasing", () => {
   });
 
   it("Full purchases", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const r1 = rm.upsert({ name: "r1", count: 10 });
     const r2 = rm.upsert({ name: "r2", count: 0 });
     r2.cost = () => [{ resource: "r1", count: 1 }];
@@ -241,7 +214,7 @@ describe("Purchasing", () => {
   });
 
   it("Partial purchases", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const r1 = rm.upsert({ name: "r1", count: 10 });
     const r2 = rm.upsert({ name: "r2", count: 0 });
     r2.cost = () => [{ resource: "r1", count: 1 }];
@@ -260,7 +233,7 @@ describe("Purchasing", () => {
   });
 
   it("Free purchases", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const r1 = rm.upsert({ name: "r1", count: 10 });
     const r2 = rm.upsert({ name: "r2", count: 0 });
     r2.cost = () => [{ resource: "r1", count: 1 }];
@@ -271,7 +244,7 @@ describe("Purchasing", () => {
   });
 
   it("Locked purchases", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const r1 = rm.upsert({ name: "r1", count: 10 });
     const r2 = rm.upsert({ name: "r2", count: 0 });
     r2.cost = () => [{ resource: "r1", count: 1 }];
@@ -296,7 +269,7 @@ describe("Purchasing", () => {
   });
 
   it("Complex purchases", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const r1 = rm.upsert({ name: "r1", count: 100 });
     const r2 = rm.upsert({ name: "r2", count: 20 });
     const r3 = rm.upsert({ name: "r3", count: 0 });
@@ -337,7 +310,7 @@ describe("Purchasing", () => {
   });
 
   it("Multiple purchases", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const r1 = rm.upsert({ name: "r1", count: 100, extra: { auto: 10 } });
     const r2 = rm.upsert({ name: "r2", count: 20 });
     const r3 = rm.upsert({ name: "r3", count: 0 });
@@ -373,7 +346,7 @@ describe("Purchasing", () => {
   });
 
   it("Dry purchases", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const r1 = rm.upsert({ name: "r1", count: 100, extra: { auto: 10 } });
     const r2 = rm.upsert({ name: "r2", count: 20 });
     const r3 = rm.upsert({ name: "r3", count: 0 });
@@ -416,7 +389,7 @@ describe("Purchasing", () => {
 
 describe("ResourceHelper", () => {
   it("Helper methods", () => {
-    const rm = genResourceManager();
+    const rm = genResourceManager(null, {});
     const r1 = rm.upsert({ name: "r1", count: 100, extra: { auto: 10 } });
     const r2 = rm.upsert({ name: "r2", count: 20 });
     const r3 = rm.upsert({ name: "r3", count: 0 });
@@ -474,5 +447,85 @@ describe("ResourceHelper", () => {
     expect(r1.extra["auto"]).to.equal(7);
     expect(r2.count).to.equal(17);
     expect(r3.count).to.equal(3);
+  });
+});
+
+/*
+    const settings = { lastUpdate: 0 };
+    const rm = genResourceManager(null, settings);
+
+    rm.upsert("test1").tick = (dt) => (rm.get("test1").count += dt);
+    rm.upsert("test2").tick = () => rm.get("test2").count++;
+*/
+describe("Task execution", () => {
+  it("Task executor enables and disabled task runs", () => {
+    const settings = { lastUpdate: 0 };
+    const rm = genResourceManager(null, settings);
+
+    const t1 = rm.upsert({
+      name: "test1",
+      tick: (dt) => dt.toString(),
+      unlocked: false,
+    });
+
+    expect(rm.update(1)).to.deep.equal([]);
+    expect(t1.execution.lastTick).to.be.undefined;
+    expect(t1.execution.lastAttempt).to.be.undefined;
+
+    expect(rm.update(2)).to.deep.equal([]);
+    expect(t1.execution.lastTick).to.be.undefined;
+    expect(t1.execution.lastAttempt).to.be.undefined;
+
+    expect(rm.update(1000)).to.deep.equal([]);
+    expect(t1.execution.lastTick).to.be.undefined;
+    expect(t1.execution.lastAttempt).to.be.undefined;
+
+    t1.unlocked = true;
+
+    expect(rm.update(2000)).to.deep.equal(["1"]);
+    expect(t1.execution.lastTick).to.be.equal(2000);
+    expect(t1.execution.lastAttempt).to.be.equal(2000);
+
+    expect(rm.update(2001)).to.deep.equal(["0.001"]);
+    expect(t1.execution.lastTick).to.be.equal(2001);
+    expect(t1.execution.lastAttempt).to.be.equal(2001);
+
+    expect(rm.update(3000)).to.deep.equal(["0.999"]);
+    expect(t1.execution.lastTick).to.be.equal(3000);
+    expect(t1.execution.lastAttempt).to.be.equal(3000);
+
+    t1.unlocked = false;
+
+    expect(rm.update(4000)).to.deep.equal([]);
+    expect(t1.execution.lastTick).to.be.equal(3000);
+    expect(t1.execution.lastAttempt).to.be.equal(3000);
+  });
+
+  it("Task executor schedules tasks correctly", () => {
+    const settings = { maxResourceTickSecs: 5 };
+    const rm = genResourceManager(null, settings);
+
+    const t1 = rm.upsert({
+      name: "1/sec",
+      shouldTick: (dt) => dt >= 1,
+      tick: (dt) => t1.name + "-" + dt.toString(),
+    });
+    const t2 = rm.upsert({
+      name: "2/sec",
+      shouldTick: (dt) => dt >= 0.5,
+      tick: (dt) => t2.name + "-" + dt.toString(),
+    });
+
+    expect(rm.update(1000)).to.deep.equal([]);
+    console.log(t2);
+    expect(rm.update(1100)).to.deep.equal([]);
+    expect(rm.update(1200)).to.deep.equal([]);
+    expect(rm.update(1500)).to.deep.equal(["2/sec-0.5"]);
+    expect(rm.update(1750)).to.deep.equal([]);
+    expect(rm.update(2000)).to.deep.equal(["1/sec-1", "2/sec-0.5"]);
+    expect(rm.update(3000)).to.deep.equal(["1/sec-1", "2/sec-1"]);
+    expect(rm.update(5000)).to.deep.equal(["1/sec-2", "2/sec-2"]);
+    expect(rm.update(5555)).to.deep.equal(["2/sec-0.555"]);
+    expect(rm.update(15555)).to.deep.equal(["1/sec-5", "2/sec-5"]);
   });
 });

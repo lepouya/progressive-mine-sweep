@@ -6,8 +6,8 @@ import Icon from "./Icon";
 const maxLengths = { tiny: 4, compact: 9, expanded: 21 };
 const multipliers = { number: 1.0, percentage: 1.0, time: 1000.0 };
 
-export type ResourceRenderProps = {
-  resource?: Partial<Resource>;
+export type ResourceRenderProps<Context, Result> = {
+  resource?: Partial<Resource<Context, Result>>;
   name?: string;
   value?: number;
   epoch?: number;
@@ -59,7 +59,7 @@ export type ResourceRenderProps = {
   style?: React.CSSProperties;
 };
 
-export default function ResourceRender({
+export default function ResourceRender<Context, Result>({
   value,
   epoch,
   name,
@@ -110,7 +110,7 @@ export default function ResourceRender({
 
   className = "",
   style,
-}: ResourceRenderProps) {
+}: ResourceRenderProps<Context, Result>) {
   const output: JSX.Element[] = [];
   function addValueDiv(
     num = NaN,
@@ -277,18 +277,18 @@ export default function ResourceRender({
     showRate &&
     !kind &&
     resource.rate != null &&
-    (resource.rate.lastCheck ?? 0) > 0 &&
-    (showZeroRates || resource.rate.value !== 0)
+    (resource.rate.lastCountUpdate ?? 0) > 0 &&
+    (showZeroRates || resource.rate.count !== 0)
   ) {
     addValueDiv(
-      resource.rate.value /
-        (showRatePercentages && resource.rate.value > 0
+      resource.rate.count /
+        (showRatePercentages && resource.rate.count > 0
           ? value ?? (resource.value ? resource.value() : resource.count) ?? 0
           : 1.0),
       "rate",
       {
         disp:
-          showRatePercentages && resource.rate.value > 0
+          showRatePercentages && resource.rate.count > 0
             ? "percentage"
             : display,
         prec: ratePrecision,
@@ -348,8 +348,8 @@ export default function ResourceRender({
       if (
         showRate &&
         resource.rate != null &&
-        (resource.rate.lastCheck ?? 0) > 0 &&
-        (showZeroRates || resource.rate.value !== 0)
+        (resource.rate.lastCountUpdate ?? 0) > 0 &&
+        (showZeroRates || resource.rate.count !== 0)
       ) {
         output.push(
           <div key={`extra-rate-${k}`} className="rate">

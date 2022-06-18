@@ -1,8 +1,8 @@
 import { createContext, FC, PropsWithChildren, useContext } from "react";
 
-import { Context, emptyContext, wrapContext } from "../model/Context";
+import { emptyContext, wrapContext } from "../model/Context";
 
-const GameReactContext = createContext<Context>(emptyContext());
+const GameReactContext = createContext(emptyContext<boolean>());
 
 export const GameContextProvider: FC<PropsWithChildren<{}>> = (props) => (
   <GameReactContext.Provider value={emptyContext()}>
@@ -13,3 +13,7 @@ export const GameContextProvider: FC<PropsWithChildren<{}>> = (props) => (
 export default function useGameContext() {
   return wrapContext(useContext(GameReactContext));
 }
+
+export type GameResource = NonNullable<
+  ReturnType<typeof useGameContext>["resourceManager"]["_resourceType"]
+>;

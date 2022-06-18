@@ -311,7 +311,11 @@ export default function Options() {
           <hr className="separator" />
           <div className="half">Resources:</div>
           <div className="full" id="debug-resources">
-            {JSON.stringify(context.resourceManager, null, 2)}
+            {JSON.stringify(
+              context.resourceManager,
+              (key, value) => (key !== "context" ? value : undefined),
+              2,
+            )}
           </div>
           <hr className="separator" />
           <div className="half">Board:</div>

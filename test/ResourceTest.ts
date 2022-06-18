@@ -12,16 +12,16 @@ import {
 
 describe("genEmptyResource", () => {
   it("Empty resource set up correctly", () => {
-    const r = genEmptyResource("test");
+    const r = genEmptyResource("test", null);
     expect(r.name).to.equal("test");
     expect(r.count).to.equal(0);
   });
 });
 
 describe("combineResources", () => {
-  const R1 = genEmptyResource("test1");
-  const R2 = genEmptyResource("test2");
-  const R3 = genEmptyResource("test3");
+  const R1 = genEmptyResource("test1", null);
+  const R2 = genEmptyResource("test2", null);
+  const R3 = genEmptyResource("test3", null);
 
   it("Single ResourceCount", () => {
     const rc = combineResources([{ resource: R1, count: 7 }]);
@@ -112,9 +112,9 @@ describe("combineResources", () => {
 });
 
 describe("subtractResources", () => {
-  const R1 = genEmptyResource("test1");
-  const R2 = genEmptyResource("test2");
-  const R3 = genEmptyResource("test3");
+  const R1 = genEmptyResource("test1", null);
+  const R2 = genEmptyResource("test2", null);
+  const R3 = genEmptyResource("test3", null);
 
   it("Single ResourceCount", () => {
     const rc = subtractResources([{ resource: R1, count: 7 }], []);
@@ -203,7 +203,7 @@ describe("subtractResources", () => {
 
 describe("applyToResource", () => {
   it("Single Resource", () => {
-    const R1 = genEmptyResource("test1");
+    const R1 = genEmptyResource("test1", null);
     const rc = applyToResource(R1, [{ resource: R1, count: 1 }]);
 
     expect(R1.count).to.equal(1);
@@ -213,8 +213,8 @@ describe("applyToResource", () => {
   });
 
   it("Multiple Resources", () => {
-    const R1 = genEmptyResource("test1");
-    const R2 = genEmptyResource("test2");
+    const R1 = genEmptyResource("test1", null);
+    const R2 = genEmptyResource("test2", null);
     const rc = applyToResource(R1, [
       { resource: R1, count: 1 },
       { resource: "test1", count: 2 },
@@ -232,7 +232,7 @@ describe("applyToResource", () => {
   });
 
   it("Multiple changes", () => {
-    const R1 = genEmptyResource("test1");
+    const R1 = genEmptyResource("test1", null);
     R1.count = 5;
     R1.extra["bonus"] = 1;
     const rc = applyToResource(R1, [
@@ -261,7 +261,7 @@ describe("applyToResource", () => {
   });
 
   it("Locked resources", () => {
-    const R1 = genEmptyResource("test1");
+    const R1 = genEmptyResource("test1", null);
     R1.count = 5;
     R1.unlocked = false;
 
@@ -278,7 +278,7 @@ describe("applyToResource", () => {
 
 describe("checkHasResources", () => {
   it("Simple Resource", () => {
-    const R1 = genEmptyResource("test1");
+    const R1 = genEmptyResource("test1", null);
     R1.count = 5;
 
     expect(checkHasResources(R1, [])).to.be.true;
@@ -301,7 +301,7 @@ describe("checkHasResources", () => {
   });
 
   it("Locked Resource", () => {
-    const R1 = genEmptyResource("test1");
+    const R1 = genEmptyResource("test1", null);
     R1.count = 5;
     R1.unlocked = false;
 
@@ -310,7 +310,7 @@ describe("checkHasResources", () => {
   });
 
   it("Multiple kinds", () => {
-    const R1 = genEmptyResource("test1");
+    const R1 = genEmptyResource("test1", null);
     R1.count = 10;
     R1.extra["bonus"] = 2;
     R1.extra["e1"] = 5;
@@ -348,8 +348,8 @@ describe("checkHasResources", () => {
   });
 
   it("Multiple Resource", () => {
-    const R1 = genEmptyResource("test1");
-    const R2 = genEmptyResource("test2");
+    const R1 = genEmptyResource("test1", null);
+    const R2 = genEmptyResource("test2", null);
     R1.count = 5;
     R2.count = 10;
     R2.extra["bonus"] = 2;

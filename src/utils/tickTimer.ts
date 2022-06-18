@@ -1,8 +1,8 @@
 import { Resource } from "../model/Resource";
 import clamp from "./clamp";
 
-export default function tickTimer(
-  res: Resource,
+export default function tickTimer<Context, Result>(
+  res: Resource<Context, Result>,
   {
     kind = "",
     source = "",
@@ -15,11 +15,11 @@ export default function tickTimer(
     assignToResourceTick = true,
   } = {},
   onEvent?: (
-    res: Resource,
+    res: Resource<Context, Result>,
     value: number,
     kind?: string,
     source?: string,
-  ) => void,
+  ) => Result,
 ) {
   const oldTick = res.tick;
   const newTick = (dt: number, src?: string) => {
@@ -33,16 +33,18 @@ export default function tickTimer(
           res.count = cur;
         }
         if (onEvent && (cur === min || cur === max)) {
-          onEvent(res, cur, kind, src);
+          return onEvent(res, cur, kind, src);
         }
       }
     }
+
+    return null;
   };
   const tick =
     oldTick && combineWithCurrentTick
-      ? (dt: number, src: string) => {
+      ? (dt: number, src?: string) => {
           oldTick(dt, src);
-          newTick(dt, src);
+          return newTick(dt, src);
         }
       : newTick;
 

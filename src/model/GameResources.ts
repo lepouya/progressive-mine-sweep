@@ -5,20 +5,21 @@ import resources_time from "../data/resources_time.json";
 import clamp from "../utils/clamp";
 import tickTimer from "../utils/tickTimer";
 import { Resource } from "./Resource";
-import { genResourceManager, ResourceManager } from "./ResourceManager";
+import { ResourceManager } from "./ResourceManager";
 
-const loadResources = <Partial<Resource>[][]>[
+const loadResources = [
   resources_time,
   resources_board,
   resources_game,
   resources_cell,
 ];
 
-export function initGameResources(
-  resourceManager?: ResourceManager,
-): ResourceManager {
-  const rm = resourceManager ?? genResourceManager();
-  loadResources.flat().forEach((props) => rm.upsert(props));
+export function initGameResources<Context, Result>(
+  rm: ResourceManager<Context, Result>,
+): ResourceManager<Context, Result> {
+  (loadResources as Partial<Resource<Context, Result>>[][])
+    .flat()
+    .forEach((props) => rm.upsert(props));
 
   setValueFunction(rm.get("rows"), (v) => clamp(v, 3, 100));
   setValueFunction(rm.get("cols"), (v) => clamp(v, 3, 100));
@@ -49,14 +50,18 @@ export function initGameResources(
   return rm;
 }
 
-function setValueFunction(
-  res: Resource,
+function setValueFunction<Context, Result>(
+  res: Resource<Context, Result>,
   fn: (val: number, kind?: string) => number,
 ) {
   res.value = (kind) => fn((kind ? res.extra[kind] : res.count) ?? 0, kind);
 }
 
-function activeTimeTicker(res: Resource, count: string, reset: string) {
+function activeTimeTicker<Context, Result>(
+  res: Resource<Context, Result>,
+  count: string,
+  reset: string,
+) {
   res.tick = (dt: number, source?: string) => {
     if (source === count) {
       res.count += dt;
@@ -67,5 +72,7 @@ function activeTimeTicker(res: Resource, count: string, reset: string) {
     } else if (source === reset) {
       res.extra.current = 0;
     }
+
+    return null;
   };
 }

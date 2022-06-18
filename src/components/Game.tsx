@@ -41,7 +41,10 @@ export default function Game() {
 
   function tick() {
     // Update resources
-    resourceManager.update(undefined, context, "tick");
+    const updated = resourceManager.update(undefined, "tick");
+    if (updated.includes(true)) {
+      context.board = { ...context.board };
+    }
 
     // Save game
     if (
