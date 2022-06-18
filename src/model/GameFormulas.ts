@@ -63,24 +63,45 @@ export function stateChanged(
 
   if (resName && res) {
     res.count += factor * multiplier;
+
     if (automatic) {
-      res.extra.auto += factor;
+      if (res.extra.auto != null) {
+        res.extra.auto += factor;
+      }
     } else {
-      res.extra.manual += factor;
+      if (res.extra.manual != null) {
+        res.extra.manual += factor;
+      }
     }
-  } else {
-    switch (target + ":" + state) {
-      case "cell:unflagged":
-        res = context.resourceManager.resources.flags;
-        res.count -= factor * multiplier;
-        res.extra.unflags += factor;
-        break;
-      case "cell:unrevealed":
-        res = context.resourceManager.resources.cells;
-        res.count -= factor * multiplier;
-        res.extra.hidden += factor;
-        break;
+
+    if (res.extra.streak != null) {
+      res.extra.streak++;
+      if (
+        res.extra.longestStreak != null &&
+        res.extra.streak > res.extra.longestStreak
+      ) {
+        res.extra.longestStreak = res.extra.streak;
+      }
     }
+  }
+
+  switch (target + ":" + state) {
+    case "cell:unflagged":
+      res = context.resourceManager.resources.flags;
+      res.count -= factor * multiplier;
+      res.extra.unflags += factor;
+      break;
+    case "cell:unrevealed":
+      res = context.resourceManager.resources.cells;
+      res.count -= factor * multiplier;
+      res.extra.hidden += factor;
+      break;
+    case "board:won":
+      context.resourceManager.resources.losses.extra.streak = 0;
+      break;
+    case "board:lost":
+      context.resourceManager.resources.wins.extra.streak = 0;
+      break;
   }
 }
 

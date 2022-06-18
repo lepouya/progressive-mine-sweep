@@ -5,7 +5,9 @@
     "icon": "icon-won square-check",
     "extra": {
       "auto": 0,
-      "manual": 0
+      "manual": 0,
+      "streak": 0,
+      "longestStreak": 0
     }
   },
   {
@@ -14,7 +16,9 @@
     "icon": "icon-lost square-x",
     "extra": {
       "auto": 0,
-      "manual": 0
+      "manual": 0,
+      "streak": 0,
+      "longestStreak": 0
     }
   },
   {
