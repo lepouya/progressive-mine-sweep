@@ -2,7 +2,7 @@ import { MouseEvent, useCallback, useState } from "react";
 
 import { Board, genBoardState } from "../model/Board";
 import { actOnCell, Cell } from "../model/Cell";
-import { stateChanged } from "../model/GameFormulas";
+import { revealNeighbors, stateChanged } from "../model/GameFormulas";
 import clamp from "../utils/clamp";
 import useGameContext from "./GameContext";
 import Icon from "./Icon";
@@ -47,10 +47,11 @@ export default function MineCell(props: Props) {
         (event.button === 2 && event.type === "contextmenu") ||
         (event.button === 0 &&
           event.type === "click" &&
-          (event.altKey ||
+          (context.settings.tapMode === "flag" ||
+            event.altKey ||
             event.ctrlKey ||
             event.metaKey ||
-            context.settings.tapMode === "flag"))
+            event.shiftKey))
       ) {
         if (shouldCountStats) {
           clicks.extra.right++;
@@ -77,6 +78,21 @@ export default function MineCell(props: Props) {
             clicks.extra.left -= clamp(uselessClicks, 0, 2);
             return 0;
           });
+        }
+
+        if (!(context.resources.revealNeighbors.unlocked ?? true)) {
+          if (shouldCountStats) {
+            clicks.extra.useless++;
+          }
+        } else {
+          revealNeighbors(
+            context,
+            board,
+            cell,
+            context.resources.revealNeighbors.count,
+            shouldCountStats,
+            false,
+          );
         }
       }
 

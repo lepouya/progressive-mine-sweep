@@ -31,7 +31,7 @@ Perhaps I could do prestige/reset options once this is ready
 ### M4: Automation
 
 - ~~Task orchestration~~
-- Double tap to reveal neighbors
+- ~~Double tap to reveal neighbors~~
 - Auto reset puzzle + interval
 - Auto fill blank squares + upgrade interval
 - Auto guess when stuck? + interval

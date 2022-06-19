@@ -6,7 +6,7 @@ import ResourceRender from "../components/ResourceRender";
 
 export default function Automation() {
   const {
-    resources: { revealNeighbors },
+    resources: { cols, rows, revealNeighbors },
   } = useGameContext();
 
   return (
@@ -30,6 +30,7 @@ export default function Automation() {
           <BuyButton
             resource={revealNeighbors}
             allowUnlocking={true}
+            enabled={cols.count > 3 && rows.count > 3}
             prefix={
               !revealNeighbors.unlocked
                 ? "Unlock"

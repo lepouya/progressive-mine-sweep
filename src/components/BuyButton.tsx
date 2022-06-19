@@ -85,8 +85,6 @@ export default function BuyButton({
   function renderResourceCounts(
     rcs: ResourceCount<any, any>[],
     multiplier: number,
-    showPlusSign?: boolean,
-    reversedDirection?: boolean,
   ) {
     return rcs.map((rc, i) => (
       <ResourceRender
@@ -107,10 +105,9 @@ export default function BuyButton({
         }
         showColors={true}
         showChrome={true}
-        showPlusSign={showPlusSign}
+        showPlusSign={true}
         className="value-first"
         key={typeof rc.resource === "string" ? rc.resource : rc.resource.name}
-        reversedDirection={reversedDirection}
       />
     ));
   }
@@ -193,10 +190,9 @@ export default function BuyButton({
       id={`button-buy-${res.name}`}
     >
       {prefix && <div className="prefix">{prefix}</div>}
-      {renderResourceCounts(purchase.gain, gainMultiplier, true, false)}
+      {renderResourceCounts(purchase.gain, gainMultiplier)}
       {totalCost > 0 && infix && <div className="infix">{infix}</div>}
-      {totalCost > 0 &&
-        renderResourceCounts(purchase.cost, costMultiplier, false, true)}
+      {totalCost > 0 && renderResourceCounts(purchase.cost, -costMultiplier)}
       {suffix && <div className="suffix">{suffix}</div>}
     </button>
   );

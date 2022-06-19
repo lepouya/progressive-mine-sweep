@@ -1,3 +1,6 @@
+import { shuffle } from "../utils/shuffle";
+import { Board } from "./Board";
+import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
 
 export function boardProgressFormula({ board }: Context): number {
@@ -58,6 +61,53 @@ export function scoreMultiplier({
   },
 }: Context): number {
   return (difficulty.value() + 10) / 25;
+}
+
+export function revealNeighbors(
+  context: Context,
+  board: Board,
+  cell: Cell,
+  count: number,
+  shouldCountStats: boolean,
+  automatic: boolean,
+): number {
+  const res = context.resourceManager.resources.revealNeighbors;
+
+  const choices = [];
+  for (let dr = cell.row - 1; dr <= cell.row + 1; dr++) {
+    for (let dc = cell.col - 1; dc <= cell.col + 1; dc++) {
+      if ((board.cells[dr] ?? [])[dc]?.state === "hidden") {
+        choices.push(board.cells[dr][dc]);
+      }
+    }
+  }
+
+  shuffle(choices).splice(count);
+  for (const cell of choices) {
+    actOnCell(cell, "reveal");
+    if (shouldCountStats) {
+      stateChanged(context, "cell", cell.state, true);
+
+      if (cell.state === "revealed" && cell.contents === "clear") {
+        res.extra.reveals++;
+      } else if (cell.state === "blown" || cell.contents === "mine") {
+        res.extra.explosions++;
+      } else {
+        res.extra.useless++;
+      }
+    }
+  }
+
+  if (automatic) {
+    res.extra.auto++;
+  } else {
+    res.extra.manual++;
+  }
+  if (choices.length === 0 && shouldCountStats) {
+    res.extra.useless++;
+  }
+
+  return choices.length;
 }
 
 export function stateChanged(

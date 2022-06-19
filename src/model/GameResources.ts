@@ -37,9 +37,10 @@ export function initGameResources<Context, Result>(
     { resource: "cells", count: n },
   ];
 
-  rm.get("revealNeighbors").cost = (n) => [
+  rm.get("revealNeighbors").cost = () => [
+    { resource: "cols", count: 1 },
+    { resource: "rows", count: 1 },
     { resource: "wins", count: 10 },
-    { resource: "cells", count: n ** 2 },
   ];
 
   tickTimer(rm.get("resetSpeed"), { kind: "remainingTime" });
