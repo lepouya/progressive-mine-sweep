@@ -16,6 +16,7 @@ export default function Stats() {
         showExtras={true}
         showZeroRates={true}
         showRateColors={true}
+        placeholder=""
       />
     );
   }
@@ -49,6 +50,16 @@ export default function Stats() {
         {render("hints")}
         {render("explosions")}
         {render("clicks")}
+      </div>
+      <div className="panel stats" id="stats-auto-board">
+        <div className="title-bar">Board Automation</div>
+      </div>
+      <div className="panel stats" id="stats-auto-game">
+        <div className="title-bar">Game Automation</div>
+      </div>
+      <div className="panel stats" id="stats-auto-cell">
+        <div className="title-bar">Cell Automation</div>
+        {render("revealNeighbors")}
       </div>
     </div>
   );

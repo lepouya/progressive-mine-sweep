@@ -14,7 +14,8 @@ export default function Upgrades() {
   return (
     <div id="upgrades">
       <ResourceBar />
-      <ModeControls />
+      <ModeControls showTapMode={false} />
+
       <div className="game-controls panel">
         <div className="title-bar">Upgrades</div>
 

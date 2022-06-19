@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 
+import Automation from "../pages/Automation";
 import Help from "../pages/Help";
 import Main from "../pages/Main";
 import Options from "../pages/Options";
@@ -21,8 +22,6 @@ export default function Game() {
   } = useGameContext();
   const [timerId, setTimerId] = useState<NodeJS.Timer | undefined>();
   const [_, setLastRendered] = useState(0);
-
-  const hasReset = resets.extra.auto + resets.extra.manual > 1;
 
   useEffect(() => {
     if (timerId) {
@@ -69,8 +68,17 @@ export default function Game() {
       <nav className="navbar">
         <div className="left">
           <Link to="/">Minefield</Link>
-          <Link to="/upgrades" condition={hasReset}>
+          <Link
+            to="/upgrades"
+            condition={resets.extra.auto + resets.extra.manual > 1}
+          >
             Upgrades
+          </Link>
+          <Link
+            to="/auto"
+            condition={resets.extra.auto + resets.extra.manual > 10}
+          >
+            Automation
           </Link>
         </div>
         <div className="spacer"></div>
@@ -84,6 +92,7 @@ export default function Game() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/upgrades" element={<Upgrades />} />
+        <Route path="/auto" element={<Automation />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/help" element={<Help />} />
         <Route path="/options" element={<Options />} />
