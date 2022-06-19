@@ -14,6 +14,7 @@ export type BuyButtonProps = {
 
   count?: number;
   maxCount?: number;
+  allowUnlocking?: boolean;
 
   maxNum?: number;
   minNum?: number;
@@ -43,7 +44,8 @@ export default function BuyButton({
   enabled = true,
 
   count: overrideCount,
-  maxCount = Infinity,
+  maxCount,
+  allowUnlocking = false,
 
   maxNum,
   minNum,
@@ -71,6 +73,15 @@ export default function BuyButton({
   maxNum ??= buyAmounts.max;
   increment ??= buyAmounts.inc;
 
+  if (!(res.unlocked ?? true)) {
+    if (allowUnlocking) {
+      minNum = maxNum = increment = 1;
+    } else {
+      minNum = maxNum = increment = 0;
+      enabled = false;
+    }
+  }
+
   function renderResourceCounts(
     rcs: ResourceCount<any, any>[],
     multiplier: number,
@@ -88,8 +99,12 @@ export default function BuyButton({
           typeof rc.resource !== "string" ? rc.resource.display : "number"
         }
         infix=""
+        placeholder=""
         prefix={i > 0 ? and : ""}
-        showLocked={true}
+        showLocked={allowUnlocking}
+        showValue={
+          typeof rc.resource === "string" ? true : rc.resource.unlocked ?? true
+        }
         showColors={true}
         showChrome={true}
         showPlusSign={showPlusSign}
@@ -104,6 +119,10 @@ export default function BuyButton({
     event.preventDefault();
     if (!enabled || count < 1) {
       return;
+    }
+
+    if (!(res.unlocked ?? true) && allowUnlocking) {
+      res.unlocked = true;
     }
 
     const bought = res.buy(count, "partial", kind);
@@ -132,7 +151,7 @@ export default function BuyButton({
     return clamp(
       Math.floor((currentCount + count) / increment) * increment - currentCount,
       0,
-      maxCount - currentCount,
+      Math.min(maxCount ?? Infinity, res.maxCount ?? Infinity) - currentCount,
     );
   }
 

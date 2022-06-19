@@ -68,13 +68,21 @@
 }
 
 .value-first {
-  .value {
+  .prefix {
     order: 1;
+  }
+
+  .value {
+    order: 2;
     padding-inline-start: 0.5ex;
   }
 
   .name {
-    order: 2;
+    order: 3;
     padding-inline: 0.5ex;
+  }
+
+  .suffix {
+    order: 4;
   }
 }
