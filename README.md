@@ -39,6 +39,7 @@ Perhaps I could do prestige/reset options once this is ready
 - Auto mine + improvements? + interval
 - Auto reason + improvements + interval
 - Offline progress summary
+- Tutorial for new automations
 
 ### M5: Achievements
 
@@ -57,3 +58,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource selling?
 - Resource minimums
 - Better unit testing for models and utils
+- Documentation!
