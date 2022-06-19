@@ -6,6 +6,7 @@
     "extra": {
       "left": 0,
       "right": 0,
+      "double": 0,
       "useless": 0
     }
   },

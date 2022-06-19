@@ -1,8 +1,9 @@
-import { MouseEvent, useCallback } from "react";
+import { MouseEvent, useCallback, useState } from "react";
 
 import { Board, genBoardState } from "../model/Board";
 import { actOnCell, Cell } from "../model/Cell";
 import { stateChanged } from "../model/GameFormulas";
+import clamp from "../utils/clamp";
 import useGameContext from "./GameContext";
 import Icon from "./Icon";
 
@@ -19,12 +20,13 @@ type Props = {
 
 export default function MineCell(props: Props) {
   const context = useGameContext();
+  const [_, setUselessClicks] = useState(0);
   const board = props.board ?? context.board;
   const cell = props.cell;
   const shouldCountStats = !props.board;
 
   const handleClick = useCallback(
-    (event: MouseEvent<Element>) => {
+    function (event: MouseEvent) {
       event.preventDefault();
       const clicks = context.resources.clicks;
       clicks.count++;
@@ -42,8 +44,9 @@ export default function MineCell(props: Props) {
       //  On devices that don't have right click, hold any of the modifier keys
       //  and left click
       if (
-        event.button === 2 ||
+        (event.button === 2 && event.type === "contextmenu") ||
         (event.button === 0 &&
+          event.type === "click" &&
           (event.altKey ||
             event.ctrlKey ||
             event.metaKey ||
@@ -55,19 +58,36 @@ export default function MineCell(props: Props) {
         actOnCell(cell, "flag");
       }
       // To reveal: Left click
-      else if (event.button === 0 && context.settings.tapMode === "reveal") {
+      else if (
+        event.button === 0 &&
+        event.type === "click" &&
+        context.settings.tapMode === "reveal"
+      ) {
         if (shouldCountStats) {
           clicks.extra.left++;
         }
         actOnCell(cell, "reveal");
       }
+      // To auto-fill: Double click
+      else if (event.button === 0 && event.type === "dblclick") {
+        if (shouldCountStats) {
+          clicks.extra.double++;
+          setUselessClicks((uselessClicks) => {
+            clicks.extra.useless -= clamp(uselessClicks, 0, 2);
+            clicks.extra.left -= clamp(uselessClicks, 0, 2);
+            return 0;
+          });
+        }
+      }
 
-      if (prevState === cell.state) {
+      if (prevState === cell.state && event.type !== "dblclick") {
+        setUselessClicks((uselessClicks) => uselessClicks + 1);
         if (shouldCountStats) {
           clicks.extra.useless++;
         }
       } else {
-        if (shouldCountStats) {
+        setUselessClicks(0);
+        if (shouldCountStats && prevState !== cell.state) {
           stateChanged(context, "cell", cell.state, false);
           if (cell.state === "hidden") {
             stateChanged(context, "cell", "un" + prevState, false);
@@ -95,6 +115,7 @@ export default function MineCell(props: Props) {
     <td
       className={`cell cell-${cell.state}`}
       onClick={handleClick}
+      onDoubleClick={handleClick}
       onContextMenu={handleClick}
       id={`col-${cell.col}`}
     >
