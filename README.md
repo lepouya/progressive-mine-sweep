@@ -55,7 +55,12 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### Bugs, Issues, and Ideas
 
-- Resource selling?
-- Resource minimums
-- Better unit testing for models and utils
 - Documentation!
+- Better unit testing for models and utils
+- Resource selling
+- Resource minimums
+- Resource for automation to unlock the tab
+- Move revealNeighbors to upgrades tab and reorg
+- Auto hint on first game
+- Fix game resets when on a different tab
+- Remove the unneccessary bits from svg in release
