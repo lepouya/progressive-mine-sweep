@@ -1,4 +1,4 @@
-import tablerIcons from "../../assets/tabler-sprite-nostroke.svg";
+import tablerIcons from "../../assets/sprites/tabler-sprite-nostroke.svg";
 import cellIcons from "../data/cell_icons.json";
 import { Cell, CellState } from "../model/Cell";
 import { getHTMLElement } from "../utils/document";
