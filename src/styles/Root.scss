@@ -13,9 +13,9 @@ body {
   line-height: 1;
   text-rendering: optimizeLegibility;
 
-  margin: 0%;
+  margin: 0;
   height: 100%;
-  overflow: visible;
+  overflow: hidden;
 
   color: Theme.color(primary);
   @include Theme.background($secondary: 100%);
