@@ -11,6 +11,11 @@ export default function tickTimer<Context, Result>(
     max = +Infinity,
     direction = -1.0,
 
+    streakKind = "",
+    maxStreakKind = "",
+    minStreakKind = "",
+    resetStreakSource = "",
+
     combineWithCurrentTick = false,
     assignToResourceTick = true,
   } = {},
@@ -32,9 +37,36 @@ export default function tickTimer<Context, Result>(
         } else {
           res.count = cur;
         }
+
         if (onEvent && (cur === min || cur === max)) {
           return onEvent(res, cur, kind, src);
         }
+
+        if (streakKind) {
+          res.extra[streakKind] = clamp(
+            (res.extra[streakKind] ?? 0) + direction * dt,
+            min,
+            max,
+          );
+
+          if (
+            maxStreakKind &&
+            (res.extra[maxStreakKind] ?? min) < res.extra[streakKind]
+          ) {
+            res.extra[maxStreakKind] = res.extra[streakKind];
+          }
+
+          if (
+            minStreakKind &&
+            (res.extra[minStreakKind] ?? max) > res.extra[streakKind]
+          ) {
+            res.extra[minStreakKind] = res.extra[streakKind];
+          }
+        }
+      }
+    } else if (!resetStreakSource || src === resetStreakSource) {
+      if (streakKind) {
+        res.extra[streakKind] = direction > 0 ? min : direction < 0 ? max : 0;
       }
     }
 
