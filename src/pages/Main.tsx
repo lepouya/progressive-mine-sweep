@@ -17,7 +17,7 @@ export default function Main() {
     context,
     board,
     setBoard,
-    resources: { rows, cols, hints, resets },
+    resources: { rows, cols, hints, hintsCount, resets },
   } = useGameContext();
 
   const boardSizeChanged =
@@ -61,6 +61,7 @@ export default function Main() {
             resource={hints}
             count={0}
             maxCount={remainingHintsFormula(context)}
+            gainMultiplier={hintsCount.value()}
             onPurchase={getHint}
           />
         </div>

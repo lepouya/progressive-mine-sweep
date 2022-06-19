@@ -32,6 +32,10 @@ export function initGameResources<Context, Result>(
     { resource: "wins", count: 1 },
     { resource: "cells", count: n - 1 },
   ];
+  rm.get("hintsCount").cost = (n) => [
+    { resource: "wins", count: (n + 2) ** 2 },
+    { resource: "cells", count: 2 ** (n + 2) },
+  ];
   rm.get("resetSpeed").cost = (n) => [
     { resource: "resets", count: 1 },
     { resource: "cells", count: n },

@@ -13,6 +13,7 @@ export default function Upgrades() {
       cols,
       difficulty,
       hintQuality,
+      hintsCount,
       resetSpeed,
       revealNeighbors,
     },
@@ -105,6 +106,8 @@ export default function Upgrades() {
           <BuyButton resource={resetSpeed} prefix="Speed up" maxCount={100} />
         </div>
 
+        <hr className="separator" />
+
         <div className="quarter">Hint Quality:</div>
         <div className="quarter">
           <ResourceRender
@@ -118,6 +121,21 @@ export default function Upgrades() {
         <div className="right half">
           <BuyButton resource={hintQuality} prefix="Improve" maxCount={100} />
         </div>
+
+        <div className="quarter">Number of hints on purchase:</div>
+        <div className="quarter">
+          <ResourceRender
+            resource={hintsCount}
+            showChrome={true}
+            infix=""
+            className="value-first"
+          />
+        </div>
+        <div className="right half">
+          <BuyButton resource={hintsCount} prefix="Improve" />
+        </div>
+
+        <hr className="separator" />
 
         <div className="half">
           <ResourceRender

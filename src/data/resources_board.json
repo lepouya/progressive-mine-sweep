@@ -19,9 +19,15 @@
   },
   {
     "name": "hintQuality",
-    "icon": "bulb",
+    "icon": "icon-hinted bulb",
     "display": "percentage",
     "count": 0
+  },
+  {
+    "name": "hintsCount",
+    "singularName": "hint",
+    "pluralName": "hints",
+    "count": 1
   },
   {
     "name": "resetSpeed",
