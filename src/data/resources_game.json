@@ -3,6 +3,7 @@
     "name": "wins",
     "singularName": "win",
     "icon": "icon-won square-check",
+    "count": 0,
     "extra": {
       "auto": 0,
       "manual": 0,
@@ -14,6 +15,7 @@
     "name": "losses",
     "singularName": "lose",
     "icon": "icon-lost square-x",
+    "count": 0,
     "extra": {
       "auto": 0,
       "manual": 0,
@@ -25,9 +27,18 @@
     "name": "resets",
     "singularName": "reset",
     "icon": "refresh",
+    "count": 0,
     "extra": {
       "auto": 0,
       "manual": 0
+    }
+  },
+  {
+    "name": "automation",
+    "icon": "robot",
+    "count": 0,
+    "extra": {
+      "total": 0
     }
   }
 ]

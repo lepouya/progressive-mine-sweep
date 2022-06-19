@@ -31,5 +31,19 @@
     "extra": {
       "remainingTime": 0
     }
+  },
+  {
+    "name": "revealNeighbors",
+    "icon": "icon-revealed arrows-maximize",
+    "unlocked": false,
+    "count": 0,
+    "maxCount": 8,
+    "extra": {
+      "reveals": 0,
+      "explosions": 0,
+      "auto": 0,
+      "manual": 0,
+      "useless": 0
+    }
   }
 ]

@@ -98,16 +98,44 @@ export function revealNeighbors(
     }
   }
 
-  if (automatic) {
-    res.extra.auto++;
-  } else {
-    res.extra.manual++;
-  }
-  if (choices.length === 0 && shouldCountStats) {
-    res.extra.useless++;
+  if (shouldCountStats) {
+    countActions(context, res.name, automatic);
+    if (choices.length === 0) {
+      res.extra.useless++;
+    }
   }
 
   return choices.length;
+}
+
+export function countActions(
+  context: Context,
+  resource: string,
+  automatic: boolean,
+) {
+  const multiplier = scoreMultiplier(context);
+  const res = context.resourceManager.resources[resource ?? ""];
+  const auto = context.resourceManager.resources.automation;
+
+  if (automatic) {
+    auto.count += multiplier;
+    auto.extra.total++;
+    if (res && res.extra.auto != null) {
+      res.extra.auto++;
+    }
+  } else if (res && res.extra.manual != null) {
+    res.extra.manual++;
+  }
+
+  if (res && res.extra.streak != null) {
+    res.extra.streak++;
+    if (
+      res.extra.longestStreak != null &&
+      res.extra.streak > res.extra.longestStreak
+    ) {
+      res.extra.longestStreak = res.extra.streak;
+    }
+  }
 }
 
 export function stateChanged(
@@ -123,26 +151,7 @@ export function stateChanged(
 
   if (resName && res) {
     res.count += factor * multiplier;
-
-    if (automatic) {
-      if (res.extra.auto != null) {
-        res.extra.auto += factor;
-      }
-    } else {
-      if (res.extra.manual != null) {
-        res.extra.manual += factor;
-      }
-    }
-
-    if (res.extra.streak != null) {
-      res.extra.streak++;
-      if (
-        res.extra.longestStreak != null &&
-        res.extra.streak > res.extra.longestStreak
-      ) {
-        res.extra.longestStreak = res.extra.streak;
-      }
-    }
+    countActions(context, res.name, automatic);
   }
 
   switch (target + ":" + state) {

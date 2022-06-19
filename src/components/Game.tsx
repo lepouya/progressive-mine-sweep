@@ -18,7 +18,7 @@ export default function Game() {
     settings,
     resourceManager,
     save,
-    resources: { resets },
+    resources: { automation, resets },
   } = useGameContext();
   const [timerId, setTimerId] = useState<NodeJS.Timer | undefined>();
   const [_, setLastRendered] = useState(0);
@@ -74,10 +74,7 @@ export default function Game() {
           >
             Upgrades
           </Link>
-          <Link
-            to="/auto"
-            condition={resets.extra.auto + resets.extra.manual > 10}
-          >
+          <Link to="/auto" condition={automation.extra.total >= 5}>
             Automation
           </Link>
         </div>

@@ -1,8 +1,8 @@
+import tasks_auto from "../data/auto.json";
 import resources_board from "../data/resources_board.json";
 import resources_cell from "../data/resources_cell.json";
 import resources_game from "../data/resources_game.json";
 import resources_time from "../data/resources_time.json";
-import tasks_cell from "../data/tasks_cell.json";
 import tickTimer from "../utils/tickTimer";
 import { Resource } from "./Resource";
 import { ResourceManager } from "./ResourceManager";
@@ -12,7 +12,7 @@ const loadResources = [
   resources_board,
   resources_game,
   resources_cell,
-  tasks_cell,
+  tasks_auto,
 ];
 
 export function initGameResources<Context, Result>(
@@ -37,10 +37,10 @@ export function initGameResources<Context, Result>(
     { resource: "cells", count: n },
   ];
 
-  rm.get("revealNeighbors").cost = () => [
+  rm.get("revealNeighbors").cost = (n) => [
     { resource: "cols", count: 1 },
     { resource: "rows", count: 1 },
-    { resource: "wins", count: 10 },
+    { resource: "wins", count: n + 1 },
   ];
 
   tickTimer(rm.get("resetSpeed"), { kind: "remainingTime" });

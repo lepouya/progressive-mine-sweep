@@ -42,6 +42,7 @@ export default function Stats() {
         {render("wins")}
         {render("losses")}
         {render("resets")}
+        {render("automation")}
       </div>
       <div className="panel stats" id="stats-cell">
         <div className="title-bar">Cell Info</div>
@@ -50,15 +51,6 @@ export default function Stats() {
         {render("hints")}
         {render("explosions")}
         {render("clicks")}
-      </div>
-      <div className="panel stats" id="stats-auto-board">
-        <div className="title-bar">Board Automation</div>
-      </div>
-      <div className="panel stats" id="stats-auto-game">
-        <div className="title-bar">Game Automation</div>
-      </div>
-      <div className="panel stats" id="stats-auto-cell">
-        <div className="title-bar">Cell Automation</div>
         {render("revealNeighbors")}
       </div>
     </div>

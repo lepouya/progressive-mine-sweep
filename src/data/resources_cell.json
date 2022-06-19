@@ -3,6 +3,7 @@
     "name": "clicks",
     "singularName": "click",
     "icon": "hand-click",
+    "count": 0,
     "extra": {
       "left": 0,
       "right": 0,
@@ -14,6 +15,7 @@
     "name": "cells",
     "singularName": "cell",
     "icon": "icon-revealed square",
+    "count": 0,
     "extra": {
       "auto": 0,
       "manual": 0,
@@ -24,6 +26,7 @@
     "name": "hints",
     "singularName": "hint",
     "icon": "icon-hinted eye",
+    "count": 0,
     "extra": {
       "auto": 0,
       "manual": 0
@@ -33,6 +36,7 @@
     "name": "flags",
     "singularName": "flag",
     "icon": "icon-flagged flag-2",
+    "count": 0,
     "extra": {
       "auto": 0,
       "manual": 0,
@@ -43,6 +47,7 @@
     "name": "explosions",
     "singularName": "explosion",
     "icon": "icon-blown alert-triangle",
+    "count": 0,
     "extra": {
       "auto": 0,
       "manual": 0
