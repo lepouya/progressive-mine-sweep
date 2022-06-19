@@ -21,6 +21,7 @@ module.exports = (env, argv) => {
     },
 
     output: {
+      assetModuleFilename: "[path][name][ext][query]",
       clean: env.clean ?? false,
       filename: (pd) =>
         pd.chunk.name.split(".").shift().replace("index", package.name) +
@@ -48,6 +49,13 @@ module.exports = (env, argv) => {
         {
           test: /\.svg$/i,
           type: "asset/source",
+        },
+        {
+          test: /\.ttf$/i,
+          type: "asset/resource",
+          generator: {
+            filename: "fonts/[name][ext]",
+          },
         },
       ],
     },
