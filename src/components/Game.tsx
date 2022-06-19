@@ -24,6 +24,31 @@ export default function Game() {
   const [_, setLastRendered] = useState(0);
 
   useEffect(() => {
+    function tick() {
+      // Update resources
+      const updated = resourceManager.update(undefined, "tick");
+      if (updated.includes(true)) {
+        context.board = { ...context.board };
+      }
+
+      // Save game
+      if (
+        settings.lastUpdate - settings.lastSaved >=
+          settings.saveFrequencySecs * 1000 &&
+        settings.lastUpdate - settings.lastLoaded >=
+          settings.saveFrequencySecs * 1000
+      ) {
+        save();
+      }
+
+      // Force re-render of child components
+      setLastRendered((lastRendered) =>
+        settings.lastUpdate - lastRendered >= 1000.0 / settings.framesPerSecond
+          ? settings.lastUpdate
+          : lastRendered,
+      );
+    }
+
     if (timerId) {
       clearInterval(timerId);
     }
@@ -37,31 +62,6 @@ export default function Game() {
       }
     };
   }, [settings, settings.ticksPerSecond, settings.theme]);
-
-  function tick() {
-    // Update resources
-    const updated = resourceManager.update(undefined, "tick");
-    if (updated.includes(true)) {
-      context.board = { ...context.board };
-    }
-
-    // Save game
-    if (
-      settings.lastUpdate - settings.lastSaved >=
-        settings.saveFrequencySecs * 1000 &&
-      settings.lastUpdate - settings.lastLoaded >=
-        settings.saveFrequencySecs * 1000
-    ) {
-      save();
-    }
-
-    // Force re-render of child components
-    setLastRendered((lastRendered) =>
-      settings.lastUpdate - lastRendered >= 1000.0 / settings.framesPerSecond
-        ? settings.lastUpdate
-        : lastRendered,
-    );
-  }
 
   return (
     <HashRouter>

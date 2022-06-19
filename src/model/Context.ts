@@ -21,8 +21,10 @@ export type Context<Update = any> = {
   resourceManager: ResourceManager<Context<Update>, Update>;
 };
 
-export function emptyContext<Update>(): Context<Update> {
-  const context: any = {};
+export function emptyContext<Update>(
+  oldContext?: Partial<Context<Update>>,
+): Context<Update> {
+  const context: any = oldContext || {};
 
   context.settings = {
     ...defaultSettings,
@@ -64,29 +66,20 @@ function _load<Update>(
   context: Context<Update>,
   loadStr: string | null,
 ): boolean {
-  const oldContext = { ...context };
-  const loaded = !!loadStr && Store.loadAs(context, loadStr);
+  const newContext = { ...context };
+  const loaded = !!loadStr && Store.loadAs(newContext, loadStr);
 
   if (loaded) {
-    context.settings = {
-      ...oldContext.settings,
-      ...context.settings,
-      lastLoaded: Date.now(),
-    };
-
-    context.board = genBoardState({ ...oldContext.board, ...context.board });
-
-    context.resourceManager = mergeResourceManagers(
-      oldContext.resourceManager,
-      context.resourceManager,
-    );
-    context.resourceManager.settings = context.settings;
-    context.resourceManager.update(undefined, "load");
-  } else {
-    let k: keyof Context<Update>;
-    for (k in oldContext) {
-      assign(context, k, oldContext[k]);
+    let settingsKey: keyof typeof newContext.settings;
+    for (settingsKey in newContext.settings) {
+      assign(context.settings, settingsKey, newContext.settings[settingsKey]);
     }
+
+    context.board = genBoardState({ ...context.board, ...newContext.board });
+    mergeResourceManagers(context.resourceManager, newContext.resourceManager);
+
+    context.settings.lastLoaded = Date.now();
+    context.resourceManager.update(undefined, "load");
   }
 
   return loaded;
@@ -99,9 +92,5 @@ function _save<Update>(context: Context<Update>, pretty?: boolean): string {
 
 function _reset<Update>(context: Context<Update>): void {
   resetOnBrowser(_store);
-  const newContext = emptyContext<Update>();
-  let k: keyof Context<Update>;
-  for (k in newContext) {
-    assign(context, k, newContext[k]);
-  }
+  emptyContext<Update>(context);
 }

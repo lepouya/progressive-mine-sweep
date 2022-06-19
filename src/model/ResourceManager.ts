@@ -86,15 +86,7 @@ export function mergeResourceManagers<Context, Result>(
   rm: ResourceManager<Context, Result>,
   toLoad: Partial<ResourceManager<Context, Result>>,
 ): ResourceManager<Context, Result> {
-  let k: keyof ResourceManager<Context, Result>;
-  for (k in toLoad) {
-    if (k === "resources") {
-      Object.values(toLoad[k] ?? {}).forEach((res) => rm.upsert(res));
-    } else {
-      assign(rm, k, toLoad[k]);
-    }
-  }
-
+  Object.values(toLoad["resources"] ?? {}).forEach((res) => rm.upsert(res));
   return rm;
 }
 
@@ -123,6 +115,7 @@ function upsert<Context, Result>(
     purchase(rm, [{ resource: res, count, kind }], style);
   res.add = (count, kind) => res.buy(count, "free", kind);
   res.canBuy = (count, kind) => res.buy(count, "dry-partial", kind);
+  res.context = rm.context;
 
   if (res.name) {
     rm.resources[res.name] = res;
