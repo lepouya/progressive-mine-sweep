@@ -29,7 +29,9 @@ export default function MineCell(props: Props) {
     function (event: MouseEvent) {
       event.preventDefault();
       const clicks = context.resources.clicks;
-      clicks.count++;
+      if (shouldCountStats) {
+        clicks.count++;
+      }
 
       if (!(props.enabled ?? true) || cell.locked) {
         if (shouldCountStats) {

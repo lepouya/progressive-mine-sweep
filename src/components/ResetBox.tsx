@@ -1,6 +1,6 @@
 import { MouseEvent, useEffect, useState } from "react";
 
-import { genBoard } from "../model/Board";
+import { genBoard, genHints } from "../model/Board";
 import {
   numMinesFormula,
   resetTimeFormula,
@@ -16,7 +16,7 @@ export default function ResetBox() {
     board,
     setBoard,
     settings,
-    resources: { rows, cols, resetSpeed },
+    resources: { rows, cols, resets, resetSpeed },
   } = useGameContext();
   const [title, setTitle] = useState<string>(board.state);
   const [isResetting, setResetting] = useState(false);
@@ -60,10 +60,26 @@ export default function ResetBox() {
   }
 
   function resetBoard(auto = false) {
-    const m = numMinesFormula(context);
+    const firstGame =
+      auto &&
+      context.board.state === "inactive" &&
+      resets.count === 0 &&
+      resets.extra.manual === 0 &&
+      resets.extra.auto === 0;
+
+    const m = firstGame ? 1 : numMinesFormula(context);
+
     setBoard(genBoard(rows.value(), cols.value(), Math.floor(m), Math.ceil(m)));
     stateChanged(context, "board", "active", auto);
     settings.tapMode = "reveal";
+
+    if (firstGame) {
+      // Free hint on first game!
+      if (genHints(context.board, 1, 0, 0, 1) === 0) {
+        genHints(context.board, 1, 0, 1, 1);
+      }
+      stateChanged(context, "cell", "hinted", auto);
+    }
   }
 
   return (

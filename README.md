@@ -59,5 +59,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Better unit testing for models and utils
 - Resource selling
 - Resource minimums
-- Auto hint on first game
 - Fix game resets when on a different tab
