@@ -23,7 +23,7 @@ export default function Upgrades() {
       <ResourceBar />
       <ModeControls showTapMode={false} />
 
-      <div className="game-controls panel">
+      <div className="game-controls panel" id="game-upgrades">
         <div className="title-bar">Game Upgrades</div>
 
         <div className="quarter">Game Width:</div>

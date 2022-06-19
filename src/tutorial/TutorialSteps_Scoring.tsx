@@ -62,8 +62,8 @@ export const tsScoring: TutorialSteps = {
     body: (
       <>
         <div className="full">
-          An UPGRADES tab just opened up that allows you to upgrade various
-          aspects of the game to make it more interesting.
+          The UPGRADES tab allows you to upgrade various aspects of the game to
+          make it more interesting.
         </div>
         <div className="full">
           Side note: this is what makes the game progressive &mdash; sometimes
@@ -120,10 +120,50 @@ export const tsScoring: TutorialSteps = {
         </div>
       </>
     ),
-    highlightSelector: "div.game-controls",
+    highlightSelector: "div#game-upgrades",
     bounds: {
       top: "26rem",
       height: "200px",
     },
+  },
+  120: {
+    title: "Quality Upgrades",
+    body: (
+      <>
+        <div className="full">
+          There are many other upgrades in this tab that improve the quality and
+          various aspects of the game. Such as getting hints or revealing
+          neighboring cells on double-tap!
+        </div>
+        <div className="full">
+          Try them all and make the game more enjoyable.
+        </div>
+        <div className="full">
+          PRO TIP: There is a lot more to the game than these upgrades. Use them
+          for a while and a whole lot of new features may open up as you go!
+        </div>
+      </>
+    ),
+  },
+  200: {
+    title: "Automation",
+    body: (
+      <>
+        <div className="full">
+          The AUTOMATION tab provides new game mechanics to automatically
+          perform some repetitive actions in the game, such as reseting the
+          board or revealing neighboring squares!
+        </div>
+        <div className="full">
+          Head over to this tab to check out the different automation options
+          available.
+        </div>
+      </>
+    ),
+    highlightSelector: "div#tab-auto",
+    enabled: (_, context) =>
+      context.resourceManager.resources.automation.extra.total >= 5,
+    nextStep: (step) =>
+      document.location.href.includes("auto") ? null : step?.step,
   },
 };
