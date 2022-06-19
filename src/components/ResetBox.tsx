@@ -60,10 +60,9 @@ export default function ResetBox() {
   }
 
   function resetBoard(auto = false) {
-    stateChanged(context, "board", "active", auto);
-
     const m = numMinesFormula(context);
     setBoard(genBoard(rows.value(), cols.value(), Math.floor(m), Math.ceil(m)));
+    stateChanged(context, "board", "active", auto);
     settings.tapMode = "reveal";
   }
 

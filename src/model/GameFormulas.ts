@@ -9,9 +9,19 @@ export function boardProgressFormula({ board }: Context): number {
 
 export function numMinesFormula({
   resourceManager: {
-    resources: { rows, cols, difficulty },
+    resources: { rows, cols, difficulty, resets },
   },
+  board: { state },
 }: Context): number {
+  if (
+    state === "inactive" &&
+    resets.count === 0 &&
+    resets.extra.manual === 0 &&
+    resets.extra.auto === 0
+  ) {
+    return 1;
+  }
+
   return rows.value() * cols.value() * (difficulty.value() / 100);
 }
 
