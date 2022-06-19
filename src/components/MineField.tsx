@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 import { Board, emptyBoard, genBoard, genBoardState } from "../model/Board";
 import useGameContext from "./GameContext";
@@ -10,7 +10,7 @@ type Props = {
   boardWidth?: number;
 };
 
-export default function MineField(props: Props) {
+export default function MineField(props: PropsWithChildren<Props>) {
   const context = useGameContext();
   const board = props.board ?? context.board;
 
@@ -45,7 +45,12 @@ export default function MineField(props: Props) {
     [board],
   );
 
-  return <div className="minefield">{mineField}</div>;
+  return (
+    <div className="minefield">
+      {mineField}
+      {props.children}
+    </div>
+  );
 }
 
 export function MineFieldWrapper(props: {

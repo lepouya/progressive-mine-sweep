@@ -39,8 +39,9 @@ export default function Main() {
   return (
     <div id="main" className="main">
       <ResourceBar />
-      <ResetBox />
-      <MineField />
+      <MineField>
+        <ResetBox />
+      </MineField>
       <ModeControls />
       <div className="game-controls panel">
         <div className="half">
