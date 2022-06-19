@@ -299,7 +299,11 @@ function getPurchaseCost<Context, Result>(
   kind: string,
   style: PurchaseStyle,
 ): PurchaseCost<Context, Result> {
-  if (!resource || count === 0) {
+  if (
+    !resource ||
+    count === 0 ||
+    (!(resource.unlocked ?? true) && !style.includes("dry"))
+  ) {
     return { count: 0, gain: [], cost: [] };
   }
 
