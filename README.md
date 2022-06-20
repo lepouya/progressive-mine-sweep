@@ -34,7 +34,7 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Double tap to reveal neighbors~~
 - ~~Auto reset puzzle~~
 - ~~Auto fill blank squares~~
-- Auto flag
+- ~~Auto flag~~
 - Auto hint
 - Auto reason
 - Auto guess when stuck?

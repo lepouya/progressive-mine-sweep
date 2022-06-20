@@ -94,7 +94,9 @@ export default function Automation() {
           <BuyButton
             resource={autoFlagMines}
             allowUnlocking={true}
-            enabled={false}
+            enabled={
+              autoRevealNeighbors.unlocked && autoRevealNeighbors.count > 0
+            }
             prefix={!autoFlagMines.unlocked ? "Unlock" : "Additional"}
           />
         </div>

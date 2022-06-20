@@ -76,5 +76,10 @@ export function initGameResources(
   autoResetGame.shouldTick = Auto.shouldTick(autoResetGame);
   autoResetGame.tick = () => Auto.resetGameTask(rm.context);
 
+  const autoFlagMines = rm.get("autoFlagMines");
+  autoFlagMines.cost = (n) => [{ resource: "automation", count: n * 2 }];
+  autoFlagMines.shouldTick = Auto.shouldTick(autoFlagMines);
+  autoFlagMines.tick = () => Auto.flagMinesTask(rm.context);
+
   return rm;
 }
