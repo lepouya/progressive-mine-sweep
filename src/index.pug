@@ -4,7 +4,7 @@ html: head
   - const pretty = x => x.replace(/\W/g, ' ').replace(/(?:^|\s)\S/g, c=>c.toUpperCase())
   title=`${pretty(package.name)} v${package.version}`
   meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
-  meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+  meta(name="viewport" content="width=device-width, height=device-height, initial-scale=1, shrink-to-fit=no")
   meta(name="author" content=package.author)
   meta(name="description" content=package.description)
 

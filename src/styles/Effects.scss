@@ -8,10 +8,11 @@
 }
 
 .shadow {
-  box-shadow: 0px 54px 55px Theme.color(primary, 25%),
-    0px 12px 13px Theme.color(primary, 17%),
-    0px -12px 30px Theme.color(primary, 12%),
-    0px 4px 6px Theme.color(primary, 12%), 0px -3px 5px Theme.color(primary, 9%);
+  box-shadow: 0px 54px 55px Theme.color(primary, 0.25),
+    0px 12px 13px Theme.color(primary, 0.17),
+    0px -12px 30px Theme.color(primary, 0.12),
+    0px 4px 6px Theme.color(primary, 0.12),
+    0px -3px 5px Theme.color(primary, 0.09);
 }
 
 @keyframes glow {
@@ -23,7 +24,9 @@
       0px 0px 82px Theme.color(positive, 50%),
       0px 0px 92px Theme.color(positive, 50%),
       0px 0px 102px Theme.color(positive, 50%),
-      0px 0px 151px Theme.color(positive, 50%);
+      0px 0px 151px Theme.color(positive, 50%),
+      inset 0px 0px 10px Theme.color(primary, 50%),
+      inset 0px 0px 21px Theme.color(positive, 50%);
   }
   to {
     box-shadow: 0px 0px 2px Theme.color(secondary, 50%),
@@ -33,6 +36,8 @@
       0px 0px 45px Theme.color(positive, 50%),
       0px 0px 55px Theme.color(positive, 50%),
       0px 0px 70px Theme.color(positive, 50%),
-      0px 0px 80px Theme.color(positive, 50%);
+      0px 0px 80px Theme.color(positive, 50%),
+      inset 0px 0px 4px Theme.color(primary, 50%),
+      inset 0px 0px 10px Theme.color(positive, 50%);
   }
 }

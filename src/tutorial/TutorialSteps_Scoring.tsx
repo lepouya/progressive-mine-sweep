@@ -36,7 +36,7 @@ export const tsScoring: TutorialSteps = {
       context.resourceManager.resources.resets.extra.manual > 0,
     highlightSelector: "div.panel#resource-bar",
     bounds: {
-      top: "6rem + 50px",
+      top: "12rem",
       height: "400px",
     },
   },

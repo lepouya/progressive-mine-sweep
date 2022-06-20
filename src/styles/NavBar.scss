@@ -8,6 +8,10 @@
   @include Theme.background($primary: 7%, $secondary: 100%);
   color: Theme.color(primary);
 
+  @media only screen and (max-device-width: 640px) {
+    font-size: smaller;
+  }
+
   > div {
     display: flex;
     flex: 1;
