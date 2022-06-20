@@ -28,7 +28,7 @@ function expectCleanCells(board: Board): void {
       const cell = board.cells[r][c];
       expect(cell.row).to.equal(r);
       expect(cell.col).to.equal(c);
-      expect(cell.neighbors).to.equal(0);
+      expect(cell.neighborContents.mine).to.equal(0);
       expect(cell.contents).to.equal("clear");
       expect(cell.state).to.equal("hidden");
     }
@@ -104,7 +104,7 @@ function expectCorrectNeighboringMineCounts(board: Board): void {
         )
         .filter(([r2, c2]) => board.cells[r2][c2].contents === "mine").length;
 
-      expect(mines).to.equal(cell.neighbors);
+      expect(mines).to.equal(cell.neighborContents.mine);
     }
   }
 }

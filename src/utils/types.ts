@@ -31,6 +31,10 @@ export type FunctionType<
   Return = unknown,
 > = (...args: Arguments) => Return;
 
+export type Counters<T extends string> = {
+  [K in T]: number;
+};
+
 export type Optional<T> = Nullable<
   T extends BaseType | AtomicType | FunctionType
     ? T

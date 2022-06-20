@@ -1,6 +1,9 @@
 import clamp from "../utils/clamp";
 import { setSaveProperties } from "../utils/store";
-import { actOnCell, Cell } from "./Cell";
+import { Counters } from "../utils/types";
+import { actOnCell, Cell, CellState, emptyCell } from "./Cell";
+
+export type BoardState = "inactive" | "active" | "won" | "lost";
 
 export type Board = {
   rows: number;
@@ -10,25 +13,7 @@ export type Board = {
   numMines: number;
 
   state: BoardState;
-  cellCounts: BoardCellCounts;
-};
-
-export type BoardState = "inactive" | "active" | "won" | "lost";
-
-export type BoardCellCounts = {
-  hidden: number;
-  hinted: number;
-  flagged: number;
-  revealed: number;
-  blown: number;
-};
-
-export const emptyCellCounts: BoardCellCounts = {
-  hidden: 0,
-  hinted: 0,
-  flagged: 0,
-  revealed: 0,
-  blown: 0,
+  cellCounts: Counters<CellState>;
 };
 
 export const emptyBoard: Board = {
@@ -37,7 +22,13 @@ export const emptyBoard: Board = {
   cells: [],
   numMines: 0,
   state: "inactive",
-  cellCounts: { ...emptyCellCounts },
+  cellCounts: {
+    hidden: 0,
+    hinted: 0,
+    flagged: 0,
+    revealed: 0,
+    blown: 0,
+  },
 };
 
 export function makeClearBoard(rows: number, cols: number): Board {
@@ -45,13 +36,7 @@ export function makeClearBoard(rows: number, cols: number): Board {
   for (let row = 0; row < rows; row++) {
     cells[row] = [];
     for (let col = 0; col < cols; col++) {
-      cells[row][col] = {
-        row,
-        col,
-        contents: "clear",
-        state: "hidden",
-        neighbors: 0,
-      };
+      cells[row][col] = { ...emptyCell, row, col };
     }
   }
 
@@ -61,7 +46,7 @@ export function makeClearBoard(rows: number, cols: number): Board {
     cells,
     numMines: 0,
     state: "active",
-    cellCounts: { ...emptyCellCounts, hidden: rows * cols },
+    cellCounts: { ...emptyBoard.cellCounts, hidden: rows * cols },
   };
 }
 
@@ -93,9 +78,14 @@ export function populateRandomMines(
 }
 
 export function genBoardState(board: Board, maxErrors = 1): Board {
-  board.cellCounts = { ...emptyCellCounts };
+  board.cellCounts = { ...emptyBoard.cellCounts };
   board.numMines = 0;
-  board.cells.forEach((cells) => cells.forEach((cell) => (cell.neighbors = 0)));
+  board.cells.forEach((cells) =>
+    cells.forEach((cell) => {
+      cell.neighborContents = { ...emptyCell.neighborContents };
+      cell.neighborStates = { ...emptyCell.neighborStates };
+    }),
+  );
 
   for (let r = 0; r < board.rows; r++) {
     for (let c = 0; c < board.cols; c++) {
@@ -107,14 +97,12 @@ export function genBoardState(board: Board, maxErrors = 1): Board {
       cell.locked = !!cell.locked || undefined;
       setSaveProperties(cell, ["contents", "state", "locked"]);
 
-      cell.neighbors = 0;
       for (let dr = r - 1; dr <= r + 1; dr++) {
         for (let dc = c - 1; dc <= c + 1; dc++) {
-          if (
-            (board.cells[dr] ?? [])[dc]?.contents === "mine" &&
-            !(dr === r && dc === c)
-          ) {
-            cell.neighbors++;
+          const neighbor = (board.cells[dr] ?? [])[dc];
+          if (neighbor && !(dr === r && dc === c)) {
+            cell.neighborContents[neighbor.contents]++;
+            cell.neighborStates[neighbor.state]++;
           }
         }
       }
@@ -182,10 +170,13 @@ export function genHints(
       (cell) =>
         cell.state === "hidden" &&
         cell.contents === "clear" &&
-        cell.neighbors >= minHintLevel &&
-        cell.neighbors <= maxHintLevel,
+        cell.neighborContents.mine >= minHintLevel &&
+        cell.neighborContents.mine <= maxHintLevel,
     )
-    .sort((cell1, cell2) => cell1.neighbors - cell2.neighbors);
+    .sort(
+      (cell1, cell2) =>
+        cell1.neighborContents.mine - cell2.neighborContents.mine,
+    );
   if (rankedHints.length <= numHints) {
     rankedHints.forEach((cell) => {
       actOnCell(cell, "hint");

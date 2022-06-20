@@ -18,7 +18,7 @@ export type IconProps = {
 
 export default function Icon(props: IconProps) {
   const state = props.cell?.state ?? props.state;
-  const neighbors = props.cell?.neighbors ?? props.neighbors;
+  const neighbors = props.cell?.neighborContents?.mine ?? props.neighbors;
   let icon = props.icon;
 
   if (!icon) {
