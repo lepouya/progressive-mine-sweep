@@ -151,7 +151,7 @@ function update<Context, Result>(
   const resources = Object.values(rm.resources).filter(
     (res) => res.unlocked ?? true,
   );
-  const tickResources = resources.filter((res) => res.tick);
+  const tickResources = resources.filter((res) => res.tick && !res.disabled);
 
   resources.forEach((res) => {
     res.rate.lastCountUpdate ??= epoch;

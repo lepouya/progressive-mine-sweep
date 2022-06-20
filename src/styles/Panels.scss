@@ -40,6 +40,14 @@
     border: 1px solid Theme.color(primary);
     border-radius: 0.5em;
 
+    cursor: pointer;
+    user-select: none;
+    touch-action: pan-x;
+
+    > * {
+      pointer-events: none;
+    }
+
     &:active {
       @include Theme.background($primary: 20%, $secondary: 100%);
     }
@@ -53,6 +61,8 @@
       @include Theme.background($primary: 5%, $secondary: 50%);
 
       border: 1px solid Theme.color(primary, 50%);
+
+      cursor: initial;
     }
   }
 

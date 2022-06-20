@@ -1,8 +1,8 @@
 // Globals
-@use "styles/Root";
+@use "styles/App";
 @use "styles/CustomThemes";
 @use "styles/Effects";
-@use "styles/App";
+@use "styles/Root";
 
 // Utility widgets
 @use "styles/Icon";
@@ -10,6 +10,7 @@
 @use "styles/Panels";
 @use "styles/ProgressCircle";
 @use "styles/Resource";
+@use "styles/ToggleButton";
 
 // Game components
 @use "styles/BoardState";

@@ -60,6 +60,5 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource selling
 - Resource minimums
 - Rate values might be wrong when there's no tick method
-- Enabling / disabling automation tasks
 - Auto wins don't count?
 - Switching tabs in middle of reset would restart the counter

@@ -11,7 +11,8 @@
   }
 
   .computed {
-    padding-inline-start: 1em;
+    padding: 0 1em;
+    box-sizing: border-box;
     font-size: smaller;
     color: Theme.color(primary, 75%);
   }

@@ -10,6 +10,7 @@ export type Resource<Context, Result> = {
   readonly name: string;
   context: Context;
   unlocked?: boolean;
+  disabled?: boolean;
 
   icon?: string;
   display?: "number" | "time" | "percentage";
@@ -60,7 +61,14 @@ export function genEmptyResource<Context, Result>(
     rate: { count: 0, ticks: 0 },
   };
 
-  setSaveProperties(res, ["name", "unlocked", "count", "maxCount", "extra"]);
+  setSaveProperties(res, [
+    "name",
+    "unlocked",
+    "disabled",
+    "count",
+    "maxCount",
+    "extra",
+  ]);
   return res;
 }
 

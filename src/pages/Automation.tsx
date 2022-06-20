@@ -1,8 +1,10 @@
 import BuyButton from "../components/BuyButton";
 import useGameContext from "../components/GameContext";
+import Icon from "../components/Icon";
 import ModeControls from "../components/ModeControls";
 import ResourceBar from "../components/ResourceBar";
 import ResourceRender from "../components/ResourceRender";
+import ToggleButton from "../components/ToggleButton";
 
 export default function Automation() {
   const {
@@ -46,6 +48,20 @@ export default function Automation() {
             allowUnlocking={true}
             enabled={revealNeighbors.unlocked && revealNeighbors.count > 0}
             prefix={!autoRevealNeighbors.unlocked ? "Unlock" : "Additional"}
+          />
+        </div>
+        <div className="full right">
+          Enabled:
+          <ToggleButton
+            checked={
+              autoRevealNeighbors.unlocked && !autoRevealNeighbors.disabled
+            }
+            onChange={(checked) => (autoRevealNeighbors.disabled = !checked)}
+            checkedContents={<Icon icon="robot" />}
+            unCheckedContents={<Icon icon="robot-off" />}
+            enabled={
+              autoRevealNeighbors.unlocked && autoRevealNeighbors.count > 0
+            }
           />
         </div>
         <div className="full computed">
@@ -98,7 +114,16 @@ export default function Automation() {
             prefix={!autoFlagMines.unlocked ? "Unlock" : "Additional"}
           />
         </div>
-
+        <div className="full right">
+          Enabled:
+          <ToggleButton
+            checked={autoFlagMines.unlocked && !autoFlagMines.disabled}
+            onChange={(checked) => (autoFlagMines.disabled = !checked)}
+            checkedContents={<Icon icon="robot" />}
+            unCheckedContents={<Icon icon="robot-off" />}
+            enabled={autoFlagMines.unlocked && autoFlagMines.count > 0}
+          />
+        </div>
         <div className="full computed">
           Automatically flags the hidden mines around a square if there are no
           more hidden clear squares left around it.
@@ -122,6 +147,16 @@ export default function Automation() {
             prefix={!autoRevealHints.unlocked ? "Unlock" : "Additional"}
           />
         </div>
+        <div className="full right">
+          Enabled:
+          <ToggleButton
+            checked={autoRevealHints.unlocked && !autoRevealHints.disabled}
+            onChange={(checked) => (autoRevealHints.disabled = !checked)}
+            checkedContents={<Icon icon="robot" />}
+            unCheckedContents={<Icon icon="robot-off" />}
+            enabled={autoRevealHints.unlocked && autoRevealHints.count > 0}
+          />
+        </div>
         <div className="full computed">
           Automatically reveals any purchased hints.
         </div>
@@ -140,6 +175,16 @@ export default function Automation() {
             resource={autoPurchaseHints}
             allowUnlocking={true}
             prefix={!autoPurchaseHints.unlocked ? "Unlock" : "Additional"}
+          />
+        </div>
+        <div className="full right">
+          Enabled:
+          <ToggleButton
+            checked={autoPurchaseHints.unlocked && !autoPurchaseHints.disabled}
+            onChange={(checked) => (autoPurchaseHints.disabled = !checked)}
+            checkedContents={<Icon icon="robot" />}
+            unCheckedContents={<Icon icon="robot-off" />}
+            enabled={autoPurchaseHints.unlocked && autoPurchaseHints.count > 0}
           />
         </div>
         <div className="full computed">
@@ -192,6 +237,16 @@ export default function Automation() {
             resource={autoResetGame}
             allowUnlocking={true}
             prefix={!autoResetGame.unlocked ? "Unlock" : "Additional"}
+          />
+        </div>
+        <div className="full right">
+          Enabled:
+          <ToggleButton
+            checked={autoResetGame.unlocked && !autoResetGame.disabled}
+            onChange={(checked) => (autoResetGame.disabled = !checked)}
+            checkedContents={<Icon icon="robot" />}
+            unCheckedContents={<Icon icon="robot-off" />}
+            enabled={autoResetGame.unlocked && autoResetGame.count > 0}
           />
         </div>
         <div className="full computed">
