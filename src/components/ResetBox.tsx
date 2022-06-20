@@ -37,6 +37,7 @@ export default function ResetBox() {
 
   const waitTime = resetTimeFormula(context);
   const remainingTime = resetSpeed.extra.remainingTime;
+
   if (!isResetting && remainingTime > 0) {
     startReset(undefined, true);
   }

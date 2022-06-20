@@ -51,16 +51,17 @@ export function revealNeighborsTask(context: Context) {
 
 export function resetGameTask(context: Context) {
   const res = context.resourceManager.resources.autoResetGame;
+  const resetSpeed = context.resourceManager.resources.resetSpeed;
   if (
     res.count <= 0 ||
     !(res.unlocked ?? true) ||
     context.board.state === "active" ||
-    context.board.state === "inactive"
+    context.board.state === "inactive" ||
+    resetSpeed.extra.remainingTime > 0
   ) {
     return null;
   }
 
-  context.resourceManager.resources.resetSpeed.extra.remainingTime =
-    resetTimeFormula(context);
+  resetSpeed.extra.remainingTime = resetTimeFormula(context);
   return false;
 }
