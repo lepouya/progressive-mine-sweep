@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 
 import { genBoardState } from "../model/Board";
+import { stateChanged } from "../model/GameFormulas";
 import Automation from "../pages/Automation";
 import Help from "../pages/Help";
 import Main from "../pages/Main";
@@ -27,6 +28,7 @@ export default function Game() {
   useEffect(() => {
     function tick() {
       // Update resources
+      const curBoardState = context.board.state;
       const updated = resourceManager.update(undefined, "tick");
       if (updated.includes(true)) {
         context.board = genBoardState(
@@ -34,6 +36,9 @@ export default function Game() {
           context.settings.maxErrors,
         );
         context.board = { ...context.board };
+        if (context.board.state !== curBoardState) {
+          stateChanged(context, "board", context.board.state, false);
+        }
       }
 
       // Save game
