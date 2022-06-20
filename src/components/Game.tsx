@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 
+import { genBoardState } from "../model/Board";
 import Automation from "../pages/Automation";
 import Help from "../pages/Help";
 import Main from "../pages/Main";
@@ -28,6 +29,10 @@ export default function Game() {
       // Update resources
       const updated = resourceManager.update(undefined, "tick");
       if (updated.includes(true)) {
+        context.board = genBoardState(
+          context.board,
+          context.settings.maxErrors,
+        );
         context.board = { ...context.board };
       }
 

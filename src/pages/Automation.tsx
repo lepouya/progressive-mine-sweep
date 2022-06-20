@@ -44,7 +44,7 @@ export default function Automation() {
           <BuyButton
             resource={autoRevealNeighbors}
             allowUnlocking={true}
-            enabled={false}
+            enabled={revealNeighbors.unlocked && revealNeighbors.count > 0}
             prefix={!autoRevealNeighbors.unlocked ? "Unlock" : "Additional"}
           />
         </div>

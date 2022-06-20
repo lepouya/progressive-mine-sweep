@@ -4,6 +4,8 @@ import resources_cell from "../data/resources_cell.json";
 import resources_game from "../data/resources_game.json";
 import resources_time from "../data/resources_time.json";
 import tickTimer from "../utils/tickTimer";
+import { Context } from "./Context";
+import { automatorShouldTick, autoRevealNeighborsTask } from "./GameAutomation";
 import { Resource } from "./Resource";
 import { ResourceManager } from "./ResourceManager";
 
@@ -15,10 +17,10 @@ const loadResources = [
   tasks_auto,
 ];
 
-export function initGameResources<Context, Result>(
-  rm: ResourceManager<Context, Result>,
-): ResourceManager<Context, Result> {
-  (loadResources as Partial<Resource<Context, Result>>[][])
+export function initGameResources(
+  rm: ResourceManager<Context, boolean>,
+): ResourceManager<Context, boolean> {
+  (loadResources as Partial<Resource<Context, boolean>>[][])
     .flat()
     .forEach((props) => rm.upsert(props));
 
@@ -63,6 +65,11 @@ export function initGameResources<Context, Result>(
     maxStreakKind: "max",
     resetStreakSource: "tick",
   });
+
+  const autoRevealNeighbors = rm.get("autoRevealNeighbors");
+  autoRevealNeighbors.cost = (n) => [{ resource: "automation", count: n * 2 }];
+  autoRevealNeighbors.shouldTick = automatorShouldTick(autoRevealNeighbors);
+  autoRevealNeighbors.tick = () => autoRevealNeighborsTask(rm.context);
 
   return rm;
 }
