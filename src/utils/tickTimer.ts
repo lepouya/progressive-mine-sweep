@@ -39,10 +39,6 @@ export default function tickTimer<Context, Result>(
           res.count = cur;
         }
 
-        if (onEvent && (cur === min || cur === max)) {
-          return onEvent(res, cur, kind, src);
-        }
-
         if (streakKind) {
           res.extra[streakKind] = clamp(
             (res.extra[streakKind] ?? 0) + direction * dt,
@@ -63,6 +59,10 @@ export default function tickTimer<Context, Result>(
           ) {
             res.extra[minStreakKind] = res.extra[streakKind];
           }
+        }
+
+        if (onEvent && (cur === min || cur === max)) {
+          return onEvent(res, cur, kind, src);
         }
       }
     } else if (!resetStreakSource || src === resetStreakSource) {
