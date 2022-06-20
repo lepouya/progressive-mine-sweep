@@ -36,10 +36,8 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Auto fill blank squares~~
 - ~~Auto flag~~
 - ~~Auto hint~~
-- Auto reason
-- Auto guess when stuck?
 - Offline progress summary
-- Tutorial for new automations
+- ~~Tutorial for new automations~~
 
 ### M5: Achievements
 
