@@ -36,8 +36,8 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Auto fill blank squares~~
 - ~~Auto flag~~
 - ~~Auto hint~~
-- Offline progress summary
 - ~~Tutorial for new automations~~
+- Auto buy board size upgrades
 
 ### M5: Achievements
 
@@ -50,6 +50,7 @@ Perhaps I could do prestige/reset options once this is ready
 ### M6: Prestige
 
 - Brainstorm on what can be done here
+- Offline progress summary
 
 ### Bugs, Issues, and Ideas
 
@@ -60,3 +61,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Rate values might be wrong when there's no tick method
 - Switching tabs in middle of reset would restart the counter
 - Reset needs minefield tab to have focus
+- Figure out a way to load cost formulas from json
