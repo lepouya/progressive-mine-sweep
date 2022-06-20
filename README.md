@@ -59,4 +59,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Better unit testing for models and utils
 - Resource selling
 - Resource minimums
-- Fix game resets when on a different tab
+- Rate values might be wrong when there's no tick method

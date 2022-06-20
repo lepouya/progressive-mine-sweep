@@ -6,6 +6,7 @@ export default function tickTimer<Context, Result>(
   {
     kind = "",
     source = "",
+    value = undefined as number | undefined,
 
     min = 0.0,
     max = +Infinity,
@@ -83,5 +84,13 @@ export default function tickTimer<Context, Result>(
   if (assignToResourceTick) {
     res.tick = tick;
   }
+  if (value != undefined) {
+    if (kind) {
+      res.extra[kind] = value;
+    } else {
+      res.count = value;
+    }
+  }
+
   return tick;
 }

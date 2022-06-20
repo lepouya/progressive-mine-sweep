@@ -7,6 +7,7 @@ import {
   stateChanged,
 } from "../model/GameFormulas";
 import message from "../utils/message";
+import tickTimer from "../utils/tickTimer";
 import useGameContext from "./GameContext";
 import ProgressCircle from "./ProgressCircle";
 
@@ -45,17 +46,16 @@ export default function ResetBox() {
     setMessageTime(messageTime + 2);
   }
 
-  if (isResetting && remainingTime === 0) {
-    setResetting(false);
-    resetBoard();
-  }
-
-  function startReset(event: MouseEvent<HTMLInputElement>) {
+  function startReset(event: MouseEvent) {
     event.preventDefault();
     if (!isResetting) {
       setResetting(true);
       setMessageTime(0);
-      resetSpeed.extra.remainingTime = waitTime;
+      tickTimer(
+        resetSpeed,
+        { kind: "remainingTime", value: waitTime },
+        (_, timer) => timer === 0 && resetBoard(),
+      );
     }
   }
 
@@ -69,6 +69,7 @@ export default function ResetBox() {
 
     const m = firstGame ? 1 : numMinesFormula(context);
 
+    setResetting(false);
     setBoard(genBoard(rows.value(), cols.value(), Math.floor(m), Math.ceil(m)));
     stateChanged(context, "board", "active", auto);
     settings.tapMode = "reveal";
@@ -80,6 +81,8 @@ export default function ResetBox() {
       }
       stateChanged(context, "cell", "hinted", auto);
     }
+
+    return true;
   }
 
   return (
