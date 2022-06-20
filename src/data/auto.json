@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "name": "autoRevealNeighbors",
+    "unlocked": false,
+    "count": 0
+  },
+  {
+    "name": "autoFlagMines",
+    "unlocked": false,
+    "count": 0
+  },
+  {
+    "name": "autoRevealHints",
+    "unlocked": false,
+    "count": 0
+  },
+  {
+    "name": "autoPurchaseHints",
+    "unlocked": false,
+    "count": 0
+  },
+  {
+    "name": "autoResetGame",
+    "unlocked": false,
+    "count": 0
+  }
+]
