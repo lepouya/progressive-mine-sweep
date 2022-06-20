@@ -6,7 +6,7 @@ export default function ResourceBar() {
   const {
     context,
     board,
-    resources: { wins, cells },
+    resources: { wins, cells, automation },
   } = useGameContext();
 
   return (
@@ -19,6 +19,16 @@ export default function ResourceBar() {
         showRatePercentages={false}
         showChrome={true}
       />
+      {automation.extra.total >= 5 && (
+        <ResourceRender
+          resource={automation}
+          precision={0}
+          showRate={true}
+          showZeroRates={true}
+          showRatePercentages={false}
+          showChrome={true}
+        />
+      )}
       <ResourceRender
         resource={cells}
         precision={0}
