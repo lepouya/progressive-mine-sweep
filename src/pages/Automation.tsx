@@ -17,6 +17,7 @@ export default function Automation() {
       autoRevealHints,
       autoPurchaseHints,
       autoResetGame,
+      resetSpeed,
     },
   } = useGameContext();
 
@@ -72,6 +73,7 @@ export default function Automation() {
             }
           />
         </div>
+
         <div className="full computed">
           Automatically reveals the neighboring hidden squares if all the mines
           around it have been flagged.
@@ -96,6 +98,7 @@ export default function Automation() {
             prefix={!autoFlagMines.unlocked ? "Unlock" : "Additional"}
           />
         </div>
+
         <div className="full computed">
           Automatically flags the hidden mines around a square if there are no
           more hidden clear squares left around it.
@@ -139,6 +142,19 @@ export default function Automation() {
           />
         </div>
 
+        <div className="quarter">Number of hints per run:</div>
+        <div className="quarter">
+          <ResourceRender
+            resource={hintsCount}
+            showChrome={true}
+            infix=""
+            className="value-first"
+          />
+        </div>
+        <div className="right half">
+          <BuyButton resource={hintsCount} prefix="Improve" />
+        </div>
+
         <div className="quarter">Hint Quality:</div>
         <div className="quarter">
           <ResourceRender
@@ -151,19 +167,6 @@ export default function Automation() {
         </div>
         <div className="right half">
           <BuyButton resource={hintQuality} prefix="Improve" maxCount={100} />
-        </div>
-
-        <div className="quarter">Number of hints per run:</div>
-        <div className="quarter">
-          <ResourceRender
-            resource={hintsCount}
-            showChrome={true}
-            infix=""
-            className="value-first"
-          />
-        </div>
-        <div className="right half">
-          <BuyButton resource={hintsCount} prefix="Improve" />
         </div>
       </div>
 
@@ -187,13 +190,31 @@ export default function Automation() {
             prefix={!autoResetGame.unlocked ? "Unlock" : "Additional"}
           />
         </div>
+
+        <div className="quarter">Reset Speed:</div>
+        <div className="quarter">
+          <ResourceRender
+            resource={resetSpeed}
+            showChrome={true}
+            showName={false}
+            infix=""
+            className="value-first"
+          />
+        </div>
+        <div className="right half">
+          <BuyButton resource={resetSpeed} prefix="Speed up" maxCount={100} />
+        </div>
+
         <div className="full computed">
-          Automatically initiate game rest when the game is either won or lost.
+          Automatically initiates game reset when the game is either won or
+          lost.
         </div>
       </div>
 
       <div className="game-controls panel">
         <div className="title-bar">Board Automation</div>
+
+        <div className="full computed">Nothing here for now...</div>
       </div>
     </div>
   );
