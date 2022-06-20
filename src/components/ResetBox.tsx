@@ -37,6 +37,9 @@ export default function ResetBox() {
 
   const waitTime = resetTimeFormula(context);
   const remainingTime = resetSpeed.extra.remainingTime;
+  if (!isResetting && remainingTime > 0) {
+    startReset(undefined, true);
+  }
 
   if (
     isResetting &&
@@ -46,15 +49,16 @@ export default function ResetBox() {
     setMessageTime(messageTime + 2);
   }
 
-  function startReset(event: MouseEvent) {
-    event.preventDefault();
+  function startReset(event?: MouseEvent, auto = false) {
+    event?.preventDefault();
+
     if (!isResetting) {
       setResetting(true);
       setMessageTime(0);
       tickTimer(
         resetSpeed,
         { kind: "remainingTime", value: waitTime },
-        (_, timer) => timer === 0 && resetBoard(),
+        (_, timer) => timer === 0 && resetBoard(auto),
       );
     }
   }

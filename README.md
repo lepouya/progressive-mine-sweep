@@ -32,12 +32,12 @@ Perhaps I could do prestige/reset options once this is ready
 
 - ~~Task orchestration~~
 - ~~Double tap to reveal neighbors~~
-- Auto reset puzzle + interval
-- ~~Auto fill blank squares + upgrade interval~~
-- Auto guess when stuck? + interval
-- Auto hint + improvements + interval
-- Auto mine + improvements? + interval
-- Auto reason + improvements + interval
+- ~~Auto reset puzzle~~
+- ~~Auto fill blank squares~~
+- Auto flag
+- Auto hint
+- Auto reason
+- Auto guess when stuck?
 - Offline progress summary
 - Tutorial for new automations
 

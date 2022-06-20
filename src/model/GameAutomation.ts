@@ -1,9 +1,9 @@
 import { shuffle } from "../utils/shuffle";
 import { Context } from "./Context";
-import { revealNeighbors } from "./GameFormulas";
+import { resetTimeFormula, revealNeighbors } from "./GameFormulas";
 import { Resource } from "./Resource";
 
-export function automatorShouldTick(res: Resource<any, any>) {
+export function shouldTick(res: Resource<any, any>) {
   return function (dt: number, src?: string) {
     return (
       src === "tick" &&
@@ -14,7 +14,7 @@ export function automatorShouldTick(res: Resource<any, any>) {
   };
 }
 
-export function autoRevealNeighborsTask(context: Context) {
+export function revealNeighborsTask(context: Context) {
   const res = context.resourceManager.resources.autoRevealNeighbors;
   if (
     res.count <= 0 ||
@@ -47,4 +47,20 @@ export function autoRevealNeighborsTask(context: Context) {
   );
 
   return revelaed > 0;
+}
+
+export function resetGameTask(context: Context) {
+  const res = context.resourceManager.resources.autoResetGame;
+  if (
+    res.count <= 0 ||
+    !(res.unlocked ?? true) ||
+    context.board.state === "active" ||
+    context.board.state === "inactive"
+  ) {
+    return null;
+  }
+
+  context.resourceManager.resources.resetSpeed.extra.remainingTime =
+    resetTimeFormula(context);
+  return false;
 }

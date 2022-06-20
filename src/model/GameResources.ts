@@ -5,7 +5,7 @@ import resources_game from "../data/resources_game.json";
 import resources_time from "../data/resources_time.json";
 import tickTimer from "../utils/tickTimer";
 import { Context } from "./Context";
-import { automatorShouldTick, autoRevealNeighborsTask } from "./GameAutomation";
+import * as Auto from "./GameAutomation";
 import { Resource } from "./Resource";
 import { ResourceManager } from "./ResourceManager";
 
@@ -68,8 +68,13 @@ export function initGameResources(
 
   const autoRevealNeighbors = rm.get("autoRevealNeighbors");
   autoRevealNeighbors.cost = (n) => [{ resource: "automation", count: n * 2 }];
-  autoRevealNeighbors.shouldTick = automatorShouldTick(autoRevealNeighbors);
-  autoRevealNeighbors.tick = () => autoRevealNeighborsTask(rm.context);
+  autoRevealNeighbors.shouldTick = Auto.shouldTick(autoRevealNeighbors);
+  autoRevealNeighbors.tick = () => Auto.revealNeighborsTask(rm.context);
+
+  const autoResetGame = rm.get("autoResetGame");
+  autoResetGame.cost = (n) => [{ resource: "automation", count: n * 2 }];
+  autoResetGame.shouldTick = Auto.shouldTick(autoResetGame);
+  autoResetGame.tick = () => Auto.resetGameTask(rm.context);
 
   return rm;
 }

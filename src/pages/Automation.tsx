@@ -186,7 +186,6 @@ export default function Automation() {
           <BuyButton
             resource={autoResetGame}
             allowUnlocking={true}
-            enabled={false}
             prefix={!autoResetGame.unlocked ? "Unlock" : "Additional"}
           />
         </div>
