@@ -81,5 +81,15 @@ export function initGameResources(
   autoFlagMines.shouldTick = Auto.shouldTick(autoFlagMines);
   autoFlagMines.tick = () => Auto.flagMinesTask(rm.context);
 
+  const autoRevealHints = rm.get("autoRevealHints");
+  autoRevealHints.cost = (n) => [{ resource: "automation", count: n * 2 }];
+  autoRevealHints.shouldTick = Auto.shouldTick(autoRevealHints);
+  autoRevealHints.tick = () => Auto.revealHintsTask(rm.context);
+
+  const autoPurchaseHints = rm.get("autoPurchaseHints");
+  autoPurchaseHints.cost = (n) => [{ resource: "automation", count: n * 2 }];
+  autoPurchaseHints.shouldTick = Auto.shouldTick(autoPurchaseHints);
+  autoPurchaseHints.tick = () => Auto.purchaseHintsTask(rm.context);
+
   return rm;
 }

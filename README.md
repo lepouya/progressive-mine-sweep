@@ -35,7 +35,7 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Auto reset puzzle~~
 - ~~Auto fill blank squares~~
 - ~~Auto flag~~
-- Auto hint
+- ~~Auto hint~~
 - Auto reason
 - Auto guess when stuck?
 - Offline progress summary
@@ -60,3 +60,6 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource selling
 - Resource minimums
 - Rate values might be wrong when there's no tick method
+- Enabling / disabling automation tasks
+- Auto wins don't count?
+- Switching tabs in middle of reset would restart the counter

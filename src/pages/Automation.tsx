@@ -48,15 +48,18 @@ export default function Automation() {
             prefix={!autoRevealNeighbors.unlocked ? "Unlock" : "Additional"}
           />
         </div>
+        <div className="full computed">
+          Automatically reveals the neighboring hidden squares if all the mines
+          around it have been flagged.
+        </div>
 
         <div className="half">
           <ResourceRender
             resource={revealNeighbors}
             showChrome={true}
+            showLocked={true}
             infix=""
-            placeholder="Nothing happens"
-            suffix="per run"
-            className="value-first"
+            suffix={`time${revealNeighbors.count === 1 ? "" : "s"} per run`}
           />
         </div>
         <div className="right half">
@@ -72,11 +75,6 @@ export default function Automation() {
                 : "Maxed out!"
             }
           />
-        </div>
-
-        <div className="full computed">
-          Automatically reveals the neighboring hidden squares if all the mines
-          around it have been flagged.
         </div>
 
         <hr className="separator" />
@@ -121,9 +119,11 @@ export default function Automation() {
           <BuyButton
             resource={autoRevealHints}
             allowUnlocking={true}
-            enabled={false}
             prefix={!autoRevealHints.unlocked ? "Unlock" : "Additional"}
           />
+        </div>
+        <div className="full computed">
+          Automatically reveals any purchased hints.
         </div>
 
         <div className="half">
@@ -139,12 +139,15 @@ export default function Automation() {
           <BuyButton
             resource={autoPurchaseHints}
             allowUnlocking={true}
-            enabled={false}
             prefix={!autoPurchaseHints.unlocked ? "Unlock" : "Additional"}
           />
         </div>
+        <div className="full computed">
+          Automatically makes a hint purchase when there are no other actions
+          available.
+        </div>
 
-        <div className="quarter">Number of hints per run:</div>
+        <div className="quarter">Hints per run:</div>
         <div className="quarter">
           <ResourceRender
             resource={hintsCount}
@@ -191,6 +194,10 @@ export default function Automation() {
             prefix={!autoResetGame.unlocked ? "Unlock" : "Additional"}
           />
         </div>
+        <div className="full computed">
+          Automatically initiates game reset when the game is either won or
+          lost.
+        </div>
 
         <div className="quarter">Reset Speed:</div>
         <div className="quarter">
@@ -204,11 +211,6 @@ export default function Automation() {
         </div>
         <div className="right half">
           <BuyButton resource={resetSpeed} prefix="Speed up" maxCount={100} />
-        </div>
-
-        <div className="full computed">
-          Automatically initiates game reset when the game is either won or
-          lost.
         </div>
       </div>
 

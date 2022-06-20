@@ -133,8 +133,8 @@ export function stateChanged(
   target: "board" | "cell",
   state: string,
   automatic: boolean,
+  factor = 1,
 ) {
-  const factor = 1;
   const multiplier = scoreMultiplier(context);
   const resName = _targetStates[target + ":" + state];
   let res = context.resourceManager.resources[resName ?? ""];
