@@ -9,17 +9,13 @@ import ToggleButton from "../components/ToggleButton";
 export default function Automation() {
   const {
     resources: {
-      rows,
-      cols,
       revealNeighbors,
       autoRevealNeighbors,
       autoFlagMines,
-      hintQuality,
-      hintsCount,
       autoRevealHints,
       autoPurchaseHints,
       autoResetGame,
-      resetSpeed,
+      autoBoardUpgrade,
     },
   } = useGameContext();
 
@@ -67,30 +63,6 @@ export default function Automation() {
         <div className="full computed">
           Automatically reveals the neighboring hidden squares if all the mines
           around it have been flagged.
-        </div>
-
-        <div className="half">
-          <ResourceRender
-            resource={revealNeighbors}
-            showChrome={true}
-            showLocked={true}
-            infix=""
-            suffix={`time${revealNeighbors.count === 1 ? "" : "s"} per run`}
-          />
-        </div>
-        <div className="right half">
-          <BuyButton
-            resource={revealNeighbors}
-            allowUnlocking={true}
-            enabled={cols.count > 3 && rows.count > 3}
-            prefix={
-              !revealNeighbors.unlocked
-                ? "Unlock"
-                : revealNeighbors.count < (revealNeighbors.maxCount ?? Infinity)
-                ? "Additional"
-                : "Maxed out!"
-            }
-          />
         </div>
 
         <hr className="separator" />
@@ -161,6 +133,8 @@ export default function Automation() {
           Automatically reveals any purchased hints.
         </div>
 
+        <hr className="separator" />
+
         <div className="half">
           <ResourceRender
             resource={autoPurchaseHints}
@@ -190,33 +164,6 @@ export default function Automation() {
         <div className="full computed">
           Automatically makes a hint purchase when there are no other actions
           available.
-        </div>
-
-        <div className="quarter">Hints per run:</div>
-        <div className="quarter">
-          <ResourceRender
-            resource={hintsCount}
-            showChrome={true}
-            infix=""
-            className="value-first"
-          />
-        </div>
-        <div className="right half">
-          <BuyButton resource={hintsCount} prefix="Improve" />
-        </div>
-
-        <div className="quarter">Hint Quality:</div>
-        <div className="quarter">
-          <ResourceRender
-            resource={hintQuality}
-            showChrome={true}
-            showName={false}
-            infix=""
-            className="value-first"
-          />
-        </div>
-        <div className="right half">
-          <BuyButton resource={hintQuality} prefix="Improve" maxCount={100} />
         </div>
       </div>
 
@@ -253,26 +200,41 @@ export default function Automation() {
           Automatically initiates game reset when the game is either won or
           lost.
         </div>
-
-        <div className="quarter">Reset Speed:</div>
-        <div className="quarter">
-          <ResourceRender
-            resource={resetSpeed}
-            showChrome={true}
-            showName={false}
-            infix=""
-            className="value-first"
-          />
-        </div>
-        <div className="right half">
-          <BuyButton resource={resetSpeed} prefix="Speed up" maxCount={100} />
-        </div>
       </div>
 
       <div className="game-controls panel">
         <div className="title-bar">Board Automation</div>
 
-        <div className="full computed">Nothing here for now...</div>
+        <div className="half">
+          <ResourceRender
+            resource={autoBoardUpgrade}
+            showChrome={true}
+            showLocked={true}
+            infix=""
+            suffix={`time${autoBoardUpgrade.count === 1 ? "" : "s"} a minute`}
+          />
+        </div>
+        <div className="right half">
+          <BuyButton
+            resource={autoBoardUpgrade}
+            allowUnlocking={true}
+            prefix={!autoBoardUpgrade.unlocked ? "Unlock" : "Additional"}
+          />
+        </div>
+        <div className="full right">
+          Enabled:
+          <ToggleButton
+            checked={autoBoardUpgrade.unlocked && !autoBoardUpgrade.disabled}
+            onChange={(checked) => (autoBoardUpgrade.disabled = !checked)}
+            checkedContents={<Icon icon="robot" />}
+            unCheckedContents={<Icon icon="robot-off" />}
+            enabled={autoBoardUpgrade.unlocked && autoBoardUpgrade.count > 0}
+          />
+        </div>
+        <div className="full computed">
+          Automatically purchases game width and game height expansions if
+          affordable.
+        </div>
       </div>
     </div>
   );

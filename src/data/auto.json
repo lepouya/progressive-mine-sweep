@@ -3,30 +3,38 @@
     "name": "autoRevealNeighbors",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: n*2"
+    "cost": "automation: Math.floor((n+1)**1.5)"
   },
   {
     "name": "autoFlagMines",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: n*2"
+    "cost": "automation: Math.floor((n+1)**1.5)"
   },
   {
     "name": "autoRevealHints",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: n*2"
+    "cost": "automation: Math.floor((n+1)**1.5)"
   },
   {
     "name": "autoPurchaseHints",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: n*2"
+    "cost": "automation: (n+1)**2"
   },
   {
     "name": "autoResetGame",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: n*2"
+    "cost": "automation: Math.floor((n+1)**1.5)"
+  },
+  {
+    "name": "autoBoardUpgrade",
+    "singularName": "Auto Expand Board Dimensions",
+    "pluralName": "Auto Expand Board Dimensions",
+    "unlocked": false,
+    "count": 0,
+    "cost": "automation: (n+1)**2"
   }
 ]

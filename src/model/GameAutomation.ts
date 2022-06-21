@@ -1,7 +1,7 @@
 import { shuffle } from "../utils/shuffle";
 import tickTimer from "../utils/tickTimer";
 import { genBoard, genHints } from "./Board";
-import { actOnCell } from "./Cell";
+import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
 import {
   hintFormula,
@@ -24,6 +24,14 @@ export function shouldTick(res: Resource<any, any>) {
   };
 }
 
+function canRevealNeighbors(cell: Cell) {
+  return (
+    cell.state === "revealed" &&
+    cell.contents === "clear" &&
+    cell.neighborContents.mine === cell.neighborStates.flagged &&
+    cell.neighborStates.hidden > 0
+  );
+}
 export function revealNeighborsTask(context: Context) {
   const res = context.resourceManager.resources.autoRevealNeighbors;
   if (
@@ -34,15 +42,7 @@ export function revealNeighborsTask(context: Context) {
     return null;
   }
 
-  const candidates = context.board.cells
-    .flat()
-    .filter(
-      (cell) =>
-        cell.state === "revealed" &&
-        cell.contents === "clear" &&
-        cell.neighborContents.mine === cell.neighborStates.flagged &&
-        cell.neighborStates.hidden > 0,
-    );
+  const candidates = context.board.cells.flat().filter(canRevealNeighbors);
   if (candidates.length === 0) {
     return false;
   }
@@ -95,6 +95,16 @@ export function resetGameTask(context: Context) {
   return false;
 }
 
+function canFlagMines(cell: Cell) {
+  return (
+    cell.state === "revealed" &&
+    cell.contents === "clear" &&
+    cell.neighborContents.mine ===
+      cell.neighborStates.flagged + cell.neighborStates.hidden &&
+    cell.neighborContents.clear === cell.neighborStates.revealed &&
+    cell.neighborStates.hidden > 0
+  );
+}
 export function flagMinesTask(context: Context) {
   const res = context.resourceManager.resources.autoFlagMines;
   if (
@@ -105,17 +115,7 @@ export function flagMinesTask(context: Context) {
     return null;
   }
 
-  const candidates = context.board.cells
-    .flat()
-    .filter(
-      (cell) =>
-        cell.state === "revealed" &&
-        cell.contents === "clear" &&
-        cell.neighborContents.mine ===
-          cell.neighborStates.flagged + cell.neighborStates.hidden &&
-        cell.neighborContents.clear === cell.neighborStates.revealed &&
-        cell.neighborStates.hidden > 0,
-    );
+  const candidates = context.board.cells.flat().filter(canFlagMines);
   if (candidates.length === 0) {
     return false;
   }
@@ -140,6 +140,9 @@ export function flagMinesTask(context: Context) {
   return true;
 }
 
+function canRevealHints(cell: Cell) {
+  return cell.state === "hinted" && cell.contents === "clear";
+}
 export function revealHintsTask(context: Context) {
   const res = context.resourceManager.resources.autoRevealHints;
   if (
@@ -150,9 +153,7 @@ export function revealHintsTask(context: Context) {
     return null;
   }
 
-  const candidates = context.board.cells
-    .flat()
-    .filter((cell) => cell.state === "hinted" && cell.contents === "clear");
+  const candidates = context.board.cells.flat().filter(canRevealHints);
   if (candidates.length === 0) {
     return false;
   }
@@ -179,17 +180,7 @@ export function purchaseHintsTask(context: Context) {
     .flat()
     .filter(
       (cell) =>
-        (cell.state === "hinted" && cell.contents === "clear") ||
-        (cell.state === "revealed" &&
-          cell.contents === "clear" &&
-          cell.neighborContents.mine === cell.neighborStates.flagged &&
-          cell.neighborStates.hidden > 0) ||
-        (cell.state === "revealed" &&
-          cell.contents === "clear" &&
-          cell.neighborContents.mine ===
-            cell.neighborStates.flagged + cell.neighborStates.hidden &&
-          cell.neighborContents.clear === cell.neighborStates.revealed &&
-          cell.neighborStates.hidden > 0),
+        canRevealHints(cell) || canRevealNeighbors(cell) || canFlagMines(cell),
     );
   if (candidates.length > 0) {
     return false;
@@ -211,4 +202,13 @@ export function purchaseHintsTask(context: Context) {
   context.resourceManager.resources.hints.count -= purchase.count;
 
   return true;
+}
+
+export function expandBoardDims(context: Context) {
+  const res = context.resourceManager.resources.autoBoardUpgrade;
+  if (res.count <= 0 || !(res.unlocked ?? true)) {
+    return null;
+  }
+
+  return false;
 }

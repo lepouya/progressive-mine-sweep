@@ -59,6 +59,7 @@ export function initGameResources(
   rm.get("autoFlagMines").tick = () => Auto.flagMinesTask(rm.context);
   rm.get("autoRevealHints").tick = () => Auto.revealHintsTask(rm.context);
   rm.get("autoPurchaseHints").tick = () => Auto.purchaseHintsTask(rm.context);
+  rm.get("autoBoardUpgrade").tick = () => Auto.expandBoardDims(rm.context);
 
   return rm;
 }
