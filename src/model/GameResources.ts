@@ -7,7 +7,7 @@ import tickTimer from "../utils/tickTimer";
 import { Context } from "./Context";
 import * as Auto from "./GameAutomation";
 import { Resource } from "./Resource";
-import { ResourceManager } from "./ResourceManager";
+import { compileResourceCost, ResourceManager } from "./ResourceManager";
 
 const loadResources = [
   resources_time,
@@ -18,36 +18,19 @@ const loadResources = [
 ];
 
 export function initGameResources(
-  rm: ResourceManager<Context, boolean>,
-): ResourceManager<Context, boolean> {
-  (loadResources as Partial<Resource<Context, boolean>>[][])
+  rm: ResourceManager<Context<boolean>, boolean>,
+): ResourceManager<Context<boolean>, boolean> {
+  const resources = (
+    loadResources as Partial<Resource<Context<boolean>, boolean>>[][]
+  )
     .flat()
-    .forEach((props) => rm.upsert(props));
+    .map((props) => rm.upsert(props));
 
-  rm.get("rows").cost = (n) => [{ resource: "cells", count: n ** 2 }];
-  rm.get("cols").cost = (n) => [{ resource: "cells", count: n ** 2 }];
-  rm.get("hints").cost = () => [{ resource: "wins", count: 1 }];
-  rm.get("difficulty").cost = (n) => [
-    { resource: "flags", count: Math.floor(n / 2) },
-  ];
-  rm.get("hintQuality").cost = (n) => [
-    { resource: "wins", count: 1 },
-    { resource: "cells", count: n - 1 },
-  ];
-  rm.get("hintsCount").cost = (n) => [
-    { resource: "wins", count: (n + 2) ** 2 },
-    { resource: "cells", count: 2 ** (n + 2) },
-  ];
-  rm.get("resetSpeed").cost = (n) => [
-    { resource: "resets", count: 1 },
-    { resource: "cells", count: n },
-  ];
-
-  rm.get("revealNeighbors").cost = (n) => [
-    { resource: "cols", count: 1 },
-    { resource: "rows", count: 1 },
-    { resource: "wins", count: n + 1 },
-  ];
+  resources.forEach((res) => {
+    if (typeof res.cost === "string") {
+      res.cost = compileResourceCost(rm, res.cost);
+    }
+  });
 
   tickTimer(rm.get("resetSpeed"), { kind: "remainingTime" });
   tickTimer(rm.get("totalTime"), { direction: 1 });
@@ -66,30 +49,16 @@ export function initGameResources(
     resetStreakSource: "tick",
   });
 
-  const autoRevealNeighbors = rm.get("autoRevealNeighbors");
-  autoRevealNeighbors.cost = (n) => [{ resource: "automation", count: n * 2 }];
-  autoRevealNeighbors.shouldTick = Auto.shouldTick(autoRevealNeighbors);
-  autoRevealNeighbors.tick = () => Auto.revealNeighborsTask(rm.context);
+  tasks_auto
+    .map((res) => rm.get((res as any).name as string))
+    .map((res) => (res.shouldTick = Auto.shouldTick(res)));
 
-  const autoResetGame = rm.get("autoResetGame");
-  autoResetGame.cost = (n) => [{ resource: "automation", count: n * 2 }];
-  autoResetGame.shouldTick = Auto.shouldTick(autoResetGame);
-  autoResetGame.tick = () => Auto.resetGameTask(rm.context);
-
-  const autoFlagMines = rm.get("autoFlagMines");
-  autoFlagMines.cost = (n) => [{ resource: "automation", count: n * 2 }];
-  autoFlagMines.shouldTick = Auto.shouldTick(autoFlagMines);
-  autoFlagMines.tick = () => Auto.flagMinesTask(rm.context);
-
-  const autoRevealHints = rm.get("autoRevealHints");
-  autoRevealHints.cost = (n) => [{ resource: "automation", count: n * 2 }];
-  autoRevealHints.shouldTick = Auto.shouldTick(autoRevealHints);
-  autoRevealHints.tick = () => Auto.revealHintsTask(rm.context);
-
-  const autoPurchaseHints = rm.get("autoPurchaseHints");
-  autoPurchaseHints.cost = (n) => [{ resource: "automation", count: n * 2 }];
-  autoPurchaseHints.shouldTick = Auto.shouldTick(autoPurchaseHints);
-  autoPurchaseHints.tick = () => Auto.purchaseHintsTask(rm.context);
+  rm.get("autoRevealNeighbors").tick = () =>
+    Auto.revealNeighborsTask(rm.context);
+  rm.get("autoResetGame").tick = () => Auto.resetGameTask(rm.context);
+  rm.get("autoFlagMines").tick = () => Auto.flagMinesTask(rm.context);
+  rm.get("autoRevealHints").tick = () => Auto.revealHintsTask(rm.context);
+  rm.get("autoPurchaseHints").tick = () => Auto.purchaseHintsTask(rm.context);
 
   return rm;
 }

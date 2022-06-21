@@ -61,4 +61,3 @@ Perhaps I could do prestige/reset options once this is ready
 - Rate values might be wrong when there's no tick method
 - Switching tabs in middle of reset would restart the counter
 - Reset needs minefield tab to have focus
-- Figure out a way to load cost formulas from json

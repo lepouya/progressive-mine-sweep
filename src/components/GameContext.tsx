@@ -2,10 +2,11 @@ import { createContext, FC, PropsWithChildren, useContext } from "react";
 
 import { emptyContext, wrapContext } from "../model/Context";
 
-const GameReactContext = createContext(emptyContext<boolean>());
+const _context = emptyContext<boolean>();
+const GameReactContext = createContext(_context);
 
 export const GameContextProvider: FC<PropsWithChildren<{}>> = (props) => (
-  <GameReactContext.Provider value={emptyContext()}>
+  <GameReactContext.Provider value={_context}>
     {props.children}
   </GameReactContext.Provider>
 );

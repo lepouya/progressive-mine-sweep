@@ -124,6 +124,37 @@ function upsert<Context, Result>(
   return res;
 }
 
+export function compileResourceCost<Context, Result>(
+  rm: ResourceManager<Context, Result>,
+  cost: string,
+): (n: number) => ResourceCount<Context, Result>[] {
+  return eval(
+    "(n) => [" +
+      (cost as string)
+        .replace(/\s/gim, "")
+        .split(/[;,]/gim)
+        .map((cost) => {
+          const parts = cost
+            .split(/:/gim, 2)
+            .map((s) =>
+              s.replace(/\b\w+\b/gim, (m) =>
+                rm.resources[m] ? `rm.resources.${m}` : m,
+              ),
+            );
+          const rc = [
+            `resource: ${parts[0]}`,
+            `count: ${parts[parts.length - 1]}`,
+          ];
+          if (parts.length > 2) {
+            rc.push(`kind: ${parts[1]}`);
+          }
+          return `{${rc.join(", ")}}`;
+        })
+        .join(", ") +
+      "];",
+  );
+}
+
 function update<Context, Result>(
   rm: ResourceManager<Context, Result>,
   now: number,

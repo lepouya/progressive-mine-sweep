@@ -2,26 +2,31 @@
   {
     "name": "autoRevealNeighbors",
     "unlocked": false,
-    "count": 0
+    "count": 0,
+    "cost": "automation: n*2"
   },
   {
     "name": "autoFlagMines",
     "unlocked": false,
-    "count": 0
+    "count": 0,
+    "cost": "automation: n*2"
   },
   {
     "name": "autoRevealHints",
     "unlocked": false,
-    "count": 0
+    "count": 0,
+    "cost": "automation: n*2"
   },
   {
     "name": "autoPurchaseHints",
     "unlocked": false,
-    "count": 0
+    "count": 0,
+    "cost": "automation: n*2"
   },
   {
     "name": "autoResetGame",
     "unlocked": false,
-    "count": 0
+    "count": 0,
+    "cost": "automation: n*2"
   }
 ]
