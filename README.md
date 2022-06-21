@@ -28,19 +28,11 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### ~~M3: Tutorial and themes~~
 
-### M4: Automation
-
-- ~~Task orchestration~~
-- ~~Double tap to reveal neighbors~~
-- ~~Auto reset puzzle~~
-- ~~Auto fill blank squares~~
-- ~~Auto flag~~
-- ~~Auto hint~~
-- ~~Tutorial for new automations~~
-- ~~Auto buy board size upgrades~~
+### ~~M4: Automation~~
 
 ### M5: Achievements
 
+- Notifications in corner
 - Add achievement tracking
 - Some basic achievements to complete
 - Bonuses for achivements
@@ -51,6 +43,9 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Brainstorm on what can be done here
 - Offline progress summary
+- Mine shields
+- Score multipliers and cost reducers
+- Automation speed up
 
 ### Bugs, Issues, and Ideas
 
