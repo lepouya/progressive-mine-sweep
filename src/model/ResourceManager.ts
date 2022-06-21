@@ -319,7 +319,7 @@ function canAfford<Context, Result>(
   cost: ResourceCount<Context, Result>[],
 ): boolean {
   return resolveAll(rm, combineResources(cost)).every((rc) =>
-    checkHasResources(rc.resource, [rc]),
+    checkHasResources(rc.resource, [rc], true),
   );
 }
 

@@ -4,6 +4,7 @@
     "singularName": "row",
     "icon": "arrows-vertical",
     "count": 3,
+    "minCount": 3,
     "cost": "cells: n**2"
   },
   {
@@ -11,6 +12,7 @@
     "singularName": "col",
     "icon": "arrows-horizontal",
     "count": 3,
+    "minCount": 3,
     "cost": "cells: n**2"
   },
   {
@@ -18,6 +20,7 @@
     "icon": "adjustments-horizontal",
     "display": "percentage",
     "count": 15,
+    "minCount": 1,
     "cost": "flags: Math.floor(n/2)"
   },
   {

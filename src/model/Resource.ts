@@ -1,3 +1,4 @@
+import clamp from "../utils/clamp";
 import { setSaveProperties } from "../utils/store";
 
 export type ResourceCount<Context, Result> = {
@@ -20,6 +21,7 @@ export type Resource<Context, Result> = {
 
   count: number;
   maxCount?: number;
+  minCount?: number;
   extra: Record<string, number>;
 
   value: (kind?: string) => number;
@@ -140,6 +142,7 @@ export function getResourceCounts<Context, Result>(
 export function checkHasResources<Context, Result>(
   res: Resource<Context, Result>,
   rcs: ResourceCount<Context, Result>[],
+  toSpend = false,
 ): boolean {
   return (
     (res.unlocked ?? true) &&
@@ -150,7 +153,11 @@ export function checkHasResources<Context, Result>(
           res.name ===
           (typeof resource === "string" ? resource : resource.name),
       ),
-    ).filter(({ count }) => count < 0).length === 0
+    ).filter(
+      ({ resource, count }) =>
+        count <
+        (toSpend && typeof resource !== "string" ? resource.minCount ?? 0 : 0),
+    ).length === 0
   );
 }
 
@@ -168,10 +175,11 @@ export function applyToResource<Context, Result>(
       )
       .map(({ count, kind }) => {
         const prev = kind ? res.extra[kind] ?? 0 : res.count;
-        let next = Math.max(0, prev + count);
-        if (!kind && res.maxCount && next > res.maxCount) {
-          next = res.maxCount;
-        }
+        const next = clamp(
+          prev + count,
+          !kind ? res.minCount ?? 0 : 0,
+          !kind ? res.maxCount ?? Infinity : Infinity,
+        );
 
         if (kind) {
           res.extra[kind] = next;

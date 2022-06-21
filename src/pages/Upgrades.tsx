@@ -151,7 +151,6 @@ export default function Upgrades() {
           <BuyButton
             resource={revealNeighbors}
             allowUnlocking={true}
-            enabled={cols.count > 3 && rows.count > 3}
             prefix={
               !revealNeighbors.unlocked
                 ? "Unlock"
