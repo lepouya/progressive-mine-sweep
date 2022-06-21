@@ -3,14 +3,7 @@ import tickTimer from "../utils/tickTimer";
 import { genBoard, genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
-import {
-  hintFormula,
-  numMinesFormula,
-  remainingHintsFormula,
-  resetTimeFormula,
-  revealNeighbors,
-  stateChanged,
-} from "./GameFormulas";
+import * as F from "./GameFormulas";
 import { Resource } from "./Resource";
 
 export function shouldTick(res: Resource<any, any>) {
@@ -19,6 +12,7 @@ export function shouldTick(res: Resource<any, any>) {
       src === "tick" &&
       res.count > 0 &&
       (res.unlocked ?? true) &&
+      !res.disabled &&
       dt >= 60.0 / res.count
     );
   };
@@ -37,6 +31,7 @@ export function revealNeighborsTask(context: Context) {
   if (
     res.count <= 0 ||
     !(res.unlocked ?? true) ||
+    res.disabled ||
     context.board.state !== "active"
   ) {
     return null;
@@ -47,7 +42,7 @@ export function revealNeighborsTask(context: Context) {
     return false;
   }
 
-  const revelaed = revealNeighbors(
+  const revelaed = F.revealNeighbors(
     context,
     context.board,
     shuffle(candidates)[0],
@@ -64,6 +59,7 @@ export function resetGameTask(context: Context) {
   if (
     resources.autoResetGame.count <= 0 ||
     !(resources.autoResetGame.unlocked ?? true) ||
+    resources.autoResetGame.disabled ||
     context.board.state === "active" ||
     context.board.state === "inactive" ||
     resources.resetSpeed.extra.remainingTime > 0
@@ -75,11 +71,11 @@ export function resetGameTask(context: Context) {
     resources.resetSpeed,
     {
       kind: "remainingTime",
-      value: resetTimeFormula(context),
+      value: F.resetTimeFormula(context),
     },
     function (_, timer) {
       if (timer === 0) {
-        const m = numMinesFormula(context);
+        const m = F.numMinesFormula(context);
         context.settings.tapMode = "reveal";
         context.board = genBoard(
           resources.rows.value(),
@@ -87,7 +83,7 @@ export function resetGameTask(context: Context) {
           Math.floor(m),
           Math.ceil(m),
         );
-        stateChanged(context, "board", "active", true);
+        F.stateChanged(context, "board", "active", true);
       }
     },
   );
@@ -110,6 +106,7 @@ export function flagMinesTask(context: Context) {
   if (
     res.count <= 0 ||
     !(res.unlocked ?? true) ||
+    res.disabled ||
     context.board.state !== "active"
   ) {
     return null;
@@ -135,7 +132,7 @@ export function flagMinesTask(context: Context) {
 
   const neighbor = shuffle(choices)[0];
   actOnCell(neighbor, "flag");
-  stateChanged(context, "cell", neighbor.state, true);
+  F.stateChanged(context, "cell", neighbor.state, true);
 
   return true;
 }
@@ -148,6 +145,7 @@ export function revealHintsTask(context: Context) {
   if (
     res.count <= 0 ||
     !(res.unlocked ?? true) ||
+    res.disabled ||
     context.board.state !== "active"
   ) {
     return null;
@@ -160,7 +158,7 @@ export function revealHintsTask(context: Context) {
 
   const cell = shuffle(candidates)[0];
   actOnCell(cell, "reveal");
-  stateChanged(context, "cell", cell.state, true);
+  F.stateChanged(context, "cell", cell.state, true);
 
   return true;
 }
@@ -170,8 +168,9 @@ export function purchaseHintsTask(context: Context) {
   if (
     res.count <= 0 ||
     !(res.unlocked ?? true) ||
+    res.disabled ||
     context.board.state !== "active" ||
-    remainingHintsFormula(context) === 0
+    F.remainingHintsFormula(context) === 0
   ) {
     return null;
   }
@@ -196,19 +195,30 @@ export function purchaseHintsTask(context: Context) {
     context.resourceManager.resources.hintsCount.value(),
     0,
     8,
-    hintFormula(context) * purchase.count,
+    F.hintFormula(context) * purchase.count,
   );
-  stateChanged(context, "cell", "hinted", true, numHints);
+  F.stateChanged(context, "cell", "hinted", true, numHints);
   context.resourceManager.resources.hints.count -= purchase.count;
 
   return true;
 }
 
 export function expandBoardDims(context: Context) {
-  const res = context.resourceManager.resources.autoBoardUpgrade;
-  if (res.count <= 0 || !(res.unlocked ?? true)) {
+  const ress = context.resourceManager.resources;
+  if (
+    ress.autoBoardUpgrade.count <= 0 ||
+    !(ress.autoBoardUpgrade.unlocked ?? true) ||
+    ress.autoBoardUpgrade.disabled
+  ) {
     return null;
   }
 
-  return false;
+  const res = ress.rows.count < ress.cols.count ? ress.rows : ress.cols;
+  const purchase = res.buy();
+  if (purchase.count === 0) {
+    return false;
+  }
+
+  F.countActions(context, res.name, true);
+  return true;
 }

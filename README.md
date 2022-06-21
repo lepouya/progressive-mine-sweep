@@ -37,7 +37,7 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Auto flag~~
 - ~~Auto hint~~
 - ~~Tutorial for new automations~~
-- Auto buy board size upgrades
+- ~~Auto buy board size upgrades~~
 
 ### M5: Achievements
 
