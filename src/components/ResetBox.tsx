@@ -58,7 +58,10 @@ export default function ResetBox() {
       setMessageTime(0);
       tickTimer(
         resetSpeed,
-        { kind: "remainingTime", value: waitTime },
+        {
+          kind: "remainingTime",
+          value: remainingTime == 0 ? waitTime : remainingTime,
+        },
         (_, timer) => timer === 0 && resetBoard(auto),
       );
     }
