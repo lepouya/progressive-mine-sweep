@@ -59,4 +59,3 @@ Perhaps I could do prestige/reset options once this is ready
 - Resource selling
 - Resource minimums
 - Rate values might be wrong when there's no tick method
-- Reset needs minefield tab to have focus

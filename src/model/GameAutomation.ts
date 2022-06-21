@@ -1,9 +1,11 @@
 import { shuffle } from "../utils/shuffle";
-import { genHints } from "./Board";
+import tickTimer from "../utils/tickTimer";
+import { genBoard, genHints } from "./Board";
 import { actOnCell } from "./Cell";
 import { Context } from "./Context";
 import {
   hintFormula,
+  numMinesFormula,
   remainingHintsFormula,
   resetTimeFormula,
   revealNeighbors,
@@ -58,19 +60,38 @@ export function revealNeighborsTask(context: Context) {
 }
 
 export function resetGameTask(context: Context) {
-  const res = context.resourceManager.resources.autoResetGame;
-  const resetSpeed = context.resourceManager.resources.resetSpeed;
+  const resources = context.resourceManager.resources;
   if (
-    res.count <= 0 ||
-    !(res.unlocked ?? true) ||
+    resources.autoResetGame.count <= 0 ||
+    !(resources.autoResetGame.unlocked ?? true) ||
     context.board.state === "active" ||
     context.board.state === "inactive" ||
-    resetSpeed.extra.remainingTime > 0
+    resources.resetSpeed.extra.remainingTime > 0
   ) {
     return null;
   }
 
-  resetSpeed.extra.remainingTime = resetTimeFormula(context);
+  tickTimer(
+    resources.resetSpeed,
+    {
+      kind: "remainingTime",
+      value: resetTimeFormula(context),
+    },
+    function (_, timer) {
+      if (timer === 0) {
+        const m = numMinesFormula(context);
+        context.settings.tapMode = "reveal";
+        context.board = genBoard(
+          resources.rows.value(),
+          resources.cols.value(),
+          Math.floor(m),
+          Math.ceil(m),
+        );
+        stateChanged(context, "board", "active", true);
+      }
+    },
+  );
+
   return false;
 }
 
