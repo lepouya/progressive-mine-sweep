@@ -34,6 +34,7 @@ export type ResourceRenderProps = {
   showGrouping?: boolean;
   showZeroRates?: boolean;
   showRatePercentages?: boolean;
+  showRateHistory?: boolean;
   showCapitalized?: boolean;
   showChrome?: boolean;
 
@@ -87,6 +88,7 @@ export default function ResourceRender({
   showGrouping = display === "number",
   showZeroRates = false,
   showRatePercentages = display === "number",
+  showRateHistory = false,
   showCapitalized = true,
   showChrome = false,
 
@@ -280,29 +282,43 @@ export default function ResourceRender({
     (resource.rate.lastCountUpdate ?? 0) > 0 &&
     (showZeroRates || resource.rate.count !== 0)
   ) {
-    addValueDiv(
-      resource.rate.count /
-        (showRatePercentages && resource.rate.count > 0
-          ? value ?? (resource.value ? resource.value() : resource.count) ?? 0
-          : 1.0),
-      "rate",
-      {
-        disp:
-          showRatePercentages && resource.rate.count > 0
-            ? "percentage"
-            : display,
-        prec: ratePrecision,
-        paren: showValue || showRawValue,
-        color: showRateColors,
-        len: showRatePercentages || length !== "expanded" ? "tiny" : "compact",
-        cls: "rate",
-        neg: true,
-        zero: true,
-        plus: true,
-        grp: false,
-        post: "/s",
-      },
-    );
+    let rate = 0;
+    if (showRateHistory && resource.rate.pastCounts.length > 0) {
+      let denom = 0;
+      let length = resource.rate.pastCounts.length;
+      resource.rate.pastCounts.forEach((pastRate, rateIdx) => {
+        const weight = length - rateIdx;
+        rate += pastRate * weight;
+        denom += weight;
+      });
+      rate /= denom;
+    } else {
+      rate = resource.rate.count;
+    }
+
+    let usePercentage = showRatePercentages;
+    let rateDenom = showRatePercentages ? getValue() ?? 0 : 1;
+    if (
+      rateDenom === 0 ||
+      (usePercentage && (rate / rateDenom < 0.01 || rateDenom < 1000))
+    ) {
+      usePercentage = false;
+      rateDenom = 1.0;
+    }
+
+    addValueDiv(rate / rateDenom, "rate", {
+      disp: usePercentage ? "percentage" : display,
+      prec: ratePrecision,
+      paren: showValue || showRawValue,
+      color: showRateColors,
+      len: usePercentage || length !== "expanded" ? "tiny" : "compact",
+      cls: "rate",
+      neg: true,
+      zero: true,
+      plus: true,
+      grp: false,
+      post: "/s",
+    });
   }
 
   if (

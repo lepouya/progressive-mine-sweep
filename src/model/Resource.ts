@@ -44,6 +44,9 @@ export type Resource<Context, Result> = {
 
     lastTickUpdate?: number;
     deltaTicks?: number;
+
+    pastCounts: number[];
+    pastTicks: number[];
   };
 };
 
@@ -57,7 +60,7 @@ export function genEmptyResource<Context, Result>(
     value: (kind) => (!kind ? res.count : res.extra[kind] ?? 0),
     cost: () => [],
     execution: {},
-    rate: { count: 0, ticks: 0 },
+    rate: { count: 0, ticks: 0, pastCounts: [], pastTicks: [] },
   };
 
   setSaveProperties(res, [

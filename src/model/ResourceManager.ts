@@ -64,6 +64,7 @@ export type ManagedResource<Context, Result> = Resource<Context, Result> & {
 export type ResourceManagerSettings = {
   lastUpdate: number;
   rateUpdateSecs: number;
+  rateHistoryWindow: number;
   minResourceUpdateSecs: number;
   maxResourceUpdateSecs: number;
   maxResourceTickSecs: number;
@@ -187,6 +188,7 @@ function update<Context, Result>(
 ): Result[] {
   const {
     rateUpdateSecs = 1.0,
+    rateHistoryWindow = 10,
     minResourceUpdateSecs = 0.001,
     maxResourceUpdateSecs = 86400.0,
     maxResourceTickSecs = 1.0,
@@ -249,8 +251,10 @@ function update<Context, Result>(
       rateDt >= rateUpdateSecs
     ) {
       res.rate.count = (res.count - (res.rate.lastCount ?? 0)) / rateDt;
-      res.rate.lastCountUpdate = now;
       res.rate.lastCount = res.count;
+      res.rate.lastCountUpdate = now;
+      res.rate.pastCounts.unshift(res.rate.count);
+      res.rate.pastCounts.splice(rateHistoryWindow);
     }
 
     const tickRateDt = (now - (res.rate.lastTickUpdate ?? 0)) / 1000.0;
@@ -262,6 +266,8 @@ function update<Context, Result>(
       res.rate.ticks = (res.rate.deltaTicks ?? 0) / tickRateDt;
       res.rate.deltaTicks = 0;
       res.rate.lastTickUpdate = now;
+      res.rate.pastTicks.unshift(res.rate.ticks);
+      res.rate.pastTicks.splice(rateHistoryWindow);
     }
   });
 

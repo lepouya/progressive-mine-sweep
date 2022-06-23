@@ -49,9 +49,5 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### Bugs, Issues, and Ideas
 
-- Documentation!
-- Better unit testing for models and utils
-- Rate values might be wrong when there's no tick method
 - Turn off all automation options
-- Longer rate windows
 - When reset speed is 100, it should instant reset

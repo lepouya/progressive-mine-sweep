@@ -6,6 +6,7 @@ export type Settings = {
 
   // Resource updates
   rateUpdateSecs: number;
+  rateHistoryWindow: number;
   minResourceUpdateSecs: number;
   maxResourceUpdateSecs: number;
   maxResourceTickSecs: number;
@@ -36,6 +37,7 @@ export const defaultSettings: Settings = {
   saveFrequencySecs: 60.0,
 
   rateUpdateSecs: 1.0,
+  rateHistoryWindow: 10,
   minResourceUpdateSecs: 0.001,
   maxResourceUpdateSecs: 86400.0,
   maxResourceTickSecs: 1.0,

@@ -20,7 +20,7 @@ export function formatNumber(
   };
 
   const res = val.toLocaleString(undefined, options);
-  if (res.length > len) {
+  if (res.replace(/\D/g, "").length > len) {
     options.notation = "scientific";
     return val.toLocaleString(undefined, options);
   } else {
