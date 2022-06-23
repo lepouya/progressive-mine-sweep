@@ -55,8 +55,8 @@ export default function Main() {
         <div className="half">
           <BuyButton
             resource={hints}
-            count={0}
-            maxCount={F.remainingHintsFormula(context)}
+            overrideCount={0}
+            overrideMaxCount={F.remainingHintsFormula(context)}
             gainMultiplier={hintsCount.value()}
             onPurchase={getHint}
           />

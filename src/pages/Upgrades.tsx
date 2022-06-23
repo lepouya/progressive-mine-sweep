@@ -37,7 +37,7 @@ export default function Upgrades() {
           />
         </div>
         <div className="right half">
-          <BuyButton resource={cols} prefix="Expand" maxCount={50} />
+          <BuyButton resource={cols} prefix="Expand" overrideMaxCount={50} />
         </div>
         <div className="quarter">Game Height:</div>
         <div className="quarter">
@@ -49,7 +49,7 @@ export default function Upgrades() {
           />
         </div>
         <div className="right half">
-          <BuyButton resource={rows} prefix="Expand" maxCount={50} />
+          <BuyButton resource={rows} prefix="Expand" overrideMaxCount={50} />
         </div>
 
         <div className="quarter">Game Difficulty:</div>
@@ -63,7 +63,7 @@ export default function Upgrades() {
           />
         </div>
         <div className="right half">
-          <BuyButton resource={difficulty} prefix="Increase" maxCount={100} />
+          <BuyButton resource={difficulty} prefix="Increase" />
         </div>
         <div className="quarter">
           <span className="computed">Score Multiplier:</span>
@@ -81,10 +81,8 @@ export default function Upgrades() {
             resource={difficulty}
             prefix="Decrease"
             gainMultiplier={-1}
-            enabled={difficulty.count > 0}
-            minNum={1}
-            maxNum={1}
-            increment={1}
+            costMultiplier={-context.settings.sellRatio}
+            precision={0}
           />
         </div>
       </div>
@@ -103,7 +101,11 @@ export default function Upgrades() {
           />
         </div>
         <div className="right half">
-          <BuyButton resource={resetSpeed} prefix="Speed up" maxCount={100} />
+          <BuyButton
+            resource={resetSpeed}
+            prefix="Speed up"
+            overrideMaxCount={100}
+          />
         </div>
 
         <hr className="separator" />
@@ -119,7 +121,7 @@ export default function Upgrades() {
           />
         </div>
         <div className="right half">
-          <BuyButton resource={hintQuality} prefix="Improve" maxCount={100} />
+          <BuyButton resource={hintQuality} prefix="Improve" />
         </div>
 
         <div className="quarter">Number of hints on purchase:</div>

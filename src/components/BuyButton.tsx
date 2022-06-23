@@ -11,17 +11,19 @@ export type BuyButtonProps = {
   resource: string | Resource<any, any>;
   kind?: string;
   enabled?: boolean;
-
-  count?: number;
-  maxCount?: number;
   allowUnlocking?: boolean;
 
   maxNum?: number;
   minNum?: number;
   increment?: number;
+  precision?: number;
 
   gainMultiplier?: number;
   costMultiplier?: number;
+
+  overrideCount?: number;
+  overrideMaxCount?: number;
+  overrideMinCount?: number;
 
   prefix?: string;
   suffix?: string;
@@ -42,17 +44,19 @@ export default function BuyButton({
   resource: resProp,
   kind,
   enabled = true,
-
-  count: overrideCount,
-  maxCount,
   allowUnlocking = false,
 
   maxNum,
   minNum,
   increment,
+  precision,
 
   gainMultiplier = 1,
   costMultiplier = 1,
+
+  overrideCount,
+  overrideMaxCount,
+  overrideMinCount,
 
   prefix = "Buy",
   suffix = "",
@@ -82,6 +86,12 @@ export default function BuyButton({
     }
   }
 
+  if (gainMultiplier < 0 && costMultiplier < 0) {
+    // Selling
+    [gainMultiplier, costMultiplier] = [-gainMultiplier, -costMultiplier];
+    [minNum, maxNum, increment] = [-minNum, -maxNum, -increment];
+  }
+
   function renderResourceCounts(
     rcs: ResourceCount<any, any>[],
     multiplier: number,
@@ -96,6 +106,7 @@ export default function BuyButton({
         display={
           typeof rc.resource !== "string" ? rc.resource.display : "number"
         }
+        precision={precision}
         infix=""
         placeholder=""
         prefix={i > 0 ? and : ""}
@@ -114,7 +125,7 @@ export default function BuyButton({
 
   function doPurchase(count: number, event: MouseEvent) {
     event.preventDefault();
-    if (!enabled || count < 1) {
+    if (!enabled || count === 0) {
       return;
     }
 
@@ -136,10 +147,12 @@ export default function BuyButton({
 
   function adjustCount(count = 0, increment = 1) {
     const currentCount = overrideCount ?? res.count;
-    return clamp(
-      Math.floor((currentCount + count) / increment) * increment - currentCount,
-      0,
-      Math.min(maxCount ?? Infinity, res.maxCount ?? Infinity) - currentCount,
+    return (
+      clamp(
+        Math.floor((currentCount + count) / increment) * increment,
+        Math.max(overrideMinCount ?? -Infinity, res.minCount ?? 0),
+        Math.min(overrideMaxCount ?? Infinity, res.maxCount ?? Infinity),
+      ) - currentCount
     );
   }
 
@@ -160,9 +173,14 @@ export default function BuyButton({
       costMultiplier,
     );
   }
-  if (purchase.count < minNum || purchase.count <= 0) {
+  if (Math.abs(purchase.count) < Math.abs(minNum) || purchase.count === 0) {
     purchase = res.buy(
-      Math.max(1, adjustCount(clamp(increment, minNum, maxNum))),
+      Math.max(
+        Math.sign(increment),
+        adjustCount(
+          clamp(increment, Math.min(minNum, maxNum), Math.max(minNum, maxNum)),
+        ),
+      ),
       "dry-full",
       kind,
       1,
@@ -192,8 +210,8 @@ export default function BuyButton({
     >
       {prefix && <div className="prefix">{prefix}</div>}
       {renderResourceCounts(purchase.gain, gainMultiplier)}
-      {totalCost > 0 && infix && <div className="infix">{infix}</div>}
-      {totalCost > 0 && renderResourceCounts(purchase.cost, -1)}
+      {totalCost !== 0 && infix && <div className="infix">{infix}</div>}
+      {totalCost !== 0 && renderResourceCounts(purchase.cost, -1)}
       {suffix && <div className="suffix">{suffix}</div>}
     </button>
   );

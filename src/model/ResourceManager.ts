@@ -120,7 +120,7 @@ function upsert<Context, Result>(
   props: Partial<Resource<Context, Result>> | string,
 ): ManagedResource<Context, Result> {
   const name = typeof props === "string" ? props : props.name ?? "";
-  const res = rm.resources[name] ?? genEmptyResource(name, rm.context);
+  const res = rm.resources[name] ?? genEmptyResource(name);
 
   if (typeof props !== "string") {
     let k: keyof Resource<Context, Result>;
@@ -147,7 +147,6 @@ function upsert<Context, Result>(
     res.buy(count, "free", kind, gainMultiplier);
   res.canBuy = (count, kind, costMultiplier) =>
     res.buy(count, "dry-partial", kind, undefined, costMultiplier);
-  res.context = rm.context;
 
   if (res.name) {
     rm.resources[res.name] = res;
@@ -376,11 +375,12 @@ function getPurchaseCost<Context, Result>(
     return { count: 0, gain: [], cost: [] };
   }
 
-  const start = kind ? resource.extra[kind] ?? 0 : resource.count;
-  let target = Math.max(0, start + count);
-  if (!kind && resource.maxCount && target > resource.maxCount) {
-    target = resource.maxCount;
-  }
+  let start = kind ? resource.extra[kind] ?? 0 : resource.count;
+  let target = clamp(
+    start + count,
+    !kind ? resource.minCount ?? 0 : 0,
+    !kind ? resource.maxCount ?? Infinity : Infinity,
+  );
 
   if (style === "free") {
     const gainCount = gainMultiplier * (target - start);
@@ -389,6 +389,11 @@ function getPurchaseCost<Context, Result>(
       gain: [{ resource, count: gainCount, kind }],
       cost: [],
     };
+  }
+
+  if (start > target) {
+    [start, target] = [target, start];
+    [gainMultiplier, costMultiplier] = [-gainMultiplier, -costMultiplier];
   }
 
   let cost: ResourceCount<Context, Result>[] = [];

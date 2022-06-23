@@ -616,3 +616,72 @@ describe("Gain and cost multipliers", () => {
     expect(r3.count).to.be.approximately(12.5, 0.001);
   });
 });
+
+describe("Resource selling", () => {
+  it("Simple buy and sell", () => {
+    const rm = genResourceManager(null, {});
+    const r1 = rm.upsert({ name: "r1", count: 10 });
+    const r2 = rm.upsert({ name: "r2", count: 0 });
+    r2.cost = () => [{ resource: "r1", count: 1 }];
+
+    rm.purchase([{ resource: "r2", count: 1 }]);
+    expect(r1.count).to.equal(9);
+    expect(r2.count).to.equal(1);
+
+    rm.purchase([{ resource: "r2", count: 2 }]);
+    expect(r1.count).to.equal(7);
+    expect(r2.count).to.equal(3);
+
+    rm.purchase([{ resource: "r2", count: -1 }]);
+    expect(r1.count).to.equal(8);
+    expect(r2.count).to.equal(2);
+
+    rm.purchase([{ resource: "r2", count: -2 }]);
+    expect(r1.count).to.equal(10);
+    expect(r2.count).to.equal(0);
+
+    rm.purchase([{ resource: "r2", count: 1 }]);
+    expect(r1.count).to.equal(9);
+    expect(r2.count).to.equal(1);
+
+    rm.purchase([{ resource: "r2", count: -2 }]);
+    expect(r1.count).to.equal(10);
+    expect(r2.count).to.equal(0);
+  });
+
+  it("Complex selling", () => {
+    const rm = genResourceManager(null, {});
+    const r1 = rm.upsert({ name: "r1", count: 100, minCount: 80 });
+    const r2 = rm.upsert({ name: "r2", count: 20 });
+    const r3 = rm.upsert({ name: "r3", count: 0, maxCount: 5 });
+    r3.cost = (n) => [
+      { resource: "r1", count: n ** 2 },
+      { resource: "r2", count: n },
+    ];
+
+    rm.purchase([{ resource: "r3", count: 1 }]);
+    expect(r1.count).to.equal(99);
+    expect(r2.count).to.equal(19);
+    expect(r3.count).to.equal(1);
+
+    rm.purchase([{ resource: "r3", count: 2 }]);
+    expect(r1.count).to.equal(86);
+    expect(r2.count).to.equal(14);
+    expect(r3.count).to.equal(3);
+
+    rm.purchase([{ resource: "r3", count: 2 }]);
+    expect(r1.count).to.equal(86);
+    expect(r2.count).to.equal(14);
+    expect(r3.count).to.equal(3);
+
+    rm.purchase([{ resource: "r3", count: -1 }]);
+    expect(r1.count).to.equal(95);
+    expect(r2.count).to.equal(17);
+    expect(r3.count).to.equal(2);
+
+    rm.purchase([{ resource: "r3", count: -5 }]);
+    expect(r1.count).to.equal(100);
+    expect(r2.count).to.equal(20);
+    expect(r3.count).to.equal(0);
+  });
+});

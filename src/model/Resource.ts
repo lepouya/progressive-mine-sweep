@@ -9,7 +9,6 @@ export type ResourceCount<Context, Result> = {
 
 export type Resource<Context, Result> = {
   readonly name: string;
-  context: Context;
   unlocked?: boolean;
   disabled?: boolean;
 
@@ -50,11 +49,9 @@ export type Resource<Context, Result> = {
 
 export function genEmptyResource<Context, Result>(
   name: string,
-  context: Context,
 ): Resource<Context, Result> {
   const res: Resource<Context, Result> = {
     name,
-    context,
     count: 0,
     extra: {},
     value: (kind) => (!kind ? res.count : res.extra[kind] ?? 0),

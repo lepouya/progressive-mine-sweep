@@ -51,7 +51,6 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Documentation!
 - Better unit testing for models and utils
-- Resource selling
 - Rate values might be wrong when there's no tick method
 - Turn off all automation options
 - Longer rate windows

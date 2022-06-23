@@ -21,6 +21,7 @@
     "display": "percentage",
     "count": 15,
     "minCount": 1,
+    "maxCount": 100,
     "cost": "flags: Math.floor(n/2)"
   },
   {
@@ -28,6 +29,7 @@
     "icon": "icon-hinted bulb",
     "display": "percentage",
     "count": 0,
+    "maxCount": 100,
     "cost": "wins: 1, cells: n-1"
   },
   {
@@ -42,6 +44,7 @@
     "icon": "refresh-alert",
     "display": "percentage",
     "count": 0,
+    "maxCount": 100,
     "extra": {
       "remainingTime": 0
     },

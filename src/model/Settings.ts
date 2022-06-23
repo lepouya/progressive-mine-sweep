@@ -19,6 +19,7 @@ export type Settings = {
   // Game settings
   maxErrors: number;
   timeDilation: number;
+  sellRatio: number;
 
   // Game mode
   tutorialStep: number;
@@ -46,6 +47,7 @@ export const defaultSettings: Settings = {
 
   maxErrors: 1,
   timeDilation: 1.0,
+  sellRatio: 0.8,
 
   tutorialStep: 0,
   tapMode: "reveal",
