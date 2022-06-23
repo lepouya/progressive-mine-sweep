@@ -569,3 +569,50 @@ describe("Task execution", () => {
     expect(t2.rate.ticks).to.equal(0.2);
   });
 });
+
+describe("Gain and cost multipliers", () => {
+  it("Simple multipliers", () => {
+    const rm = genResourceManager(null, {});
+    const r1 = rm.upsert({ name: "r1", count: 10 });
+    const r2 = rm.upsert({ name: "r2", count: 0 });
+    r2.cost = () => [{ resource: "r1", count: 1 }];
+
+    rm.purchase([{ resource: "r2", count: 1 }]);
+    expect(r1.count).to.equal(9);
+    expect(r2.count).to.equal(1);
+
+    rm.purchase([{ resource: "r2", count: 2 }], undefined, 2, 1);
+    expect(r1.count).to.equal(7);
+    expect(r2.count).to.equal(5);
+
+    rm.purchase([{ resource: "r2", count: 2 }], undefined, 1, 2);
+    expect(r1.count).to.equal(3);
+    expect(r2.count).to.equal(7);
+  });
+
+  it("More complicated multipliers", () => {
+    const rm = genResourceManager(null, {});
+    const r1 = rm.upsert({ name: "r1", count: 100 });
+    const r2 = rm.upsert({ name: "r2", count: 20 });
+    const r3 = rm.upsert({ name: "r3", count: 0 });
+    r3.cost = (n) => [
+      { resource: "r1", count: n ** 2 },
+      { resource: "r2", count: n },
+    ];
+
+    rm.purchase([{ resource: "r3", count: 1 }], "full", 10, 2);
+    expect(r1.count).to.equal(98);
+    expect(r2.count).to.equal(18);
+    expect(r3.count).to.equal(10);
+
+    rm.purchase([{ resource: "r3", count: 1 }], "partial", 2, 0.1);
+    expect(r1.count).to.equal(85.9);
+    expect(r2.count).to.equal(16.9);
+    expect(r3.count).to.equal(12);
+
+    rm.purchase([{ resource: "r3", count: 3 }], "partial", 0.5, 0.5);
+    expect(r1.count).to.be.approximately(1.4, 0.001);
+    expect(r2.count).to.be.approximately(10.4, 0.001);
+    expect(r3.count).to.be.approximately(12.5, 0.001);
+  });
+});
