@@ -100,7 +100,7 @@ export function combineResources<Context, Result>(
           frc.count += rc.count;
           return res;
         } else {
-          return [...res, rc];
+          return [...res, { ...rc }];
         }
       },
       [],
@@ -146,18 +146,15 @@ export function checkHasResources<Context, Result>(
 ): boolean {
   return (
     (res.unlocked ?? true) &&
-    subtractResources(
-      getResourceCounts(res),
-      rcs.filter(
-        ({ resource }) =>
-          res.name ===
-          (typeof resource === "string" ? resource : resource.name),
-      ),
-    ).filter(
-      ({ resource, count }) =>
-        count <
-        (toSpend && typeof resource !== "string" ? resource.minCount ?? 0 : 0),
-    ).length === 0
+    combineResources(rcs).every(
+      ({ resource, count, kind }) =>
+        res.name !==
+          (typeof resource === "string" ? resource : resource.name) ||
+        res.value(kind) - count >=
+          (toSpend && !kind && typeof resource !== "string"
+            ? resource.minCount ?? 0
+            : 0),
+    )
   );
 }
 

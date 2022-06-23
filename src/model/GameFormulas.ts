@@ -102,23 +102,24 @@ export function countActions(
   context: Context,
   resource: string,
   automatic: boolean,
+  factor = 1,
 ) {
   const multiplier = scoreMultiplier(context);
   const res = context.resourceManager.resources[resource ?? ""];
   const auto = context.resourceManager.resources.automation;
 
   if (automatic) {
-    auto.count += multiplier;
-    auto.extra.total++;
+    auto.count += multiplier * factor;
+    auto.extra.total += factor;
     if (res && res.extra.auto != null) {
-      res.extra.auto++;
+      res.extra.auto += factor;
     }
   } else if (res && res.extra.manual != null) {
-    res.extra.manual++;
+    res.extra.manual += factor;
   }
 
   if (res && res.extra.streak != null) {
-    res.extra.streak++;
+    res.extra.streak += factor;
     if (
       res.extra.longestStreak != null &&
       res.extra.streak > res.extra.longestStreak
@@ -141,7 +142,7 @@ export function stateChanged(
 
   if (resName && res) {
     res.count += factor * multiplier;
-    countActions(context, res.name, automatic);
+    countActions(context, res.name, automatic, factor);
   }
 
   switch (target + ":" + state) {

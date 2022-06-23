@@ -6,11 +6,7 @@ import ResetBox from "../components/ResetBox";
 import ResourceBar from "../components/ResourceBar";
 import ResourceRender from "../components/ResourceRender";
 import { genBoardState, genHints } from "../model/Board";
-import {
-  hintFormula,
-  remainingHintsFormula,
-  stateChanged,
-} from "../model/GameFormulas";
+import * as F from "../model/GameFormulas";
 
 export default function Main() {
   const {
@@ -26,12 +22,12 @@ export default function Main() {
   function reset() {
     let newBoard = genBoardState(board, 0);
     setBoard({ ...newBoard });
-    stateChanged(context, "board", newBoard.state, false);
+    F.stateChanged(context, "board", newBoard.state, false);
   }
 
   function getHint(_res: unknown, _kind: unknown, numHints = 0) {
-    if (genHints(board, numHints, 0, 8, hintFormula(context)) > 0) {
-      hints.extra.manual++;
+    if (genHints(board, numHints, 0, 8, F.hintFormula(context)) > 0) {
+      F.countActions(context, "hints", false);
       setBoard({ ...board });
     }
   }
@@ -60,7 +56,7 @@ export default function Main() {
           <BuyButton
             resource={hints}
             count={0}
-            maxCount={remainingHintsFormula(context)}
+            maxCount={F.remainingHintsFormula(context)}
             gainMultiplier={hintsCount.value()}
             onPurchase={getHint}
           />

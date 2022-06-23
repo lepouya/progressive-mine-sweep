@@ -1,7 +1,7 @@
 import { MouseEvent } from "react";
 
 import { getBuyAmount } from "../model/GameFormulas";
-import { Resource, ResourceCount, scaleResources } from "../model/Resource";
+import { Resource, ResourceCount } from "../model/Resource";
 import apply from "../utils/apply";
 import clamp from "../utils/clamp";
 import useGameContext from "./GameContext";
@@ -122,24 +122,15 @@ export default function BuyButton({
       res.unlocked = true;
     }
 
-    const bought = res.buy(count, "partial", kind);
-    let gainCount = bought.count;
-    if (gainMultiplier != 1) {
-      const adjustment = resourceManager.purchase(
-        scaleResources(bought.gain, gainMultiplier - 1),
-        "free",
-      );
-      gainCount += adjustment.count;
-    }
-    if (costMultiplier != 1) {
-      resourceManager.purchase(
-        scaleResources(bought.cost, 1 - costMultiplier),
-        "free",
-      );
-    }
-
+    const bought = res.buy(
+      count,
+      "partial",
+      kind,
+      gainMultiplier,
+      costMultiplier,
+    );
     if (onPurchase) {
-      onPurchase(res, kind, gainCount);
+      onPurchase(res, kind, bought.count);
     }
   }
 
@@ -153,12 +144,20 @@ export default function BuyButton({
   }
 
   let active = true;
-  let purchase = res.buy(adjustCount(maxNum, increment), "dry-partial", kind);
+  let purchase = res.buy(
+    adjustCount(maxNum, increment),
+    "dry-partial",
+    kind,
+    1,
+    costMultiplier,
+  );
   if (purchase.count % increment !== 0) {
     purchase = res.buy(
       adjustCount(purchase.count, increment),
       "dry-partial",
       kind,
+      1,
+      costMultiplier,
     );
   }
   if (purchase.count < minNum || purchase.count <= 0) {
@@ -166,6 +165,8 @@ export default function BuyButton({
       Math.max(1, adjustCount(clamp(increment, minNum, maxNum))),
       "dry-full",
       kind,
+      1,
+      costMultiplier,
     );
     active = false;
   }
@@ -192,7 +193,7 @@ export default function BuyButton({
       {prefix && <div className="prefix">{prefix}</div>}
       {renderResourceCounts(purchase.gain, gainMultiplier)}
       {totalCost > 0 && infix && <div className="infix">{infix}</div>}
-      {totalCost > 0 && renderResourceCounts(purchase.cost, -costMultiplier)}
+      {totalCost > 0 && renderResourceCounts(purchase.cost, -1)}
       {suffix && <div className="suffix">{suffix}</div>}
     </button>
   );

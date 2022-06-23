@@ -56,4 +56,3 @@ Perhaps I could do prestige/reset options once this is ready
 - Turn off all automation options
 - Longer rate windows
 - When reset speed is 100, it should instant reset
-- Roll gain and cost multipliers into resource manager

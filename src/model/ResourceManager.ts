@@ -9,6 +9,7 @@ import {
   genEmptyResource,
   Resource,
   ResourceCount,
+  scaleResources,
 } from "./Resource";
 
 export type ResourceManager<Context, Result> = {
@@ -25,6 +26,8 @@ export type ResourceManager<Context, Result> = {
   purchase: (
     toBuy: ResourceCount<Context, Result>[],
     style?: PurchaseStyle,
+    gainMultiplier?: number,
+    costMultiplier?: number,
   ) => PurchaseCost<Context, Result>;
   canAfford: (cost: ResourceCount<Context, Result>[]) => boolean;
 
@@ -49,9 +52,19 @@ export type ManagedResource<Context, Result> = Resource<Context, Result> & {
     count?: number,
     style?: PurchaseStyle,
     kind?: string,
+    gainMultiplier?: number,
+    costMultiplier?: number,
   ) => PurchaseCost<Context, Result>;
-  add: (count?: number, kind?: string) => PurchaseCost<Context, Result>;
-  canBuy: (count?: number, kind?: string) => PurchaseCost<Context, Result>;
+  add: (
+    count?: number,
+    kind?: string,
+    gainMultiplier?: number,
+  ) => PurchaseCost<Context, Result>;
+  canBuy: (
+    count?: number,
+    kind?: string,
+    costMultiplier?: number,
+  ) => PurchaseCost<Context, Result>;
 };
 
 export type ResourceManagerSettings = {
@@ -73,7 +86,12 @@ export function genResourceManager<Context, Result>(
     resources: {},
     upsert: (props) => upsert(rm, props),
     get: (resource) => resolve(rm, resource),
-    purchase: (toBuy, style) => purchase(rm, toBuy, style),
+    purchase: (
+      toBuy,
+      style = "partial",
+      gainMultiplier = 1,
+      costMultiplier = 1,
+    ) => purchase(rm, toBuy, style, gainMultiplier, costMultiplier),
     canAfford: (cost) => canAfford(rm, cost),
     update: (now, source) => update(rm, now ?? Date.now(), source ?? "unknown"),
   };
@@ -111,10 +129,24 @@ function upsert<Context, Result>(
     }
   }
 
-  res.buy = (count = 1, style = "partial", kind = "") =>
-    purchase(rm, [{ resource: res, count, kind }], style);
-  res.add = (count, kind) => res.buy(count, "free", kind);
-  res.canBuy = (count, kind) => res.buy(count, "dry-partial", kind);
+  res.buy = (
+    count = 1,
+    style = "partial",
+    kind = "",
+    gainMultiplier = 1,
+    costMultiplier = 1,
+  ) =>
+    purchase(
+      rm,
+      [{ resource: res, count, kind }],
+      style,
+      gainMultiplier,
+      costMultiplier,
+    );
+  res.add = (count, kind, gainMultiplier) =>
+    res.buy(count, "free", kind, gainMultiplier);
+  res.canBuy = (count, kind, costMultiplier) =>
+    res.buy(count, "dry-partial", kind, undefined, costMultiplier);
   res.context = rm.context;
 
   if (res.name) {
@@ -246,7 +278,9 @@ function update<Context, Result>(
 function purchase<Context, Result>(
   rm: ResourceManager<Context, Result>,
   toBuy: ResourceCount<Context, Result>[],
-  style?: PurchaseStyle,
+  style: PurchaseStyle,
+  gainMultiplier: number,
+  costMultiplier: number,
 ): PurchaseCost<Context, Result> {
   const costs = resolveAll(rm, toBuy).map((rc) => {
     const rcCost = getPurchaseCost(
@@ -254,7 +288,9 @@ function purchase<Context, Result>(
       rc.resource,
       rc.count,
       rc.kind,
-      style ?? "partial",
+      style,
+      gainMultiplier,
+      costMultiplier,
     );
 
     if (style === "dry-partial" || style === "dry-full") {
@@ -284,7 +320,7 @@ function resolveAll<Context, Result>(
   rm: ResourceManager<Context, Result>,
   rcs: ResourceCount<Context, Result>[],
 ): {
-  resource: Resource<Context, Result>;
+  resource: ManagedResource<Context, Result>;
   count: number;
   kind: string;
 }[] {
@@ -329,6 +365,8 @@ function getPurchaseCost<Context, Result>(
   count: number,
   kind: string,
   style: PurchaseStyle,
+  gainMultiplier: number,
+  costMultiplier: number,
 ): PurchaseCost<Context, Result> {
   if (
     !resource ||
@@ -345,9 +383,10 @@ function getPurchaseCost<Context, Result>(
   }
 
   if (style === "free") {
+    const gainCount = gainMultiplier * (target - start);
     return {
-      count: target - start,
-      gain: [{ resource, count: target - start, kind }],
+      count: gainCount,
+      gain: [{ resource, count: gainCount, kind }],
       cost: [],
     };
   }
@@ -356,21 +395,20 @@ function getPurchaseCost<Context, Result>(
   let partialCost = cost;
   let partialCount = 0;
   for (let i = start; i < target; i++) {
-    if (style === "partial" || style === "dry-partial") {
-      partialCost = combineResources(
-        partialCost,
-        resolveAll(rm, resource.cost(i + 1, kind)),
-      );
+    const curCost = scaleResources(
+      resolveAll(rm, resource.cost(i + 1, kind)),
+      costMultiplier,
+    );
+    if (style.includes("partial")) {
+      partialCost = combineResources(partialCost, curCost);
       if (!canAfford(rm, partialCost)) {
         break;
       }
     }
 
     partialCount++;
-    cost = combineResources(cost, resolveAll(rm, resource.cost(i + 1, kind)));
+    cost = combineResources(cost, curCost);
   }
-
-  const gain = [{ resource, count: partialCount, kind }];
 
   if (
     (style !== "dry-full" && !canAfford(rm, cost)) ||
@@ -379,5 +417,10 @@ function getPurchaseCost<Context, Result>(
     return { count: 0, gain: [], cost: [] };
   }
 
-  return { count: partialCount, gain, cost };
+  const gainCount = gainMultiplier * partialCount;
+  return {
+    count: gainCount,
+    gain: [{ resource, count: gainCount, kind }],
+    cost,
+  };
 }
