@@ -1,9 +1,5 @@
 import assign from "../utils/assign";
-import {
-  loadFromBrowser,
-  resetOnBrowser,
-  saveToBrowser,
-} from "../utils/localStorage";
+import * as LocalStore from "../utils/localStorage";
 import * as Store from "../utils/store";
 import { Board, emptyBoard, genBoardState } from "./Board";
 import { initGameResources } from "./GameResources";
@@ -50,10 +46,11 @@ export function wrapContext<Update>(context: Context<Update>) {
     resource: (res: string | Resource<Context<Update>, Update>) =>
       context.resourceManager.get(res),
 
-    load: () => _load(context, loadFromBrowser(_store)),
+    load: () => _load(context, LocalStore.loadFromBrowser(_store)),
     loadAs: (loadStr: string) => _load(context, loadStr),
 
-    save: (pretty?: boolean) => saveToBrowser(_store, _save(context, pretty)),
+    save: (pretty?: boolean) =>
+      LocalStore.saveToBrowser(_store, _save(context, pretty)),
     saveAs: (pretty?: boolean) => _save(context, pretty),
 
     reset: () => _reset(context),
@@ -91,6 +88,6 @@ function _save<Update>(context: Context<Update>, pretty?: boolean): string {
 }
 
 function _reset<Update>(context: Context<Update>): void {
-  resetOnBrowser(_store);
+  LocalStore.resetOnBrowser(_store);
   emptyContext<Update>(context);
 }

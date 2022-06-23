@@ -2,15 +2,9 @@ import assign from "../utils/assign";
 import clamp from "../utils/clamp";
 import dedupe from "../utils/dedupe";
 import { setSaveProperties } from "../utils/store";
-import {
-  applyToResource,
-  checkHasResources,
-  combineResources,
-  genEmptyResource,
-  Resource,
-  ResourceCount,
-  scaleResources,
-} from "./Resource";
+import * as R from "./Resource";
+
+import type { Resource, ResourceCount } from "./Resource";
 
 export type ResourceManager<Context, Result> = {
   context: Context;
@@ -120,7 +114,7 @@ function upsert<Context, Result>(
   props: Partial<Resource<Context, Result>> | string,
 ): ManagedResource<Context, Result> {
   const name = typeof props === "string" ? props : props.name ?? "";
-  const res = rm.resources[name] ?? genEmptyResource(name);
+  const res = rm.resources[name] ?? R.genEmptyResource(name);
 
   if (typeof props !== "string") {
     let k: keyof Resource<Context, Result>;
@@ -295,11 +289,11 @@ function purchase<Context, Result>(
     if (style === "dry-partial" || style === "dry-full") {
       return rcCost;
     } else {
-      const gain = applyToResource(rc.resource, rcCost.gain),
+      const gain = R.applyToResource(rc.resource, rcCost.gain),
         count = getCountOf(gain, rc.resource.name, rc.kind),
         cost = rcCost.cost
           .map(({ resource, count, kind }) =>
-            applyToResource(resolve(rm, resource), [
+            R.applyToResource(resolve(rm, resource), [
               { resource, count: -count, kind },
             ]),
           )
@@ -310,8 +304,8 @@ function purchase<Context, Result>(
 
   return {
     count: costs.reduce((count, rcCost) => count + rcCost.count, 0),
-    gain: combineResources(costs.map((rcCost) => rcCost.gain).flat()),
-    cost: combineResources(costs.map((rcCost) => rcCost.cost).flat()),
+    gain: R.combineResources(costs.map((rcCost) => rcCost.gain).flat()),
+    cost: R.combineResources(costs.map((rcCost) => rcCost.cost).flat()),
   };
 }
 
@@ -353,8 +347,8 @@ function canAfford<Context, Result>(
   rm: ResourceManager<Context, Result>,
   cost: ResourceCount<Context, Result>[],
 ): boolean {
-  return resolveAll(rm, combineResources(cost)).every((rc) =>
-    checkHasResources(rc.resource, [rc], true),
+  return resolveAll(rm, R.combineResources(cost)).every((rc) =>
+    R.checkHasResources(rc.resource, [rc], true),
   );
 }
 
@@ -400,19 +394,19 @@ function getPurchaseCost<Context, Result>(
   let partialCost = cost;
   let partialCount = 0;
   for (let i = start; i < target; i++) {
-    const curCost = scaleResources(
+    const curCost = R.scaleResources(
       resolveAll(rm, resource.cost(i + 1, kind)),
       costMultiplier,
     );
     if (style.includes("partial")) {
-      partialCost = combineResources(partialCost, curCost);
+      partialCost = R.combineResources(partialCost, curCost);
       if (!canAfford(rm, partialCost)) {
         break;
       }
     }
 
     partialCount++;
-    cost = combineResources(cost, curCost);
+    cost = R.combineResources(cost, curCost);
   }
 
   if (
