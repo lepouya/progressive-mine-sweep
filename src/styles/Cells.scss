@@ -1,21 +1,19 @@
 @use "./Theme";
 
 .cell {
-  background-size: contain;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-
-  line-height: 1;
-  overflow: hidden;
-
   width: 1px;
   height: 1px;
+  overflow: hidden;
 
-  cursor: default;
+  cursor: pointer;
+  user-select: none;
+  touch-action: pan-x;
 
   > div {
     display: flex;
     align-items: center;
+
+    pointer-events: none;
   }
 
   .icon {
