@@ -1,0 +1,20 @@
+@use "./Theme";
+
+.automation {
+  .progress-bar {
+    font-size: smaller;
+
+    justify-content: left;
+    text-align: left;
+
+    .primary {
+      color: Theme.color(positive, 30%);
+      background: Theme.color(positive, 15%);
+    }
+
+    .secondary {
+      color: Theme.color(neutral, 30%);
+      background: Theme.color(neutral, 15%);
+    }
+  }
+}

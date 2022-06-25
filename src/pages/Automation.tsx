@@ -1,13 +1,17 @@
 import BuyButton from "../components/BuyButton";
+import { getTickProgress } from "../model/GameAutomation";
 import useGameContext from "../components/GameContext";
 import Icon from "../components/Icon";
 import ModeControls from "../components/ModeControls";
+import ProgressBar from "../components/ProgressBar";
 import ResourceBar from "../components/ResourceBar";
 import ResourceRender from "../components/ResourceRender";
 import ToggleButton from "../components/ToggleButton";
+import { Resource } from "../model/Resource";
 
 export default function Automation() {
   const {
+    context,
     resources: {
       revealNeighbors,
       autoRevealNeighbors,
@@ -19,8 +23,13 @@ export default function Automation() {
     },
   } = useGameContext();
 
+  function tickProgress(res: Resource<any, any>) {
+    // Prevent flickering
+    return res.count >= 100 ? 1 : getTickProgress(context, res);
+  }
+
   return (
-    <div id="automation">
+    <div id="automation" className="automation">
       <ResourceBar />
       <ModeControls showTapMode={false} />
 
@@ -28,15 +37,17 @@ export default function Automation() {
         <div className="title-bar">Cell Automation</div>
 
         <div className="half">
-          <ResourceRender
-            resource={autoRevealNeighbors}
-            showChrome={true}
-            showLocked={true}
-            infix=""
-            suffix={`time${
-              autoRevealNeighbors.count === 1 ? "" : "s"
-            } a minute`}
-          />
+          <ProgressBar value={tickProgress(autoRevealNeighbors)}>
+            <ResourceRender
+              resource={autoRevealNeighbors}
+              showChrome={true}
+              showLocked={true}
+              infix=""
+              suffix={`time${
+                autoRevealNeighbors.count === 1 ? "" : "s"
+              } a minute`}
+            />
+          </ProgressBar>
         </div>
         <div className="right half">
           <BuyButton
@@ -68,13 +79,15 @@ export default function Automation() {
         <hr className="separator" />
 
         <div className="half">
-          <ResourceRender
-            resource={autoFlagMines}
-            showChrome={true}
-            showLocked={true}
-            infix=""
-            suffix={`time${autoFlagMines.count === 1 ? "" : "s"} a minute`}
-          />
+          <ProgressBar value={tickProgress(autoFlagMines)}>
+            <ResourceRender
+              resource={autoFlagMines}
+              showChrome={true}
+              showLocked={true}
+              infix=""
+              suffix={`time${autoFlagMines.count === 1 ? "" : "s"} a minute`}
+            />
+          </ProgressBar>
         </div>
         <div className="right half">
           <BuyButton
@@ -104,13 +117,15 @@ export default function Automation() {
         <hr className="separator" />
 
         <div className="half">
-          <ResourceRender
-            resource={autoRevealHints}
-            showChrome={true}
-            showLocked={true}
-            infix=""
-            suffix={`time${autoRevealHints.count === 1 ? "" : "s"} a minute`}
-          />
+          <ProgressBar value={tickProgress(autoRevealHints)}>
+            <ResourceRender
+              resource={autoRevealHints}
+              showChrome={true}
+              showLocked={true}
+              infix=""
+              suffix={`time${autoRevealHints.count === 1 ? "" : "s"} a minute`}
+            />
+          </ProgressBar>
         </div>
         <div className="right half">
           <BuyButton
@@ -136,13 +151,17 @@ export default function Automation() {
         <hr className="separator" />
 
         <div className="half">
-          <ResourceRender
-            resource={autoPurchaseHints}
-            showChrome={true}
-            showLocked={true}
-            infix=""
-            suffix={`time${autoPurchaseHints.count === 1 ? "" : "s"} a minute`}
-          />
+          <ProgressBar value={tickProgress(autoPurchaseHints)}>
+            <ResourceRender
+              resource={autoPurchaseHints}
+              showChrome={true}
+              showLocked={true}
+              infix=""
+              suffix={`time${
+                autoPurchaseHints.count === 1 ? "" : "s"
+              } a minute`}
+            />
+          </ProgressBar>
         </div>
         <div className="right half">
           <BuyButton
@@ -171,13 +190,15 @@ export default function Automation() {
         <div className="title-bar">Game Automation</div>
 
         <div className="half">
-          <ResourceRender
-            resource={autoResetGame}
-            showChrome={true}
-            showLocked={true}
-            infix=""
-            suffix={`time${autoResetGame.count === 1 ? "" : "s"} a minute`}
-          />
+          <ProgressBar value={tickProgress(autoResetGame)}>
+            <ResourceRender
+              resource={autoResetGame}
+              showChrome={true}
+              showLocked={true}
+              infix=""
+              suffix={`time${autoResetGame.count === 1 ? "" : "s"} a minute`}
+            />
+          </ProgressBar>
         </div>
         <div className="right half">
           <BuyButton
@@ -206,13 +227,15 @@ export default function Automation() {
         <div className="title-bar">Board Automation</div>
 
         <div className="half">
-          <ResourceRender
-            resource={autoBoardUpgrade}
-            showChrome={true}
-            showLocked={true}
-            infix=""
-            suffix={`time${autoBoardUpgrade.count === 1 ? "" : "s"} a minute`}
-          />
+          <ProgressBar value={tickProgress(autoBoardUpgrade)}>
+            <ResourceRender
+              resource={autoBoardUpgrade}
+              showChrome={true}
+              showLocked={true}
+              infix=""
+              suffix={`time${autoBoardUpgrade.count === 1 ? "" : "s"} a minute`}
+            />
+          </ProgressBar>
         </div>
         <div className="right half">
           <BuyButton

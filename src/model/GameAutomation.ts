@@ -6,15 +6,25 @@ import { Context } from "./Context";
 import * as F from "./GameFormulas";
 import { Resource } from "./Resource";
 
-export function shouldTick(res: Resource<any, any>) {
+export function getTickProgress(
+  context: Context,
+  res: Resource<any, any>,
+  dt?: number,
+): number {
+  if (res.count <= 0 || !(res.unlocked ?? true) || res.disabled) {
+    return NaN;
+  }
+
+  dt ??=
+    (Date.now() - (res.execution.lastTick ?? Date.now())) /
+    1000.0 /
+    context.settings.timeDilation;
+  return (dt * res.count) / context.settings.automationBaseSecs;
+}
+
+export function shouldTick(context: Context, res: Resource<any, any>) {
   return function (dt: number, src?: string) {
-    return (
-      src === "tick" &&
-      res.count > 0 &&
-      (res.unlocked ?? true) &&
-      !res.disabled &&
-      dt >= 60.0 / res.count
-    );
+    return src === "tick" && getTickProgress(context, res, dt) >= 1.0;
   };
 }
 

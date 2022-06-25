@@ -50,4 +50,3 @@ Perhaps I could do prestige/reset options once this is ready
 ### Bugs, Issues, and Ideas
 
 - Turn off all automation options
-- Progress bars on how long is left on tasks to run

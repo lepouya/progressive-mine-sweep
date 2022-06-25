@@ -51,7 +51,7 @@ export function initGameResources(
 
   tasks_auto
     .map((res) => rm.get((res as any).name as string))
-    .map((res) => (res.shouldTick = Auto.shouldTick(res)));
+    .map((res) => (res.shouldTick = Auto.shouldTick(rm.context, res)));
 
   rm.get("autoRevealNeighbors").tick = () =>
     Auto.revealNeighborsTask(rm.context);

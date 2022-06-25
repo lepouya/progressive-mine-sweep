@@ -1,25 +1,34 @@
 import { PropsWithChildren } from "react";
 
 export type ProgressBarProps = PropsWithChildren<{
-  value: number;
+  value?: number;
   minValue?: number;
   maxValue?: number;
+
   orientation?: "horizontal" | "vertical";
   width?: string | number;
   height?: string | number;
+
   showPercent?: boolean;
+  visible?: boolean;
+
   className?: string;
 }>;
 
 export default function ProgressBar({
-  value,
+  value = NaN,
   minValue = 0.0,
   maxValue = 1.0,
+
   orientation = "horizontal",
   width = orientation === "horizontal" ? "100%" : "1ex",
   height = orientation === "vertical" ? "100%" : "1ex",
+
   showPercent = false,
+  visible = !isNaN(value),
+
   className,
+
   children,
 }: ProgressBarProps) {
   const pct = (value - minValue) / (maxValue - minValue);
@@ -32,16 +41,16 @@ export default function ProgressBar({
       style={{ minWidth: width, minHeight: height }}
     >
       <div className="children">
-        {showPercent && <span>{Math.floor(100 * pct)}%</span>}
+        {visible && showPercent && <span>{Math.floor(100 * pct)}%</span>}
         {children}
       </div>
-      {pct > 0.001 && (
+      {visible && pct > 0.001 && (
         <div
           className="primary"
           style={{ width: `${endX * 100}%`, height: `${endY * 100}%` }}
         ></div>
       )}
-      <div className="secondary"></div>
+      {visible && <div className="secondary"></div>}
     </div>
   );
 }

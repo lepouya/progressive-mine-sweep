@@ -3,14 +3,19 @@
 .progress-bar {
   position: relative;
   display: flex;
+
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
   text-align: center;
 
+  padding: 0.25em;
+  box-sizing: border-box;
+
   > .children {
     flex-flow: row wrap;
     justify-content: center;
+    align-items: center;
     z-index: 3;
   }
 
@@ -21,7 +26,10 @@
     left: 0;
 
     border: 1px solid;
-    border-radius: 1ex;
+    border-radius: 1em;
+    box-sizing: border-box;
+
+    transition: all 0.16s ease-in-out;
   }
 
   .primary {
