@@ -1,6 +1,6 @@
 {
   "name": "progressive-mine-sweep",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Progressive (Incremental) take on classic Minesweeper puzzle",
   "author": "Pouya Larjani <pouya.larjani@gmail.com> (https://github.com/lepouya)",
   "license": "MIT",
