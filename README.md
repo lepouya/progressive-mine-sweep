@@ -50,4 +50,4 @@ Perhaps I could do prestige/reset options once this is ready
 ### Bugs, Issues, and Ideas
 
 - Turn off all automation options
-- When reset speed is 100, it should instant reset
+- Progress bars on how long is left on tasks to run

@@ -67,26 +67,34 @@ export function resetGameTask(context: Context) {
     return null;
   }
 
-  tickTimer(
-    resources.resetSpeed,
-    {
-      kind: "remainingTime",
-      value: F.resetTimeFormula(context),
-    },
-    function (_, timer) {
-      if (timer === 0) {
-        const m = F.numMinesFormula(context);
-        context.settings.tapMode = "reveal";
-        context.board = genBoard(
-          resources.rows.value(),
-          resources.cols.value(),
-          Math.floor(m),
-          Math.ceil(m),
-        );
-        F.stateChanged(context, "board", "active", true);
-      }
-    },
-  );
+  function onReset(_: any, timer: number) {
+    if (timer <= 0.001) {
+      const m = F.numMinesFormula(context);
+      context.settings.tapMode = "reveal";
+      context.board = genBoard(
+        resources.rows.value(),
+        resources.cols.value(),
+        Math.floor(m),
+        Math.ceil(m),
+      );
+      F.stateChanged(context, "board", "active", true);
+    }
+  }
+
+  const waitTime = F.resetTimeFormula(context);
+  if (waitTime < 0.001) {
+    onReset(resources.resetSpeed, waitTime);
+    return true;
+  } else {
+    tickTimer(
+      resources.resetSpeed,
+      {
+        kind: "remainingTime",
+        value: waitTime,
+      },
+      onReset,
+    );
+  }
 
   return false;
 }

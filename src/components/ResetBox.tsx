@@ -56,14 +56,18 @@ export default function ResetBox() {
     if (!isResetting) {
       setResetting(true);
       setMessageTime(0);
-      tickTimer(
-        resetSpeed,
-        {
-          kind: "remainingTime",
-          value: remainingTime == 0 ? waitTime : remainingTime,
-        },
-        (_, timer) => timer === 0 && resetBoard(auto),
-      );
+      if (waitTime < 0.001) {
+        resetBoard(auto);
+      } else {
+        tickTimer(
+          resetSpeed,
+          {
+            kind: "remainingTime",
+            value: remainingTime === 0 ? waitTime : remainingTime,
+          },
+          (_, timer) => timer <= 0.001 && resetBoard(auto),
+        );
+      }
     }
   }
 
