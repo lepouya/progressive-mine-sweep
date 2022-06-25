@@ -19,8 +19,7 @@
     z-index: 3;
   }
 
-  .primary,
-  .secondary {
+  > div:not(.children) {
     position: absolute;
     top: 0;
     left: 0;
@@ -33,18 +32,28 @@
   }
 
   .primary {
+    z-index: 2;
+  }
+
+  .secondary,
+  .disabled {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .primary {
     color: Theme.color(positive);
     @include Theme.background($positive: 85%);
-
-    z-index: 2;
   }
 
   .secondary {
     color: Theme.color(neutral);
     @include Theme.background($neutral: 85%, $secondary: 100%);
+  }
 
-    width: 100%;
-    height: 100%;
-    z-index: 1;
+  .disabled {
+    color: Theme.color(negative);
+    @include Theme.background($negative: 85%, $secondary: 100%);
   }
 }

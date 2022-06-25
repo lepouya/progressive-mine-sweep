@@ -31,8 +31,8 @@
   },
   {
     "name": "autoBoardUpgrade",
-    "singularName": "Auto Expand Board Dimensions",
-    "pluralName": "Auto Expand Board Dimensions",
+    "singularName": "Auto Expand Board",
+    "pluralName": "Auto Expand Board",
     "unlocked": false,
     "count": 0,
     "cost": "automation: (n+1)**2"

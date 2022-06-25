@@ -10,7 +10,7 @@ export type ProgressBarProps = PropsWithChildren<{
   height?: string | number;
 
   showPercent?: boolean;
-  visible?: boolean;
+  enabled?: boolean;
 
   className?: string;
 }>;
@@ -25,7 +25,7 @@ export default function ProgressBar({
   height = orientation === "vertical" ? "100%" : "1ex",
 
   showPercent = false,
-  visible = !isNaN(value),
+  enabled = !isNaN(value),
 
   className,
 
@@ -41,16 +41,16 @@ export default function ProgressBar({
       style={{ minWidth: width, minHeight: height }}
     >
       <div className="children">
-        {visible && showPercent && <span>{Math.floor(100 * pct)}%</span>}
+        {enabled && showPercent && <span>{Math.floor(100 * pct)}%</span>}
         {children}
       </div>
-      {visible && pct > 0.001 && (
+      {enabled && pct > 0.001 && (
         <div
           className="primary"
           style={{ width: `${endX * 100}%`, height: `${endY * 100}%` }}
         ></div>
       )}
-      {visible && <div className="secondary"></div>}
+      <div className={enabled ? "secondary" : "disabled"}></div>
     </div>
   );
 }

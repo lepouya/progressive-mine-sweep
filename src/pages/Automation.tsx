@@ -37,17 +37,15 @@ export default function Automation() {
         <div className="title-bar">Cell Automation</div>
 
         <div className="half">
-          <ProgressBar value={tickProgress(autoRevealNeighbors)}>
-            <ResourceRender
-              resource={autoRevealNeighbors}
-              showChrome={true}
-              showLocked={true}
-              infix=""
-              suffix={`time${
-                autoRevealNeighbors.count === 1 ? "" : "s"
-              } a minute`}
-            />
-          </ProgressBar>
+          <ResourceRender
+            resource={autoRevealNeighbors}
+            showChrome={true}
+            showLocked={true}
+            infix=""
+            suffix={`time${
+              autoRevealNeighbors.count === 1 ? "" : "s"
+            } a minute`}
+          />
         </div>
         <div className="right half">
           <BuyButton
@@ -71,23 +69,24 @@ export default function Automation() {
             }
           />
         </div>
-        <div className="full computed">
+        <ProgressBar
+          value={tickProgress(autoRevealNeighbors)}
+          className="full computed"
+        >
           Automatically reveals the neighboring hidden squares if all the mines
           around it have been flagged.
-        </div>
+        </ProgressBar>
 
         <hr className="separator" />
 
         <div className="half">
-          <ProgressBar value={tickProgress(autoFlagMines)}>
-            <ResourceRender
-              resource={autoFlagMines}
-              showChrome={true}
-              showLocked={true}
-              infix=""
-              suffix={`time${autoFlagMines.count === 1 ? "" : "s"} a minute`}
-            />
-          </ProgressBar>
+          <ResourceRender
+            resource={autoFlagMines}
+            showChrome={true}
+            showLocked={true}
+            infix=""
+            suffix={`time${autoFlagMines.count === 1 ? "" : "s"} a minute`}
+          />
         </div>
         <div className="right half">
           <BuyButton
@@ -109,23 +108,24 @@ export default function Automation() {
             enabled={autoFlagMines.unlocked && autoFlagMines.count > 0}
           />
         </div>
-        <div className="full computed">
+        <ProgressBar
+          value={tickProgress(autoFlagMines)}
+          className="full computed"
+        >
           Automatically flags the hidden mines around a square if there are no
           more hidden clear squares left around it.
-        </div>
+        </ProgressBar>
 
         <hr className="separator" />
 
         <div className="half">
-          <ProgressBar value={tickProgress(autoRevealHints)}>
-            <ResourceRender
-              resource={autoRevealHints}
-              showChrome={true}
-              showLocked={true}
-              infix=""
-              suffix={`time${autoRevealHints.count === 1 ? "" : "s"} a minute`}
-            />
-          </ProgressBar>
+          <ResourceRender
+            resource={autoRevealHints}
+            showChrome={true}
+            showLocked={true}
+            infix=""
+            suffix={`time${autoRevealHints.count === 1 ? "" : "s"} a minute`}
+          />
         </div>
         <div className="right half">
           <BuyButton
@@ -144,24 +144,23 @@ export default function Automation() {
             enabled={autoRevealHints.unlocked && autoRevealHints.count > 0}
           />
         </div>
-        <div className="full computed">
+        <ProgressBar
+          value={tickProgress(autoRevealHints)}
+          className="full computed"
+        >
           Automatically reveals any purchased hints.
-        </div>
+        </ProgressBar>
 
         <hr className="separator" />
 
         <div className="half">
-          <ProgressBar value={tickProgress(autoPurchaseHints)}>
-            <ResourceRender
-              resource={autoPurchaseHints}
-              showChrome={true}
-              showLocked={true}
-              infix=""
-              suffix={`time${
-                autoPurchaseHints.count === 1 ? "" : "s"
-              } a minute`}
-            />
-          </ProgressBar>
+          <ResourceRender
+            resource={autoPurchaseHints}
+            showChrome={true}
+            showLocked={true}
+            infix=""
+            suffix={`time${autoPurchaseHints.count === 1 ? "" : "s"} a minute`}
+          />
         </div>
         <div className="right half">
           <BuyButton
@@ -180,25 +179,26 @@ export default function Automation() {
             enabled={autoPurchaseHints.unlocked && autoPurchaseHints.count > 0}
           />
         </div>
-        <div className="full computed">
+        <ProgressBar
+          value={tickProgress(autoPurchaseHints)}
+          className="full computed"
+        >
           Automatically makes a hint purchase when there are no other actions
           available.
-        </div>
+        </ProgressBar>
       </div>
 
       <div className="game-controls panel">
         <div className="title-bar">Game Automation</div>
 
         <div className="half">
-          <ProgressBar value={tickProgress(autoResetGame)}>
-            <ResourceRender
-              resource={autoResetGame}
-              showChrome={true}
-              showLocked={true}
-              infix=""
-              suffix={`time${autoResetGame.count === 1 ? "" : "s"} a minute`}
-            />
-          </ProgressBar>
+          <ResourceRender
+            resource={autoResetGame}
+            showChrome={true}
+            showLocked={true}
+            infix=""
+            suffix={`time${autoResetGame.count === 1 ? "" : "s"} a minute`}
+          />
         </div>
         <div className="right half">
           <BuyButton
@@ -217,25 +217,26 @@ export default function Automation() {
             enabled={autoResetGame.unlocked && autoResetGame.count > 0}
           />
         </div>
-        <div className="full computed">
+        <ProgressBar
+          value={tickProgress(autoResetGame)}
+          className="full computed"
+        >
           Automatically initiates game reset when the game is either won or
           lost.
-        </div>
+        </ProgressBar>
       </div>
 
       <div className="game-controls panel">
         <div className="title-bar">Board Automation</div>
 
         <div className="half">
-          <ProgressBar value={tickProgress(autoBoardUpgrade)}>
-            <ResourceRender
-              resource={autoBoardUpgrade}
-              showChrome={true}
-              showLocked={true}
-              infix=""
-              suffix={`time${autoBoardUpgrade.count === 1 ? "" : "s"} a minute`}
-            />
-          </ProgressBar>
+          <ResourceRender
+            resource={autoBoardUpgrade}
+            showChrome={true}
+            showLocked={true}
+            infix=""
+            suffix={`time${autoBoardUpgrade.count === 1 ? "" : "s"} a minute`}
+          />
         </div>
         <div className="right half">
           <BuyButton
@@ -254,10 +255,13 @@ export default function Automation() {
             enabled={autoBoardUpgrade.unlocked && autoBoardUpgrade.count > 0}
           />
         </div>
-        <div className="full computed">
+        <ProgressBar
+          value={tickProgress(autoBoardUpgrade)}
+          className="full computed"
+        >
           Automatically purchases game width and game height expansions if
           affordable.
-        </div>
+        </ProgressBar>
       </div>
     </div>
   );
