@@ -141,7 +141,7 @@ export default function MineCell(props: Props) {
         style={{ width: cellSize, height: cellSize }}
         id={`cell-${cell.row}-${cell.col}`}
       >
-        <Icon cell={cell} size="80%" />
+        <Icon cell={cell} />
       </div>
     </td>
   );

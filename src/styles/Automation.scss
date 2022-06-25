@@ -24,4 +24,14 @@
       background: Theme.color(negative, 15%);
     }
   }
+
+  .icon {
+    display: inline-block;
+    align-items: center;
+    vertical-align: middle;
+
+    width: 1em;
+    height: 1em;
+    margin: 0;
+  }
 }
