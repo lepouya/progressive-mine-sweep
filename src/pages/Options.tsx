@@ -6,6 +6,7 @@ import ResourceRender from "../components/ResourceRender";
 import themeData from "../data/themes.json";
 import { setTheme } from "../utils/document";
 import { loadFromFile, saveToFile } from "../utils/fileStorage";
+import toast from "../components/Toast";
 
 export default function Options() {
   const context = useGameContext();
@@ -20,21 +21,29 @@ export default function Options() {
 
   function saveGame() {
     context.save(debug);
+    toast({ message: "Game saved!", type: "success" });
   }
 
   function loadGame() {
     if (context.load()) {
       navigate({ pathname: "/", search: location.search });
+      toast({ message: "Game loaded!", type: "success" });
+    } else {
+      toast({ message: "Load failed!", type: "fail" });
     }
   }
 
   function exportGame() {
     setTextContents(context.saveAs(debug));
+    toast({ message: "Game exported!", type: "success" });
   }
 
   function importGame() {
     if (context.loadAs(textContents)) {
       navigate({ pathname: "/", search: location.search });
+      toast({ message: "Game imported!", type: "success" });
+    } else {
+      toast({ message: "Import failed!", type: "fail" });
     }
   }
 
@@ -42,6 +51,9 @@ export default function Options() {
     loadFromFile((contents) => {
       if (context.loadAs(contents)) {
         navigate({ pathname: "/", search: location.search });
+        toast({ message: "Game imported!", type: "success" });
+      } else {
+        toast({ message: "Import failed!", type: "fail" });
       }
     });
   }
@@ -53,6 +65,7 @@ export default function Options() {
       .trim()
       .replace(/\D/g, "-");
     saveToFile(`progressive-mine-sweep-${date}`, context.saveAs(debug));
+    toast({ message: "Game exported!", type: "success" });
   }
 
   function changeFrequency(timer: string, value: string) {

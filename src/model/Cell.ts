@@ -1,4 +1,4 @@
-import { Counters } from "../utils/types";
+import { Expansion } from "../utils/types";
 
 export type CellContents = "clear" | "mine";
 export type CellState = "hidden" | "hinted" | "flagged" | "revealed" | "blown";
@@ -12,8 +12,8 @@ export type Cell = {
   state: CellState;
   locked?: boolean;
 
-  neighborContents: Counters<CellContents>;
-  neighborStates: Counters<CellState>;
+  neighborContents: Expansion<CellContents, number>;
+  neighborStates: Expansion<CellState, number>;
 };
 
 export const emptyCell: Cell = {

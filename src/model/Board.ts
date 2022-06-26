@@ -1,6 +1,6 @@
 import clamp from "../utils/clamp";
 import { setSaveProperties } from "../utils/store";
-import { Counters } from "../utils/types";
+import { Expansion } from "../utils/types";
 import { actOnCell, Cell, CellState, emptyCell } from "./Cell";
 
 export type BoardState = "inactive" | "active" | "won" | "lost";
@@ -13,7 +13,7 @@ export type Board = {
   numMines: number;
 
   state: BoardState;
-  cellCounts: Counters<CellState>;
+  cellCounts: Expansion<CellState, number>;
 };
 
 export const emptyBoard: Board = {

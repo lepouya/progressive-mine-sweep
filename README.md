@@ -32,7 +32,7 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### M5: Achievements
 
-- Notifications in corner
+- ~~Notifications in corner~~
 - Add achievement tracking
 - Some basic achievements to complete
 - Bonuses for achivements
@@ -50,3 +50,4 @@ Perhaps I could do prestige/reset options once this is ready
 ### Bugs, Issues, and Ideas
 
 - Turn off all automation options
+- Import css files from relevant tsx files

@@ -31,8 +31,8 @@ export type FunctionType<
   Return = unknown,
 > = (...args: Arguments) => Return;
 
-export type Counters<T extends string> = {
-  [K in T]: number;
+export type Expansion<Union extends string, Type> = {
+  [Key in Union]: Type;
 };
 
 export type Optional<T> = Nullable<

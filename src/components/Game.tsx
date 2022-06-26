@@ -13,6 +13,7 @@ import Upgrades from "../pages/Upgrades";
 import { setTheme } from "../utils/document";
 import useGameContext from "./GameContext";
 import Link from "./Link";
+import toast from "./Toast";
 
 export default function Game() {
   const {
@@ -49,6 +50,7 @@ export default function Game() {
           settings.saveFrequencySecs * 1000
       ) {
         save();
+        toast({ message: "Game saved!", type: "success" });
       }
 
       // Force re-render of child components
