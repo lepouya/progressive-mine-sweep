@@ -17,9 +17,12 @@
   }
 
   .icon {
+    width: 1em;
+    height: 1em;
+    margin: 0;
+
     display: inline-block;
     align-items: center;
     vertical-align: middle;
-    margin: 0;
   }
 }

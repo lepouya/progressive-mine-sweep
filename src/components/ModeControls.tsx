@@ -41,7 +41,7 @@ export default function ModeControls({
         onClick={setBuyMode}
         id={`button-${value.replace(/\W/g, "")}`}
       >
-        {icon && <Icon icon={icon} size="1em" />}
+        {icon && <Icon icon={icon} />}
         {text}
       </button>
     );
@@ -61,7 +61,6 @@ export default function ModeControls({
             <Icon
               state={settings.tapMode === "reveal" ? "revealed" : "flagged"}
               neighbors={9}
-              size="1em"
             />
             {settings.tapMode === "reveal" ? "Revealing" : "Flagging"}
           </button>
