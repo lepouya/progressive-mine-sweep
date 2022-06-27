@@ -35,6 +35,12 @@ export type Expansion<Union extends string, Type> = {
   [Key in Union]: Type;
 };
 
+export type KeysUnion<
+  T1 extends string,
+  T2 extends string,
+  Separator extends string = "-",
+> = `${T1}${Separator}${T2}`;
+
 export type Optional<T> = Nullable<
   T extends BaseType | AtomicType | FunctionType
     ? T

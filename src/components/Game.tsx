@@ -50,7 +50,7 @@ export default function Game() {
           settings.saveFrequencySecs * 1000
       ) {
         save();
-        toast({ message: "Game saved!", type: "success" });
+        toast.info("Game saved!");
       }
 
       // Force re-render of child components

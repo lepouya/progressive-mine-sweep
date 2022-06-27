@@ -80,8 +80,8 @@
   }
 
   .icon {
-    width: 1em;
-    height: 1em;
+    width: 1.5em;
+    height: 1.5em;
   }
 
   .shown {
@@ -112,17 +112,29 @@
     color: Theme.color(primary);
     @include Theme.background($neutral: 25%, $secondary: 75%);
     border-color: Theme.color(neutral, 75%);
+
+    .icon {
+      color: Theme.color(neutral);
+    }
   }
 
   .success {
     color: Theme.color(primary);
     @include Theme.background($positive: 25%, $secondary: 75%);
     border-color: Theme.color(positive, 75%);
+
+    .icon {
+      color: Theme.color(positive);
+    }
   }
 
   .fail {
     color: Theme.color(primary);
     @include Theme.background($negative: 25%, $secondary: 75%);
     border-color: Theme.color(negative, 75%);
+
+    .icon {
+      color: Theme.color(negative);
+    }
   }
 }

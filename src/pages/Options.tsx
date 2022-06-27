@@ -21,41 +21,30 @@ export default function Options() {
 
   function saveGame() {
     context.save(debug);
-    toast({ message: "Game saved!", type: "success" });
+    toast.success("Game saved!");
   }
 
   function loadGame() {
     if (context.load()) {
       navigate({ pathname: "/", search: location.search });
-      toast({ message: "Game loaded!", type: "success" });
+      toast.success("Game loaded!");
     } else {
-      toast({ message: "Load failed!", type: "fail" });
+      toast.fail("Load failed!");
     }
   }
 
   function exportGame() {
     setTextContents(context.saveAs(debug));
-    toast({ message: "Game exported!", type: "success" });
+    toast.success("Game exported!");
   }
 
   function importGame() {
     if (context.loadAs(textContents)) {
       navigate({ pathname: "/", search: location.search });
-      toast({ message: "Game imported!", type: "success" });
+      toast.success("Game imported!");
     } else {
-      toast({ message: "Import failed!", type: "fail" });
+      toast.fail("Import failed!");
     }
-  }
-
-  function loadFile() {
-    loadFromFile((contents) => {
-      if (context.loadAs(contents)) {
-        navigate({ pathname: "/", search: location.search });
-        toast({ message: "Game imported!", type: "success" });
-      } else {
-        toast({ message: "Import failed!", type: "fail" });
-      }
-    });
   }
 
   function saveFile() {
@@ -65,7 +54,18 @@ export default function Options() {
       .trim()
       .replace(/\D/g, "-");
     saveToFile(`progressive-mine-sweep-${date}`, context.saveAs(debug));
-    toast({ message: "Game exported!", type: "success" });
+    toast.success("Game exported!");
+  }
+
+  function loadFile() {
+    loadFromFile((contents) => {
+      if (context.loadAs(contents)) {
+        navigate({ pathname: "/", search: location.search });
+        toast.success("Game imported!");
+      } else {
+        toast.fail("Import failed!");
+      }
+    });
   }
 
   function changeFrequency(timer: string, value: string) {
