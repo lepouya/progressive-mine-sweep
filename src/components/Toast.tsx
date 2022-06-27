@@ -1,12 +1,11 @@
 // Inspired by github:Cogoport/cogo-toast
 
-import { MouseEventHandler, useState, useEffect } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
 import { createRoot, Root } from "react-dom/client";
 
 import { getHTMLElement } from "../utils/document";
-import { Optional, Expansion } from "../utils/types";
-import Icon from "./Icon";
-import { IconProps } from "./Icon";
+import { Expansion, Optional } from "../utils/types";
+import Icon, { IconProps } from "./Icon";
 
 export type ToastOptions = Optional<{
   id: number;

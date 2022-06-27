@@ -3,10 +3,10 @@ import { useLocation, useNavigate } from "react-router";
 
 import useGameContext from "../components/GameContext";
 import ResourceRender from "../components/ResourceRender";
+import toast from "../components/Toast";
 import themeData from "../data/themes.json";
 import { setTheme } from "../utils/document";
 import { loadFromFile, saveToFile } from "../utils/fileStorage";
-import toast from "../components/Toast";
 
 export default function Options() {
   const context = useGameContext();

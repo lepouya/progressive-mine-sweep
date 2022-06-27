@@ -9,5 +9,5 @@ html: head
   meta(name="description" content=package.description)
 
   !=require("data/favicon.json").favicon.html_code.replace(/\n/g,"")
-  link( rel="stylesheet" href=require("index.scss"))
+  link(rel="stylesheet" href=require("index.scss"))
   script(src=require("index.tsx"))

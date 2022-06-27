@@ -1,5 +1,4 @@
 import BuyButton from "../components/BuyButton";
-import { getTickProgress } from "../model/GameAutomation";
 import useGameContext from "../components/GameContext";
 import Icon from "../components/Icon";
 import ModeControls from "../components/ModeControls";
@@ -7,6 +6,7 @@ import ProgressBar from "../components/ProgressBar";
 import ResourceBar from "../components/ResourceBar";
 import ResourceRender from "../components/ResourceRender";
 import ToggleButton from "../components/ToggleButton";
+import { getTickProgress } from "../model/GameAutomation";
 import { Resource } from "../model/Resource";
 
 export default function Automation() {
