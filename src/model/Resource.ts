@@ -1,5 +1,6 @@
 import clamp from "../utils/clamp";
 import { setSaveProperties } from "../utils/store";
+import { Nullable } from "../utils/types";
 
 export type ResourceCount<Context, Result> = {
   resource: Resource<Context, Result> | string;
@@ -27,11 +28,11 @@ export type Resource<Context, Result> = {
   cost: (n: number, kind?: string) => ResourceCount<Context, Result>[];
 
   shouldTick?: (dt: number, source?: string) => boolean;
-  tick?: (dt: number, source?: string) => Result | null;
+  tick?: (dt: number, source?: string) => Nullable<Result>;
 
   execution: {
     lastTick?: number;
-    lastResult?: Result;
+    lastResult?: Nullable<Result>;
     lastAttempt?: number;
   };
 
@@ -57,7 +58,10 @@ export function genEmptyResource<Context, Result>(
     name,
     count: 0,
     extra: {},
-    value: (kind) => (!kind ? res.count : res.extra[kind] ?? 0),
+    value: (kind) =>
+      !kind
+        ? clamp(res.count, res.minCount ?? 0, res.maxCount ?? Infinity)
+        : res.extra[kind] ?? 0,
     cost: () => [],
     execution: {},
     rate: { count: 0, ticks: 0, pastCounts: [], pastTicks: [] },
@@ -69,6 +73,7 @@ export function genEmptyResource<Context, Result>(
     "disabled",
     "count",
     "maxCount",
+    "minCount",
     "extra",
   ]);
   return res;

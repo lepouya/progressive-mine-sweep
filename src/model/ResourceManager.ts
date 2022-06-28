@@ -42,6 +42,8 @@ export type PurchaseCost<Context, Result> = {
 };
 
 export type ManagedResource<Context, Result> = Resource<Context, Result> & {
+  manager: ResourceManager<Context, Result>;
+
   buy: (
     count?: number,
     style?: PurchaseStyle,
@@ -49,16 +51,27 @@ export type ManagedResource<Context, Result> = Resource<Context, Result> & {
     gainMultiplier?: number,
     costMultiplier?: number,
   ) => PurchaseCost<Context, Result>;
+  sell: (
+    count?: number,
+    kind?: string,
+    sellMultiplier?: number,
+  ) => PurchaseCost<Context, Result>;
   add: (
     count?: number,
     kind?: string,
     gainMultiplier?: number,
   ) => PurchaseCost<Context, Result>;
+
   canBuy: (
     count?: number,
     kind?: string,
     costMultiplier?: number,
   ) => PurchaseCost<Context, Result>;
+
+  onPurchase?: (
+    resource: ManagedResource<Context, Result>,
+    purchase: PurchaseCost<Context, Result>,
+  ) => void;
 };
 
 export type ResourceManagerSettings = {
@@ -95,19 +108,14 @@ export function genResourceManager<Context, Result>(
   return rm;
 }
 
-export function mergeResourceManagers<Context, Result>(
-  rm: ResourceManager<Context, Result>,
-  toLoad: Partial<ResourceManager<Context, Result>>,
-): ResourceManager<Context, Result> {
-  Object.values(toLoad["resources"] ?? {}).forEach((res) => rm.upsert(res));
-  return rm;
-}
-
 function resolve<Context, Result>(
   rm: ResourceManager<Context, Result>,
   resource: Resource<Context, Result> | string,
 ): ManagedResource<Context, Result> {
-  return rm.resources[typeof resource === "string" ? resource : resource.name];
+  return (
+    rm.resources[typeof resource === "string" ? resource : resource.name] ??
+    upsert(rm, resource)
+  );
 }
 
 function upsert<Context, Result>(
@@ -124,6 +132,7 @@ function upsert<Context, Result>(
     }
   }
 
+  res.manager = rm;
   res.buy = (
     count = 1,
     style = "partial",
@@ -138,6 +147,8 @@ function upsert<Context, Result>(
       gainMultiplier,
       costMultiplier,
     );
+  res.sell = (count, kind, sellMultiplier) =>
+    res.buy(-(count ?? 1), undefined, kind, undefined, sellMultiplier);
   res.add = (count, kind, gainMultiplier) =>
     res.buy(count, "free", kind, gainMultiplier);
   res.canBuy = (count, kind, costMultiplier) =>
@@ -232,7 +243,7 @@ function update<Context, Result>(
       const tick = (slice - res.execution.lastTick!) * tickScale;
 
       if (tick > 0 && (!res.shouldTick || res.shouldTick(tick, source))) {
-        res.execution.lastResult = res.tick!(tick, source) ?? undefined;
+        res.execution.lastResult = res.tick!(tick, source);
         res.execution.lastTick = slice;
         res.rate.deltaTicks = (res.rate.deltaTicks ?? 0) + 1;
         res.rate.lastTickUpdate ??= slice;
@@ -304,7 +315,12 @@ function purchase<Context, Result>(
             ]),
           )
           .flat();
-      return { count, gain, cost };
+
+      const purchaseCost = { count, gain, cost };
+      if (rc.resource.onPurchase) {
+        rc.resource.onPurchase(rc.resource, purchaseCost);
+      }
+      return purchaseCost;
     }
   });
 

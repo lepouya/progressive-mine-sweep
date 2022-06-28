@@ -4,11 +4,7 @@ import * as Store from "../utils/store";
 import { Board, emptyBoard, genBoardState } from "./Board";
 import { initGameResources } from "./GameResources";
 import { Resource } from "./Resource";
-import {
-  genResourceManager,
-  mergeResourceManagers,
-  ResourceManager,
-} from "./ResourceManager";
+import { genResourceManager, ResourceManager } from "./ResourceManager";
 import { defaultSettings, Settings } from "./Settings";
 
 export type Context<Update = any> = {
@@ -73,7 +69,9 @@ function _load<Update>(
     }
 
     context.board = genBoardState({ ...context.board, ...newContext.board });
-    mergeResourceManagers(context.resourceManager, newContext.resourceManager);
+    Object.values(newContext.resourceManager.resources).forEach((res) =>
+      context.resourceManager.upsert(res),
+    );
 
     context.settings.lastLoaded = Date.now();
     context.resourceManager.update(undefined, "load");
