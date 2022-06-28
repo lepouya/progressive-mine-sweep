@@ -7,11 +7,10 @@ import ResourceBar from "../components/ResourceBar";
 import ResourceRender from "../components/ResourceRender";
 import ToggleButton from "../components/ToggleButton";
 import { getTickProgress } from "../model/GameAutomation";
-import { Resource } from "../model/Resource";
+import { ManagedResource } from "../model/ResourceManager";
 
 export default function Automation() {
   const {
-    context,
     resources: {
       revealNeighbors,
       autoRevealNeighbors,
@@ -23,9 +22,9 @@ export default function Automation() {
     },
   } = useGameContext();
 
-  function tickProgress(res: Resource<any, any>) {
+  function tickProgress(res: ManagedResource<any, any>) {
     // Prevent flickering
-    return res.count >= 100 ? 1 : getTickProgress(context, res);
+    return res.count >= 100 ? 1 : getTickProgress(res);
   }
 
   return (

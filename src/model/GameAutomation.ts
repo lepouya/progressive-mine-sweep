@@ -4,17 +4,17 @@ import { genBoard, genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
 import * as F from "./GameFormulas";
-import { Resource } from "./Resource";
+import { ManagedResource } from "./ResourceManager";
 
 export function getTickProgress(
-  context: Context,
-  res: Resource<any, any>,
+  res: ManagedResource<any, any>,
   dt?: number,
 ): number {
   if (res.count <= 0 || !(res.unlocked ?? true) || res.disabled) {
     return NaN;
   }
 
+  const context = res.manager.context;
   dt ??=
     (Date.now() - (res.execution.lastTick ?? Date.now())) /
     1000.0 /
@@ -22,10 +22,12 @@ export function getTickProgress(
   return (dt * res.count) / context.settings.automationBaseSecs;
 }
 
-export function shouldTick(context: Context, res: Resource<any, any>) {
-  return function (dt: number, src?: string) {
-    return src === "tick" && getTickProgress(context, res, dt) >= 1.0;
-  };
+export function shouldTick(
+  this: ManagedResource<any, any>,
+  dt: number,
+  src?: string,
+) {
+  return src === "tick" && getTickProgress(this, dt) >= 1.0;
 }
 
 function canRevealNeighbors(cell: Cell) {

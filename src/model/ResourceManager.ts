@@ -161,37 +161,6 @@ function upsert<Context, Result>(
   return res;
 }
 
-export function compileResourceCost<Context, Result>(
-  rm: ResourceManager<Context, Result>,
-  cost: string,
-): (n: number) => ResourceCount<Context, Result>[] {
-  return eval(
-    "(n) => [" +
-      (cost as string)
-        .replace(/\s/gim, "")
-        .split(/[;,]/gim)
-        .map((cost) => {
-          const parts = cost
-            .split(/:/gim, 2)
-            .map((s) =>
-              s.replace(/\b\w+\b/gim, (m) =>
-                rm.resources[m] ? `rm.resources.${m}` : m,
-              ),
-            );
-          const rc = [
-            `resource: ${parts[0]}`,
-            `count: ${parts[parts.length - 1]}`,
-          ];
-          if (parts.length > 2) {
-            rc.push(`kind: ${parts[1]}`);
-          }
-          return `{${rc.join(", ")}}`;
-        })
-        .join(", ") +
-      "];",
-  );
-}
-
 function update<Context, Result>(
   rm: ResourceManager<Context, Result>,
   now: number,
@@ -220,7 +189,6 @@ function update<Context, Result>(
   const resources = Object.values(rm.resources).filter(
     (res) => res.unlocked ?? true,
   );
-  const tickResources = resources.filter((res) => res.tick && !res.disabled);
 
   resources.forEach((res) => {
     res.rate.lastCountUpdate ??= epoch;
@@ -231,9 +199,20 @@ function update<Context, Result>(
       now,
     );
     res.execution.lastAttempt = now;
+
+    if (typeof res.shouldTick === "string") {
+      res.shouldTick = compileResourceFunction(res, res.shouldTick, [
+        "dt",
+        "source",
+      ]);
+    }
+    if (typeof res.tick === "string") {
+      res.tick = compileResourceFunction(res, res.tick, ["dt", "source"]);
+    }
   });
 
   let results: Record<string, Result> = {};
+  const tickResources = resources.filter((res) => res.tick && !res.disabled);
   const tickScale = 1 / 1000.0 / timeDilation;
   while (dt > 0) {
     dt -= clamp(dt, minResourceUpdateSecs, maxResourceTickSecs);
@@ -376,7 +355,7 @@ function canAfford<Context, Result>(
 
 function getPurchaseCost<Context, Result>(
   rm: ResourceManager<Context, Result>,
-  resource: Resource<Context, Result>,
+  resource: ManagedResource<Context, Result>,
   count: number,
   kind: string,
   style: PurchaseStyle,
@@ -405,6 +384,10 @@ function getPurchaseCost<Context, Result>(
       gain: [{ resource, count: gainCount, kind }],
       cost: [],
     };
+  }
+
+  if (typeof resource.cost === "string") {
+    resource.cost = compileResourceCost(resource, resource.cost);
   }
 
   if (start > target) {
@@ -444,4 +427,61 @@ function getPurchaseCost<Context, Result>(
     gain: [{ resource, count: gainCount, kind }],
     cost,
   };
+}
+
+function compileResourceUsage<Context, Result>(
+  resourceManager: ResourceManager<Context, Result>,
+  str: string,
+  reserved: string[] = [],
+): string {
+  return str.replace(/\b\w+\b/gim, (token) =>
+    token.length > 0 &&
+    resourceManager.resources[token] &&
+    !reserved.includes(token)
+      ? `resourceManager.resources.${token}`
+      : token,
+  );
+}
+
+function compileResourceFunction<Context, Result>(
+  resource: ManagedResource<Context, Result>,
+  fn: string,
+  params: string[] = [],
+): (...args: any[]) => any {
+  const resourceManager = resource.manager;
+  return eval(
+    `(function(${params.join(",")}) { return ${compileResourceUsage(
+      resourceManager,
+      fn,
+      params,
+    )}; })`,
+  ).bind(resource);
+}
+
+function compileResourceCost<Context, Result>(
+  resource: ManagedResource<Context, Result>,
+  cost: string,
+): (n: number) => ResourceCount<Context, Result>[] {
+  const resourceManager = resource.manager;
+  return eval(
+    "(function(n) { return [" +
+      (cost as string)
+        .replace(/\s/gim, "")
+        .split(/[;,]/gim)
+        .map((cost) => {
+          const parts = cost
+            .split(/:/gim, 2)
+            .map((s) => compileResourceUsage(resourceManager, s));
+          const rc = [
+            `resource: ${parts[0]}`,
+            `count: ${parts[parts.length - 1]}`,
+          ];
+          if (parts.length > 2) {
+            rc.push(`kind: ${parts[1]}`);
+          }
+          return `{${rc.join(", ")}}`;
+        })
+        .join(", ") +
+      "]; })",
+  ).bind(resource);
 }

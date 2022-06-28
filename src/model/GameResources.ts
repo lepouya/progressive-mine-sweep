@@ -6,8 +6,7 @@ import resources_time from "../data/resources_time.json";
 import tickTimer from "../utils/tickTimer";
 import { Context } from "./Context";
 import * as Auto from "./GameAutomation";
-import { Resource } from "./Resource";
-import { compileResourceCost, ResourceManager } from "./ResourceManager";
+import { ResourceManager } from "./ResourceManager";
 
 const loadResources = [
   resources_time,
@@ -20,17 +19,7 @@ const loadResources = [
 export function initGameResources(
   rm: ResourceManager<Context<boolean>, boolean>,
 ): ResourceManager<Context<boolean>, boolean> {
-  const resources = (
-    loadResources as Partial<Resource<Context<boolean>, boolean>>[][]
-  )
-    .flat()
-    .map((props) => rm.upsert(props));
-
-  resources.forEach((res) => {
-    if (typeof res.cost === "string") {
-      res.cost = compileResourceCost(rm, res.cost);
-    }
-  });
+  loadResources.flat().forEach((props: any) => rm.upsert(props));
 
   tickTimer(rm.get("resetSpeed"), { kind: "remainingTime" });
   tickTimer(rm.get("totalTime"), { direction: 1 });
@@ -51,7 +40,9 @@ export function initGameResources(
 
   tasks_auto
     .map((res) => rm.get(res.name))
-    .forEach((res) => (res.shouldTick = Auto.shouldTick(rm.context, res)));
+    .forEach((res) => {
+      res.shouldTick = Auto.shouldTick;
+    });
 
   rm.get("autoRevealNeighbors").tick = () =>
     Auto.revealNeighborsTask(rm.context);
