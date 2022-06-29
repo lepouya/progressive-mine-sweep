@@ -1,96 +1,69 @@
-import { Resource } from "../model/Resource";
 import clamp from "./clamp";
 
-export default function tickTimer<Context, Result>(
-  res: Resource<Context, Result>,
+export default function tickTimer(
+  res: {
+    count?: number;
+    extra?: Record<string, number>;
+  },
   {
     kind = "",
-    source = "",
-    value = undefined as number | undefined,
+    tickSource = "",
 
-    min = 0.0,
-    max = +Infinity,
-    direction = -1.0,
+    minValue = 0.0,
+    maxValue = +Infinity,
+    direction = 1.0,
 
-    streakKind = "",
-    maxStreakKind = "",
-    minStreakKind = "",
+    streakKind = "current",
+    maxStreakKind = "max",
+    minStreakKind = "min",
     resetStreakSource = "",
-
-    combineWithCurrentTick = false,
-    assignToResourceTick = true,
   } = {},
-  onEvent?: (
-    res: Resource<Context, Result>,
-    value: number,
-    kind?: string,
-    source?: string,
-  ) => Result,
 ) {
-  const oldTick = res.tick;
-  const newTick = (dt: number, src?: string) => {
-    if (!source || src === source) {
-      let cur = (kind ? res.extra[kind] : res.count) ?? 0;
-      if ((cur > min || direction > 0) && (cur < max || direction < 0)) {
-        cur = clamp(cur + direction * dt, min, max);
-        if (kind) {
+  return (dt: number, src?: string) => {
+    if (!tickSource || src === tickSource) {
+      let cur = (kind && res.extra ? res.extra[kind] : res.count) ?? 0;
+      if (
+        (cur > minValue || direction > 0) &&
+        (cur < maxValue || direction < 0)
+      ) {
+        cur = clamp(cur + direction * dt, minValue, maxValue);
+        if (kind && res.extra) {
           res.extra[kind] = cur;
         } else {
           res.count = cur;
         }
 
-        if (streakKind) {
+        if (streakKind && res.extra && res.extra[streakKind] != null) {
           res.extra[streakKind] = clamp(
-            (res.extra[streakKind] ?? 0) + direction * dt,
-            min,
-            max,
+            res.extra[streakKind] + direction * dt,
+            minValue,
+            maxValue,
           );
 
           if (
             maxStreakKind &&
-            (res.extra[maxStreakKind] ?? min) < res.extra[streakKind]
+            res.extra[maxStreakKind] != null &&
+            res.extra[maxStreakKind] < res.extra[streakKind]
           ) {
             res.extra[maxStreakKind] = res.extra[streakKind];
           }
 
           if (
             minStreakKind &&
-            (res.extra[minStreakKind] ?? max) > res.extra[streakKind]
+            res.extra[minStreakKind] != null &&
+            res.extra[minStreakKind] > res.extra[streakKind]
           ) {
             res.extra[minStreakKind] = res.extra[streakKind];
           }
         }
-
-        if (onEvent && (cur === min || cur === max)) {
-          return onEvent(res, cur, kind, src);
-        }
       }
     } else if (!resetStreakSource || src === resetStreakSource) {
-      if (streakKind) {
-        res.extra[streakKind] = direction > 0 ? min : direction < 0 ? max : 0;
+      if (streakKind && res.extra) {
+        res.extra[streakKind] =
+          direction > 0 ? minValue : direction < 0 ? maxValue : 0;
       }
     }
 
     return null;
   };
-  const tick =
-    oldTick && combineWithCurrentTick
-      ? (dt: number, src?: string) => {
-          oldTick(dt, src);
-          return newTick(dt, src);
-        }
-      : newTick;
-
-  if (assignToResourceTick) {
-    res.tick = tick;
-  }
-  if (value != undefined) {
-    if (kind) {
-      res.extra[kind] = value;
-    } else {
-      res.count = value;
-    }
-  }
-
-  return tick;
 }

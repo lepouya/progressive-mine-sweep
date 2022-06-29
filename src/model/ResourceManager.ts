@@ -1,11 +1,13 @@
+import apply from "../utils/apply";
 import assign from "../utils/assign";
 import clamp from "../utils/clamp";
+import { compileInlineFunction } from "../utils/compiler";
 import dedupe from "../utils/dedupe";
 import { setSaveProperties } from "../utils/store";
+import tickTimer from "../utils/tickTimer";
 import * as R from "./Resource";
 
 import type { Resource, ResourceCount } from "./Resource";
-
 export type ResourceManager<Context, Result> = {
   context: Context;
   settings: Partial<ResourceManagerSettings>;
@@ -212,13 +214,20 @@ function update<Context, Result>(
     res.execution.lastAttempt = now;
 
     if (typeof res.shouldTick === "string") {
-      res.shouldTick = compileResourceFunction(res, res.shouldTick, [
-        "dt",
-        "source",
-      ]);
+      res.shouldTick = compileInlineFunction(
+        res.shouldTick,
+        res,
+        ["dt", "source"],
+        { ...rm.context, ...rm, ...rm.resources },
+      );
     }
     if (typeof res.tick === "string") {
-      res.tick = compileResourceFunction(res, res.tick, ["dt", "source"]);
+      res.tick = compileInlineFunction(res.tick, res, ["dt", "source"], {
+        ...rm.context,
+        ...rm,
+        ...rm.resources,
+        timer: apply(tickTimer, res),
+      });
     }
   });
 
@@ -276,11 +285,11 @@ function update<Context, Result>(
 
     if (res.onChange) {
       const changeResults = [];
-      if (res.count !== cache[res.name][""]) {
+      if (res.count !== (cache[res.name] ?? {})[""]) {
         changeResults.push(res.onChange(res, res.count, undefined, source));
       }
       for (const kind in res.extra) {
-        if (res.extra[kind] !== cache[res.name][kind]) {
+        if (res.extra[kind] !== (cache[res.name] ?? {})[kind]) {
           changeResults.push(res.onChange(res, res.extra[kind], kind, source));
         }
       }
@@ -418,7 +427,16 @@ function getPurchaseCost<Context, Result>(
   }
 
   if (typeof resource.cost === "string") {
-    resource.cost = compileResourceCost(resource, resource.cost);
+    resource.cost = compileInlineFunction(
+      processCostFunction(resource.cost),
+      resource,
+      ["n"],
+      {
+        ...rm.context,
+        ...rm,
+        ...rm.resources,
+      },
+    );
   }
 
   if (start > target) {
@@ -460,59 +478,24 @@ function getPurchaseCost<Context, Result>(
   };
 }
 
-function compileResourceUsage<Context, Result>(
-  resourceManager: ResourceManager<Context, Result>,
-  str: string,
-  reserved: string[] = [],
-): string {
-  return str.replace(/\b\w+\b/gim, (token) =>
-    token.length > 0 &&
-    resourceManager.resources[token] &&
-    !reserved.includes(token)
-      ? `resourceManager.resources.${token}`
-      : token,
+function processCostFunction(cost: string): string {
+  return (
+    "[" +
+    cost
+      .replace(/\s/gim, "")
+      .split(/[;,]/gim)
+      .map((cost) => {
+        const parts = cost.split(/:/gim, 2);
+        const rc = [
+          `resource: ${parts[0]}`,
+          `count: ${parts[parts.length - 1]}`,
+        ];
+        if (parts.length > 2) {
+          rc.push(`kind: ${parts[1]}`);
+        }
+        return "{" + rc.join(", ") + "}";
+      })
+      .join(", ") +
+    "]"
   );
-}
-
-function compileResourceFunction<Context, Result>(
-  resource: ManagedResource<Context, Result>,
-  fn: string,
-  params: string[] = [],
-): (...args: any[]) => any {
-  const resourceManager = resource.manager;
-  return eval(
-    `(function(${params.join(",")}) { return ${compileResourceUsage(
-      resourceManager,
-      fn,
-      params,
-    )}; })`,
-  ).bind(resource);
-}
-
-function compileResourceCost<Context, Result>(
-  resource: ManagedResource<Context, Result>,
-  cost: string,
-): (n: number) => ResourceCount<Context, Result>[] {
-  const resourceManager = resource.manager;
-  return eval(
-    "(function(n) { return [" +
-      (cost as string)
-        .replace(/\s/gim, "")
-        .split(/[;,]/gim)
-        .map((cost) => {
-          const parts = cost
-            .split(/:/gim, 2)
-            .map((s) => compileResourceUsage(resourceManager, s));
-          const rc = [
-            `resource: ${parts[0]}`,
-            `count: ${parts[parts.length - 1]}`,
-          ];
-          if (parts.length > 2) {
-            rc.push(`kind: ${parts[1]}`);
-          }
-          return `{${rc.join(", ")}}`;
-        })
-        .join(", ") +
-      "]; })",
-  ).bind(resource);
 }

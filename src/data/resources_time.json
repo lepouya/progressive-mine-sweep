@@ -2,7 +2,8 @@
   {
     "name": "totalTime",
     "icon": "clock",
-    "display": "time"
+    "display": "time",
+    "tick": "timer()"
   },
   {
     "name": "activeTime",
@@ -11,7 +12,8 @@
     "extra": {
       "current": 0,
       "max": 0
-    }
+    },
+    "tick": "timer({ tickSource: 'tick' })"
   },
   {
     "name": "offlineTime",
@@ -20,6 +22,7 @@
     "extra": {
       "current": 0,
       "max": 0
-    }
+    },
+    "tick": "timer({ tickSource: 'load' })"
   }
 ]

@@ -48,7 +48,8 @@
     "extra": {
       "remainingTime": 0
     },
-    "cost": "resets: 1, cells: n"
+    "cost": "resets: 1, cells: n",
+    "tick": "timer({ kind: 'remainingTime', direction: -1 })"
   },
   {
     "name": "revealNeighbors",
