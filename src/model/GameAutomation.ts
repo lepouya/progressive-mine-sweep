@@ -1,6 +1,5 @@
 import { shuffle } from "../utils/shuffle";
-import tickTimer from "../utils/tickTimer";
-import { genBoard, genHints } from "./Board";
+import { genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
 import * as F from "./GameFormulas";
@@ -79,33 +78,17 @@ export function resetGameTask(context: Context) {
     return null;
   }
 
-  function onReset(_: any, timer: number) {
-    if (timer <= 0.001) {
-      const m = F.numMinesFormula(context);
-      context.settings.tapMode = "reveal";
-      context.board = genBoard(
-        resources.rows.value(),
-        resources.cols.value(),
-        Math.floor(m),
-        Math.ceil(m),
-      );
-      F.stateChanged(context, "board", "active", true);
-    }
-  }
-
   const waitTime = F.resetTimeFormula(context);
   if (waitTime < 0.001) {
-    onReset(resources.resetSpeed, waitTime);
+    F.boardReset(context, true);
     return true;
   } else {
-    tickTimer(
-      resources.resetSpeed,
-      {
-        kind: "remainingTime",
-        value: waitTime,
-      },
-      onReset,
-    );
+    resources.resetSpeed.extra.remainingTime = waitTime;
+    resources.resetSpeed.onChange = (_, timer, kind, src) =>
+      timer < 0.001 &&
+      kind === "remainingTime" &&
+      src === "tick" &&
+      F.boardReset(context, true);
   }
 
   return false;

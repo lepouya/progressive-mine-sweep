@@ -1,13 +1,7 @@
 import { MouseEvent, useEffect, useState } from "react";
 
-import { genBoard, genHints } from "../model/Board";
-import {
-  numMinesFormula,
-  resetTimeFormula,
-  stateChanged,
-} from "../model/GameFormulas";
+import { boardReset, resetTimeFormula } from "../model/GameFormulas";
 import message from "../utils/message";
-import tickTimer from "../utils/tickTimer";
 import useGameContext from "./GameContext";
 import ProgressCircle from "./ProgressCircle";
 
@@ -15,9 +9,7 @@ export default function ResetBox() {
   const {
     context,
     board,
-    setBoard,
-    settings,
-    resources: { rows, cols, resets, resetSpeed },
+    resources: { resetSpeed },
   } = useGameContext();
   const [title, setTitle] = useState<string>(board.state);
   const [isResetting, setResetting] = useState(false);
@@ -29,7 +21,7 @@ export default function ResetBox() {
   }, [board, board.state]);
 
   if (board.rows === 0 || board.cols === 0 || board.state === "inactive") {
-    resetBoard(true);
+    boardReset(context, true);
     return null;
   } else if (board.state === "active") {
     return null;
@@ -39,7 +31,10 @@ export default function ResetBox() {
   const remainingTime = resetSpeed.extra.remainingTime;
 
   if (!isResetting && remainingTime > 0) {
-    startReset(undefined, true);
+    setResetting(true);
+    setMessageTime(0);
+  } else if (isResetting && remainingTime < 0.001) {
+    setResetting(false);
   }
 
   if (
@@ -50,51 +45,21 @@ export default function ResetBox() {
     setMessageTime(messageTime + 2);
   }
 
-  function startReset(event?: MouseEvent, auto = false) {
+  function startReset(event?: MouseEvent) {
     event?.preventDefault();
 
     if (!isResetting) {
-      setResetting(true);
-      setMessageTime(0);
       if (waitTime < 0.001) {
-        resetBoard(auto);
-      } else {
-        tickTimer(
-          resetSpeed,
-          {
-            kind: "remainingTime",
-            value: remainingTime === 0 ? waitTime : remainingTime,
-          },
-          (_, timer) => timer <= 0.001 && resetBoard(auto),
-        );
+        boardReset(context, false);
+      } else if (resetSpeed.extra.remainingTime < 0.001) {
+        resetSpeed.extra.remainingTime = waitTime;
+        resetSpeed.onChange = (_, timer, kind, src) =>
+          timer < 0.001 &&
+          kind === "remainingTime" &&
+          src === "tick" &&
+          boardReset(context, false);
       }
     }
-  }
-
-  function resetBoard(auto = false) {
-    const firstGame =
-      auto &&
-      context.board.state === "inactive" &&
-      resets.count === 0 &&
-      resets.extra.manual === 0 &&
-      resets.extra.auto === 0;
-
-    const m = firstGame ? 1 : numMinesFormula(context);
-
-    setResetting(false);
-    setBoard(genBoard(rows.value(), cols.value(), Math.floor(m), Math.ceil(m)));
-    stateChanged(context, "board", "active", auto);
-    settings.tapMode = "reveal";
-
-    if (firstGame) {
-      // Free hint on first game!
-      if (genHints(context.board, 1, 0, 0, 1) === 0) {
-        genHints(context.board, 1, 0, 1, 1);
-      }
-      stateChanged(context, "cell", "hinted", auto);
-    }
-
-    return true;
   }
 
   return (

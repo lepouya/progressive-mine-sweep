@@ -1,5 +1,5 @@
 import { shuffle } from "../utils/shuffle";
-import { Board } from "./Board";
+import { Board, genBoard, genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
 
@@ -163,6 +163,37 @@ export function stateChanged(
       context.resourceManager.resources.wins.extra.streak = 0;
       break;
   }
+}
+
+export function boardReset(context: Context, automatic = false) {
+  const resources = context.resourceManager.resources;
+  const firstGame =
+    automatic &&
+    context.board.state === "inactive" &&
+    resources.resets.count === 0 &&
+    resources.resets.extra.manual === 0 &&
+    resources.resets.extra.auto === 0;
+
+  // First game always has 1 mine
+  const m = firstGame ? 1 : numMinesFormula(context);
+
+  context.settings.tapMode = "reveal";
+  context.board = genBoard(
+    resources.rows.value(),
+    resources.cols.value(),
+    Math.floor(m),
+    Math.ceil(m),
+  );
+
+  if (firstGame) {
+    // Free hint on first game!
+    if (genHints(context.board, 1, 0, 0, 1) === 0) {
+      genHints(context.board, 1, 0, 1, 1);
+    }
+    stateChanged(context, "cell", "hinted", automatic);
+  }
+
+  return true;
 }
 
 const _targetStates: Record<string, string> = {

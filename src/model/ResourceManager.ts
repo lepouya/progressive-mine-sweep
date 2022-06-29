@@ -72,6 +72,12 @@ export type ManagedResource<Context, Result> = Resource<Context, Result> & {
     resource: ManagedResource<Context, Result>,
     purchase: PurchaseCost<Context, Result>,
   ) => void;
+  onChange?: (
+    resource: ManagedResource<Context, Result>,
+    value: number,
+    kind?: string,
+    source?: string,
+  ) => Result;
 };
 
 export type ResourceManagerSettings = {
@@ -186,11 +192,16 @@ function update<Context, Result>(
 
   rm.settings.lastUpdate = now;
   const epoch = now - dt * 1000.0;
+  const cache: Record<string, Record<string, number>> = {};
   const resources = Object.values(rm.resources).filter(
     (res) => res.unlocked ?? true,
   );
 
   resources.forEach((res) => {
+    if (res.onChange) {
+      cache[res.name] = { ...res.extra, "": res.count };
+    }
+
     res.rate.lastCountUpdate ??= epoch;
     res.rate.lastCount ??= res.count;
     res.execution.lastTick = clamp(
@@ -211,7 +222,7 @@ function update<Context, Result>(
     }
   });
 
-  let results: Record<string, Result> = {};
+  const results: Record<string, Result[]> = {};
   const tickResources = resources.filter((res) => res.tick && !res.disabled);
   const tickScale = 1 / 1000.0 / timeDilation;
   while (dt > 0) {
@@ -227,7 +238,10 @@ function update<Context, Result>(
         res.rate.deltaTicks = (res.rate.deltaTicks ?? 0) + 1;
         res.rate.lastTickUpdate ??= slice;
         if (res.execution.lastResult) {
-          results[res.name] = res.execution.lastResult;
+          results[res.name] = dedupe([
+            ...(results[res.name] ?? []),
+            res.execution.lastResult,
+          ]);
         }
       }
     });
@@ -259,9 +273,26 @@ function update<Context, Result>(
       res.rate.pastTicks.unshift(res.rate.ticks);
       res.rate.pastTicks.splice(rateHistoryWindow);
     }
+
+    if (res.onChange) {
+      const changeResults = [];
+      if (res.count !== cache[res.name][""]) {
+        changeResults.push(res.onChange(res, res.count, undefined, source));
+      }
+      for (const kind in res.extra) {
+        if (res.extra[kind] !== cache[res.name][kind]) {
+          changeResults.push(res.onChange(res, res.extra[kind], kind, source));
+        }
+      }
+
+      results[res.name] = dedupe([
+        ...(results[res.name] ?? []),
+        ...changeResults,
+      ]);
+    }
   });
 
-  return dedupe(Object.values(results));
+  return dedupe(Object.values(results).flat());
 }
 
 function purchase<Context, Result>(
