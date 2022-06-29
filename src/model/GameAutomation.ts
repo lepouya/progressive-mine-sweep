@@ -3,12 +3,9 @@ import { genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
 import * as F from "./GameFormulas";
-import { ManagedResource } from "./ResourceManager";
+import { Resource } from "./Resource";
 
-export function getTickProgress(
-  res: ManagedResource<any, any>,
-  dt?: number,
-): number {
+export function getTickProgress(res: Resource<any, any>, dt?: number): number {
   if (res.count <= 0 || !(res.unlocked ?? true) || res.disabled) {
     return NaN;
   }
@@ -22,7 +19,7 @@ export function getTickProgress(
 }
 
 export function shouldAutoTick(
-  this: ManagedResource<any, any>,
+  this: Resource<any, any>,
   dt: number,
   src?: string,
 ) {

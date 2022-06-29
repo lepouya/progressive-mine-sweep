@@ -2,8 +2,7 @@ import assign from "../utils/assign";
 import * as LocalStore from "../utils/localStorage";
 import * as Store from "../utils/store";
 import { Board, emptyBoard, genBoardState } from "./Board";
-import { Resource } from "./Resource";
-import { genResourceManager, ResourceManager } from "./ResourceManager";
+import { genResourceManager, Resource, ResourceManager } from "./Resource";
 import { defaultSettings, Settings } from "./Settings";
 
 export type Context<Update = any> = {

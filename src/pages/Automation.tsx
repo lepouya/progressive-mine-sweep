@@ -7,7 +7,7 @@ import ResourceBar from "../components/ResourceBar";
 import ResourceRender from "../components/ResourceRender";
 import ToggleButton from "../components/ToggleButton";
 import { getTickProgress } from "../model/GameAutomation";
-import { ManagedResource } from "../model/ResourceManager";
+import { Resource } from "../model/Resource";
 
 export default function Automation() {
   const {
@@ -22,7 +22,7 @@ export default function Automation() {
     },
   } = useGameContext();
 
-  function tickProgress(res: ManagedResource<any, any>) {
+  function tickProgress(res: Resource<any, any>) {
     // Prevent flickering
     return res.count >= 100 ? 1 : getTickProgress(res);
   }
