@@ -3,31 +3,41 @@
     "name": "autoRevealNeighbors",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: Math.floor((n+1)**1.5)"
+    "cost": "automation: Math.floor((n+1)**1.5)",
+    "shouldTick": "shouldAutoTick",
+    "tick": "revealNeighborsTask(context, dt, source)"
   },
   {
     "name": "autoFlagMines",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: Math.floor((n+1)**1.5)"
+    "cost": "automation: Math.floor((n+1)**1.5)",
+    "shouldTick": "shouldAutoTick",
+    "tick": "flagMinesTask(context, dt, source)"
   },
   {
     "name": "autoRevealHints",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: Math.floor((n+1)**1.5)"
+    "cost": "automation: Math.floor((n+1)**1.5)",
+    "shouldTick": "shouldAutoTick",
+    "tick": "revealHintsTask(context, dt, source)"
   },
   {
     "name": "autoPurchaseHints",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: (n+1)**2"
+    "cost": "automation: (n+1)**2",
+    "shouldTick": "shouldAutoTick",
+    "tick": "purchaseHintsTask(context, dt, source)"
   },
   {
     "name": "autoResetGame",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: Math.floor((n+1)**1.5)"
+    "cost": "automation: Math.floor((n+1)**1.5)",
+    "shouldTick": "shouldAutoTick",
+    "tick": "resetGameTask(context, dt, source)"
   },
   {
     "name": "autoBoardUpgrade",
@@ -35,6 +45,8 @@
     "pluralName": "Auto Expand Board",
     "unlocked": false,
     "count": 0,
-    "cost": "automation: (n+1)**2"
+    "cost": "automation: (n+1)**2",
+    "shouldTick": "shouldAutoTick",
+    "tick": "expandBoardDims(context, dt, source)"
   }
 ]

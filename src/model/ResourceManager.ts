@@ -5,6 +5,7 @@ import { compileInlineFunction } from "../utils/compiler";
 import dedupe from "../utils/dedupe";
 import { setSaveProperties } from "../utils/store";
 import tickTimer from "../utils/tickTimer";
+import * as Auto from "./GameAutomation";
 import * as R from "./Resource";
 
 import type { Resource, ResourceCount } from "./Resource";
@@ -218,7 +219,7 @@ function update<Context, Result>(
         res.shouldTick,
         res,
         ["dt", "source"],
-        { ...rm.context, ...rm, ...rm.resources },
+        { ...rm.context, ...rm, ...rm.resources, ...Auto },
       );
     }
     if (typeof res.tick === "string") {
@@ -226,6 +227,7 @@ function update<Context, Result>(
         ...rm.context,
         ...rm,
         ...rm.resources,
+        ...Auto,
         timer: apply(tickTimer, res),
       });
     }

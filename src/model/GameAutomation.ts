@@ -21,7 +21,7 @@ export function getTickProgress(
   return (dt * res.count) / context.settings.automationBaseSecs;
 }
 
-export function shouldTick(
+export function shouldAutoTick(
   this: ManagedResource<any, any>,
   dt: number,
   src?: string,

@@ -2,7 +2,6 @@ import assign from "../utils/assign";
 import * as LocalStore from "../utils/localStorage";
 import * as Store from "../utils/store";
 import { Board, emptyBoard, genBoardState } from "./Board";
-import { initGameResources } from "./GameResources";
 import { Resource } from "./Resource";
 import { genResourceManager, ResourceManager } from "./ResourceManager";
 import { defaultSettings, Settings } from "./Settings";
@@ -25,9 +24,7 @@ export function emptyContext<Update>(
     lastLoaded: Date.now(),
   };
   context.board = { ...emptyBoard };
-  context.resourceManager = initGameResources(
-    genResourceManager(context, context.settings),
-  );
+  context.resourceManager = genResourceManager(context, context.settings);
 
   return context;
 }
