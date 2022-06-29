@@ -5,10 +5,10 @@ import { compileInlineFunction } from "../utils/compiler";
 import dedupe from "../utils/dedupe";
 import { setSaveProperties } from "../utils/store";
 import tickTimer from "../utils/tickTimer";
-import * as Auto from "./GameAutomation";
 import * as R from "./Resource";
 
 import type { Resource, ResourceCount } from "./Resource";
+
 export type ResourceManager<Context, Result> = {
   context: Context;
   settings: Partial<ResourceManagerSettings>;
@@ -219,15 +219,14 @@ function update<Context, Result>(
         res.shouldTick,
         res,
         ["dt", "source"],
-        { ...rm.context, ...rm, ...rm.resources, ...Auto },
+        { ...rm, ...rm.context, ...rm.resources },
       );
     }
     if (typeof res.tick === "string") {
       res.tick = compileInlineFunction(res.tick, res, ["dt", "source"], {
-        ...rm.context,
         ...rm,
+        ...rm.context,
         ...rm.resources,
-        ...Auto,
         timer: apply(tickTimer, res),
       });
     }
