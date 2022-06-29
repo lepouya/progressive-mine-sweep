@@ -323,7 +323,8 @@ export default function Options() {
           <div className="full" id="debug-resources">
             {JSON.stringify(
               context.resourceManager,
-              (key, value) => (key !== "context" ? value : undefined),
+              (key, value) =>
+                disallowedResourceKeys.includes(key) ? undefined : value,
               2,
             )}
           </div>
@@ -337,3 +338,5 @@ export default function Options() {
     </div>
   );
 }
+
+const disallowedResourceKeys = ["context", "manager"];
