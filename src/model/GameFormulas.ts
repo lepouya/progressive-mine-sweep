@@ -2,6 +2,7 @@ import { shuffle } from "../utils/shuffle";
 import { Board, genBoard, genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
+import { Resource } from "./Resource";
 
 export function boardProgressFormula({ board }: Context): number {
   return (
@@ -89,7 +90,7 @@ export function revealNeighbors(
   }
 
   if (shouldCountStats) {
-    countActions(context, res.name, automatic);
+    countActions(res, automatic);
     if (choices.length === 0) {
       res.extra.useless++;
     }
@@ -99,32 +100,34 @@ export function revealNeighbors(
 }
 
 export function countActions(
-  context: Context,
-  resource: string,
+  resource: Resource,
   automatic: boolean,
-  factor = 1,
+  count = 1,
 ) {
-  const multiplier = scoreMultiplier(context);
-  const res = context.resourceManager.resources[resource ?? ""];
-  const auto = context.resourceManager.resources.automation;
-
   if (automatic) {
-    auto.count += multiplier * factor;
-    auto.extra.total += factor;
-    if (res && res.extra.auto != null) {
-      res.extra.auto += factor;
+    const auto = resource.manager.resources.automation;
+    auto.add(count, "", scoreMultiplier(resource.manager.context));
+    auto.extra.total += count;
+
+    if (resource.extra.auto != null) {
+      resource.extra.auto += count;
     }
-  } else if (res && res.extra.manual != null) {
-    res.extra.manual += factor;
+  } else if (resource.extra.manual != null) {
+    resource.extra.manual += count;
   }
 
-  if (res && res.extra.streak != null) {
-    res.extra.streak += factor;
+  if (resource.extra.total != null) {
+    resource.extra.total += count;
+  }
+
+  if (resource.extra.streak != null) {
+    resource.extra.streak += count;
+
     if (
-      res.extra.longestStreak != null &&
-      res.extra.streak > res.extra.longestStreak
+      resource.extra.longestStreak != null &&
+      resource.extra.streak > resource.extra.longestStreak
     ) {
-      res.extra.longestStreak = res.extra.streak;
+      resource.extra.longestStreak = resource.extra.streak;
     }
   }
 }
@@ -134,33 +137,31 @@ export function stateChanged(
   target: "board" | "cell",
   state: string,
   automatic: boolean,
-  factor = 1,
+  count = 1,
 ) {
+  const resources = context.resourceManager.resources;
   const multiplier = scoreMultiplier(context);
-  const resName = _targetStates[target + ":" + state];
-  let res = context.resourceManager.resources[resName ?? ""];
 
-  if (resName && res) {
-    res.count += factor * multiplier;
-    countActions(context, res.name, automatic, factor);
+  const res = resources[_targetStates[target + ":" + state] ?? ""];
+  if (res) {
+    res.add(count, "", multiplier);
+    countActions(res, automatic, count);
   }
 
   switch (target + ":" + state) {
     case "cell:unflagged":
-      res = context.resourceManager.resources.flags;
-      res.count -= factor * multiplier;
-      res.extra.unflags += factor;
+      resources.flags.add(-count, "", multiplier);
+      resources.flags.extra.unflags += count;
       break;
     case "cell:unrevealed":
-      res = context.resourceManager.resources.cells;
-      res.count -= factor * multiplier;
-      res.extra.hidden += factor;
+      resources.cells.add(-count, "", multiplier);
+      resources.cells.extra.hidden += count;
       break;
     case "board:won":
-      context.resourceManager.resources.losses.extra.streak = 0;
+      resources.losses.extra.streak = 0;
       break;
     case "board:lost":
-      context.resourceManager.resources.wins.extra.streak = 0;
+      resources.wins.extra.streak = 0;
       break;
   }
 }

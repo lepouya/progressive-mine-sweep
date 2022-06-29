@@ -27,7 +27,7 @@ export default function Main() {
 
   function getHint(_res: unknown, _kind: unknown, numHints = 0) {
     if (genHints(board, numHints, 0, 8, F.hintFormula(context)) > 0) {
-      F.countActions(context, "hints", false);
+      F.countActions(hints, false);
       setBoard({ ...board });
     }
   }

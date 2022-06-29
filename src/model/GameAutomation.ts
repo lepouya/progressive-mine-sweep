@@ -219,6 +219,6 @@ export function expandBoardDims(context: Context) {
     return false;
   }
 
-  F.countActions(context, res.name, true);
+  F.countActions(res, true);
   return true;
 }
