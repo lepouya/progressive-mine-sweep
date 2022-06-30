@@ -41,13 +41,15 @@ export default function Upgrades() {
         </div>
         <div className="half"></div>
         <div className="right half">
-          <BuyButton
-            resource={cols}
-            prefix="Shrink"
-            gainMultiplier={-1}
-            costMultiplier={-context.settings.sellRatio}
-            precision={0}
-          />
+          {cols.count > 3 && (
+            <BuyButton
+              resource={cols}
+              prefix="Shrink"
+              gainMultiplier={-1}
+              costMultiplier={-context.settings.sellRatio}
+              precision={0}
+            />
+          )}
         </div>
 
         <div className="quarter">Game Height:</div>
@@ -64,13 +66,15 @@ export default function Upgrades() {
         </div>
         <div className="half"></div>
         <div className="right half">
-          <BuyButton
-            resource={rows}
-            prefix="Shrink"
-            gainMultiplier={-1}
-            costMultiplier={-context.settings.sellRatio}
-            precision={0}
-          />
+          {rows.count > 3 && (
+            <BuyButton
+              resource={rows}
+              prefix="Shrink"
+              gainMultiplier={-1}
+              costMultiplier={-context.settings.sellRatio}
+              precision={0}
+            />
+          )}
         </div>
 
         <div className="quarter">Game Difficulty:</div>

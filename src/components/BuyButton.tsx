@@ -139,7 +139,7 @@ export default function BuyButton({
   }
 
   function adjustCount(count = 0, increment = 1) {
-    const currentCount = overrideCount ?? res.count;
+    const currentCount = overrideCount ?? res.value(kind);
     return (
       clamp(
         Math.floor((currentCount + count) / increment) * increment,
@@ -166,7 +166,11 @@ export default function BuyButton({
       costMultiplier,
     );
   }
-  if (Math.abs(purchase.count) < Math.abs(minNum) || purchase.count === 0) {
+  if (
+    (minNum >= 0 && purchase.count < minNum) ||
+    (minNum < 0 && purchase.count > minNum) ||
+    purchase.count === 0
+  ) {
     purchase = res.buy(
       Math.max(
         Math.sign(increment),
