@@ -8,7 +8,7 @@ import useGameContext from "./GameContext";
 import ResourceRender from "./ResourceRender";
 
 export type BuyButtonProps = {
-  resource: string | Resource<any, any>;
+  resource: string | Resource;
   kind?: string;
   enabled?: boolean;
   allowUnlocking?: boolean;
@@ -33,15 +33,11 @@ export type BuyButtonProps = {
   className?: string;
   style?: React.CSSProperties;
 
-  onPurchase?: (
-    resource: Resource<any, any>,
-    kind?: string,
-    bought?: number,
-  ) => void;
+  onPurchase?: (resource: Resource, kind?: string, bought?: number) => void;
 };
 
 export default function BuyButton({
-  resource: resProp,
+  resource,
   kind,
   enabled = true,
   allowUnlocking = false,
@@ -71,7 +67,7 @@ export default function BuyButton({
     resourceManager,
     settings: { buyAmount },
   } = useGameContext();
-  const res = resourceManager.get(resProp);
+  const res = resourceManager.get(resource);
   const buyAmounts = getBuyAmount(buyAmount);
   minNum ??= buyAmounts.min;
   maxNum ??= buyAmounts.max;
@@ -92,10 +88,7 @@ export default function BuyButton({
     [minNum, maxNum, increment] = [-minNum, -maxNum, -increment];
   }
 
-  function renderResourceCounts(
-    rcs: ResourceCount<any, any>[],
-    multiplier: number,
-  ) {
+  function renderResourceCounts(rcs: ResourceCount[], multiplier: number) {
     return rcs.map((rc, i) => (
       <ResourceRender
         resource={

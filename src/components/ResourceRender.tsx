@@ -7,7 +7,7 @@ const maxLengths = { tiny: 4, compact: 9, expanded: 21 };
 const multipliers = { number: 1.0, percentage: 1.0, time: 1000.0 };
 
 export type ResourceRenderProps = {
-  resource?: Partial<Resource<any, any>>;
+  resource?: Partial<Resource>;
   name?: string;
   value?: number;
   epoch?: number;

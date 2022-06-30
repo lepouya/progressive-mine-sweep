@@ -39,6 +39,17 @@ export default function Upgrades() {
         <div className="right half">
           <BuyButton resource={cols} prefix="Expand" overrideMaxCount={50} />
         </div>
+        <div className="half"></div>
+        <div className="right half">
+          <BuyButton
+            resource={cols}
+            prefix="Shrink"
+            gainMultiplier={-1}
+            costMultiplier={-context.settings.sellRatio}
+            precision={0}
+          />
+        </div>
+
         <div className="quarter">Game Height:</div>
         <div className="quarter">
           <ResourceRender
@@ -50,6 +61,16 @@ export default function Upgrades() {
         </div>
         <div className="right half">
           <BuyButton resource={rows} prefix="Expand" overrideMaxCount={50} />
+        </div>
+        <div className="half"></div>
+        <div className="right half">
+          <BuyButton
+            resource={rows}
+            prefix="Shrink"
+            gainMultiplier={-1}
+            costMultiplier={-context.settings.sellRatio}
+            precision={0}
+          />
         </div>
 
         <div className="quarter">Game Difficulty:</div>

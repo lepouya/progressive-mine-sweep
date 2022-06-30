@@ -54,5 +54,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Auto wins/losses aren't counting
 - Turn revealNeighbors into a Board function
 - Automation to auto click first square on board
-- Purchase size decrease
 - There might be something wrong with the ->10 button adding negative amounts

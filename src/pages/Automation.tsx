@@ -22,7 +22,7 @@ export default function Automation() {
     },
   } = useGameContext();
 
-  function tickProgress(res: Resource<any, any>) {
+  function tickProgress(res: Resource) {
     // Prevent flickering
     return res.count >= 100 ? 1 : getTickProgress(res);
   }

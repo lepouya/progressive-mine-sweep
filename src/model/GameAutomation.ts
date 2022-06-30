@@ -5,7 +5,7 @@ import { Context } from "./Context";
 import * as F from "./GameFormulas";
 import { Resource } from "./Resource";
 
-export function getTickProgress(res: Resource<any, any>, dt?: number): number {
+export function getTickProgress(res: Resource, dt?: number): number {
   if (res.count <= 0 || !(res.unlocked ?? true) || res.disabled) {
     return NaN;
   }
@@ -18,11 +18,7 @@ export function getTickProgress(res: Resource<any, any>, dt?: number): number {
   return (dt * res.count) / context.settings.automationBaseSecs;
 }
 
-export function shouldAutoTick(
-  this: Resource<any, any>,
-  dt: number,
-  src?: string,
-) {
+export function shouldAutoTick(this: Resource, dt: number, src?: string) {
   return src === "tick" && getTickProgress(this, dt) >= 1.0;
 }
 
