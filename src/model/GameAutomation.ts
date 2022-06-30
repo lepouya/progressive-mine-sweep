@@ -6,7 +6,7 @@ import * as F from "./GameFormulas";
 import { Resource } from "./Resource";
 
 export function getTickProgress(res: Resource, dt?: number): number {
-  if (res.count <= 0 || !(res.unlocked ?? true) || res.disabled) {
+  if (!res || res.count <= 0 || !(res.unlocked ?? true) || res.disabled) {
     return NaN;
   }
 

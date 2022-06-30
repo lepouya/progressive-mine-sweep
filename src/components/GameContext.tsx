@@ -1,4 +1,4 @@
-import { createContext, FC, PropsWithChildren, useContext } from "react";
+import { createContext, PropsWithChildren, useContext } from "react";
 
 import tasks_auto from "../data/auto.json";
 import resources_board from "../data/resources_board.json";
@@ -9,35 +9,35 @@ import { emptyContext, wrapContext } from "../model/Context";
 import * as GameAutomation from "../model/GameAutomation";
 import * as GameFormulas from "../model/GameFormulas";
 
-const _context = emptyContext<boolean>();
-const GameReactContext = createContext(_context);
+const context = emptyContext<boolean>();
+const GameReactContext = createContext(context);
 
-export const GameContextProvider: FC<PropsWithChildren<{}>> = (props) => (
-  <GameReactContext.Provider value={_context}>
-    {props.children}
-  </GameReactContext.Provider>
-);
+export function GameContextProvider(props: PropsWithChildren) {
+  return (
+    <GameReactContext.Provider value={context}>
+      {props.children}
+    </GameReactContext.Provider>
+  );
+}
 
 export default function useGameContext() {
   return wrapContext(useContext(GameReactContext));
 }
 
-window.addEventListener(
-  "load",
-  function () {
-    const loadResources = [
-      resources_time,
-      resources_board,
-      resources_game,
-      resources_cell,
-      tasks_auto,
-    ];
+const _load_resources = [
+  resources_time,
+  resources_board,
+  resources_game,
+  resources_cell,
+  tasks_auto,
+];
 
-    Object.assign(_context, { ...GameAutomation, ...GameFormulas });
-
-    loadResources
+Object.assign(context, {
+  ...GameAutomation,
+  ...GameFormulas,
+  init: function (this: typeof context) {
+    _load_resources
       .flat()
-      .forEach((props: any) => _context.resourceManager.upsert(props));
+      .forEach((props: any) => this.resourceManager.upsert(props));
   },
-  false,
-);
+});

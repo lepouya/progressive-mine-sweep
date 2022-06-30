@@ -6,7 +6,7 @@ import useGameContext from "./GameContext";
 import Spinner from "./Spinner";
 
 export default function Loader() {
-  const { load } = useGameContext();
+  const { context, load } = useGameContext();
   const [isLoaded, setLoaded] = useState(false);
   const [isFailed, setFailed] = useState(false);
 
@@ -18,6 +18,7 @@ export default function Loader() {
 
   function initialize() {
     try {
+      context.init();
       load();
       setLoaded(true);
     } catch (ex) {

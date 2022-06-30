@@ -9,6 +9,8 @@ export type Context<Update = any> = {
   settings: Settings;
   board: Board;
   resourceManager: ResourceManager<Context<Update>, Update>;
+
+  init: (this: Context<Update>) => void;
 };
 
 export function emptyContext<Update>(
@@ -16,6 +18,7 @@ export function emptyContext<Update>(
 ): Context<Update> {
   const context: any = oldContext || {};
 
+  context.init ??= () => {};
   context.settings = {
     ...defaultSettings,
     lastReset: Date.now(),
@@ -25,6 +28,7 @@ export function emptyContext<Update>(
   context.board = { ...emptyBoard };
   context.resourceManager = genResourceManager(context, context.settings);
 
+  context.init();
   return context;
 }
 
@@ -59,6 +63,8 @@ function _load<Update>(
   const loaded = !!loadStr && Store.loadAs(newContext, loadStr);
 
   if (loaded) {
+    context.init();
+
     let settingsKey: keyof typeof newContext.settings;
     for (settingsKey in newContext.settings) {
       assign(context.settings, settingsKey, newContext.settings[settingsKey]);
@@ -83,5 +89,5 @@ function _save<Update>(context: Context<Update>, pretty?: boolean): string {
 
 function _reset<Update>(context: Context<Update>): void {
   LocalStore.resetOnBrowser(_store);
-  emptyContext<Update>(context);
+  emptyContext(context);
 }
