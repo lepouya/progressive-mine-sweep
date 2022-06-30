@@ -80,10 +80,7 @@ export default function Game() {
       <nav className="navbar">
         <div className="left">
           <Link to="/">Minefield</Link>
-          <Link
-            to="/upgrades"
-            condition={resets.extra.auto + resets.extra.manual > 1}
-          >
+          <Link to="/upgrades" condition={resets.extra.total > 1}>
             Upgrades
           </Link>
           <Link to="/auto" condition={automation.extra.total >= 5}>

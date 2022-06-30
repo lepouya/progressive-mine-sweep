@@ -33,7 +33,7 @@ export const tsScoring: TutorialSteps = {
       </>
     ),
     enabled: (_, context) =>
-      context.resourceManager.resources.resets.extra.manual > 0,
+      context.resourceManager.resources.resets.extra.total > 1,
     highlightSelector: "div.panel#resource-bar",
     bounds: {
       top: "12rem",
@@ -77,7 +77,7 @@ export const tsScoring: TutorialSteps = {
     ),
     highlightSelector: "div#tab-upgrades",
     enabled: (_, context) =>
-      context.resourceManager.resources.resets.extra.manual > 0,
+      context.resourceManager.resources.resets.extra.total > 1,
     nextStep: (step) =>
       document.location.href.includes("upgrades") ? null : step?.step,
   },

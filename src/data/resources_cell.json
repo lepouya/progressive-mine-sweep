@@ -19,6 +19,7 @@
     "extra": {
       "auto": 0,
       "manual": 0,
+      "total": 0,
       "hidden": 0
     }
   },
@@ -29,7 +30,8 @@
     "count": 0,
     "extra": {
       "auto": 0,
-      "manual": 0
+      "manual": 0,
+      "total": 0
     },
     "cost": "wins: 1"
   },
@@ -41,6 +43,7 @@
     "extra": {
       "auto": 0,
       "manual": 0,
+      "total": 0,
       "unflags": 0
     }
   },
@@ -51,7 +54,8 @@
     "count": 0,
     "extra": {
       "auto": 0,
-      "manual": 0
+      "manual": 0,
+      "total": 0
     }
   }
 ]

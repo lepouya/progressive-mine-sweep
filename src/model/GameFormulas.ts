@@ -172,8 +172,7 @@ export function boardReset(context: Context, automatic = false) {
     automatic &&
     context.board.state === "inactive" &&
     resources.resets.count === 0 &&
-    resources.resets.extra.manual === 0 &&
-    resources.resets.extra.auto === 0;
+    resources.resets.extra.total === 0;
 
   // First game always has 1 mine
   const m = firstGame ? 1 : numMinesFormula(context);
@@ -191,6 +190,7 @@ export function boardReset(context: Context, automatic = false) {
     if (genHints(context.board, 1, 0, 0, 1) === 0) {
       genHints(context.board, 1, 0, 1, 1);
     }
+    stateChanged(context, "board", "active", automatic);
     stateChanged(context, "cell", "hinted", automatic);
   }
 

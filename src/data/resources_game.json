@@ -7,6 +7,7 @@
     "extra": {
       "auto": 0,
       "manual": 0,
+      "total": 0,
       "streak": 0,
       "longestStreak": 0
     }
@@ -19,6 +20,7 @@
     "extra": {
       "auto": 0,
       "manual": 0,
+      "total": 0,
       "streak": 0,
       "longestStreak": 0
     }
@@ -30,7 +32,8 @@
     "count": 0,
     "extra": {
       "auto": 0,
-      "manual": 0
+      "manual": 0,
+      "total": 0
     }
   },
   {
