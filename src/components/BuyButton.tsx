@@ -20,6 +20,7 @@ export type BuyButtonProps = {
 
   gainMultiplier?: number;
   costMultiplier?: number;
+  mode?: "buy" | "sell";
 
   overrideCount?: number;
   overrideMaxCount?: number;
@@ -33,7 +34,11 @@ export type BuyButtonProps = {
   className?: string;
   style?: React.CSSProperties;
 
-  onPurchase?: (resource: Resource, kind?: string, bought?: number) => void;
+  onPurchase?: (
+    resource: Resource,
+    kind: string | undefined,
+    bought: number,
+  ) => void;
 };
 
 export default function BuyButton({
@@ -49,6 +54,7 @@ export default function BuyButton({
 
   gainMultiplier = 1,
   costMultiplier = 1,
+  mode = "buy",
 
   overrideCount,
   overrideMaxCount,
@@ -82,9 +88,7 @@ export default function BuyButton({
     }
   }
 
-  if (gainMultiplier < 0 && costMultiplier < 0) {
-    // Selling
-    [gainMultiplier, costMultiplier] = [-gainMultiplier, -costMultiplier];
+  if (mode === "sell") {
     [minNum, maxNum, increment] = [-minNum, -maxNum, -increment];
   }
 
@@ -121,7 +125,6 @@ export default function BuyButton({
     if (!enabled || count === 0) {
       return;
     }
-
     if (!(res.unlocked ?? true) && allowUnlocking) {
       res.unlocked = true;
     }
@@ -133,8 +136,8 @@ export default function BuyButton({
       gainMultiplier,
       costMultiplier,
     );
-    if (onPurchase) {
-      onPurchase(res, kind, bought.count);
+    if (onPurchase && bought.gain.length > 0) {
+      onPurchase(res, kind, bought.gain[0].count);
     }
   }
 
@@ -154,7 +157,7 @@ export default function BuyButton({
     adjustCount(maxNum, increment),
     "dry-partial",
     kind,
-    1,
+    gainMultiplier,
     costMultiplier,
   );
   if (purchase.count % increment !== 0) {
@@ -162,7 +165,7 @@ export default function BuyButton({
       adjustCount(purchase.count, increment),
       "dry-partial",
       kind,
-      1,
+      gainMultiplier,
       costMultiplier,
     );
   }
@@ -180,7 +183,7 @@ export default function BuyButton({
       ),
       "dry-full",
       kind,
-      1,
+      gainMultiplier,
       costMultiplier,
     );
     active = false;
@@ -206,7 +209,7 @@ export default function BuyButton({
       id={`button-buy-${res.name}`}
     >
       {prefix && <div className="prefix">{prefix}</div>}
-      {renderResourceCounts(purchase.gain, gainMultiplier)}
+      {renderResourceCounts(purchase.gain, 1)}
       {totalCost !== 0 && infix && <div className="infix">{infix}</div>}
       {totalCost !== 0 && renderResourceCounts(purchase.cost, -1)}
       {suffix && <div className="suffix">{suffix}</div>}

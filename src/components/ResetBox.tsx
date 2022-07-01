@@ -53,7 +53,7 @@ export default function ResetBox() {
         boardReset(context, false);
       } else if (resetSpeed.extra.remainingTime < 0.001) {
         resetSpeed.extra.remainingTime = waitTime;
-        resetSpeed.onChange = (_, timer, kind, src) =>
+        resetSpeed.onChange = (timer, kind, src) =>
           timer < 0.001 &&
           kind === "remainingTime" &&
           src === "tick" &&

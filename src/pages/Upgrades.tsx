@@ -3,7 +3,7 @@ import useGameContext from "../components/GameContext";
 import ModeControls from "../components/ModeControls";
 import ResourceBar from "../components/ResourceBar";
 import ResourceRender from "../components/ResourceRender";
-import { scoreMultiplier } from "../model/GameFormulas";
+import { difficultyScoreMultiplier } from "../model/GameFormulas";
 
 export default function Upgrades() {
   const {
@@ -45,8 +45,7 @@ export default function Upgrades() {
             <BuyButton
               resource={cols}
               prefix="Shrink"
-              gainMultiplier={-1}
-              costMultiplier={-context.settings.sellRatio}
+              mode="sell"
               precision={0}
             />
           )}
@@ -70,8 +69,7 @@ export default function Upgrades() {
             <BuyButton
               resource={rows}
               prefix="Shrink"
-              gainMultiplier={-1}
-              costMultiplier={-context.settings.sellRatio}
+              mode="sell"
               precision={0}
             />
           )}
@@ -95,20 +93,21 @@ export default function Upgrades() {
         </div>
         <div className="quarter">
           <ResourceRender
-            value={scoreMultiplier(context) * 100}
+            value={difficultyScoreMultiplier(context) * 100}
             display="percentage"
             showChrome={true}
             className="computed"
           />
         </div>
         <div className="right half">
-          <BuyButton
-            resource={difficulty}
-            prefix="Decrease"
-            gainMultiplier={-1}
-            costMultiplier={-context.settings.sellRatio}
-            precision={0}
-          />
+          {difficulty.count > 1 && (
+            <BuyButton
+              resource={difficulty}
+              prefix="Decrease"
+              mode="sell"
+              precision={0}
+            />
+          )}
         </div>
       </div>
 
@@ -126,11 +125,7 @@ export default function Upgrades() {
           />
         </div>
         <div className="right half">
-          <BuyButton
-            resource={resetSpeed}
-            prefix="Speed up"
-            overrideMaxCount={100}
-          />
+          <BuyButton resource={resetSpeed} prefix="Speed up" />
         </div>
 
         <hr className="separator" />

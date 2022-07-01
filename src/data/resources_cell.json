@@ -33,7 +33,8 @@
       "manual": 0,
       "total": 0
     },
-    "cost": "wins: 1"
+    "cost": "wins: 1",
+    "gainMultiplier": "m * hintsCount.count"
   },
   {
     "name": "flags",

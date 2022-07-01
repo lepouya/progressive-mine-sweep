@@ -77,7 +77,7 @@ export function resetGameTask(context: Context) {
     return true;
   } else {
     resources.resetSpeed.extra.remainingTime = waitTime;
-    resources.resetSpeed.onChange = (_, timer, kind, src) =>
+    resources.resetSpeed.onChange = (timer, kind, src) =>
       timer < 0.001 &&
       kind === "remainingTime" &&
       src === "tick" &&
@@ -171,6 +171,7 @@ export function purchaseHintsTask(context: Context) {
     return null;
   }
 
+  const hints = context.resourceManager.resources.hints;
   const candidates = context.board.cells
     .flat()
     .filter(
@@ -181,22 +182,24 @@ export function purchaseHintsTask(context: Context) {
     return false;
   }
 
-  const purchase = context.resourceManager.resources.hints.buy();
+  const purchase = hints.buy();
   if (purchase.count === 0) {
     return false;
   }
 
   const numHints = genHints(
     context.board,
-    context.resourceManager.resources.hintsCount.value(),
+    purchase.count,
     0,
     8,
-    F.hintFormula(context) * purchase.count,
+    F.hintFormula(context),
   );
-  F.stateChanged(context, "cell", "hinted", true, numHints);
-  context.resourceManager.resources.hints.count -= purchase.count;
+  if (numHints > 0) {
+    F.countActions(hints, true, numHints);
+    return true;
+  }
 
-  return true;
+  return false;
 }
 
 export function expandBoardDims(context: Context) {

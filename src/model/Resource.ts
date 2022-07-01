@@ -55,16 +55,11 @@ export type Resource<Context = any, Result = any> = {
     costMultiplier?: number,
   ) => PurchaseCost<Context, Result>;
 
-  onPurchase?: (
-    resource: Resource<Context, Result>,
-    purchase: PurchaseCost<Context, Result>,
-  ) => void;
-  onChange?: (
-    resource: Resource<Context, Result>,
-    value: number,
-    kind?: string,
-    source?: string,
-  ) => Result;
+  gainMultiplier?: (m: number) => number;
+  costMultiplier?: (m: number) => number;
+
+  onPurchase?: (purchase: PurchaseCost<Context, Result>) => void;
+  onChange?: (value: number, kind?: string, source?: string) => Result;
 
   execution: {
     lastTick?: number;
@@ -107,6 +102,9 @@ export type ResourceManager<Context = any, Result = any> = {
   canAfford: (cost: ResourceCount<Context, Result>[]) => boolean;
 
   update: (now?: number, source?: string) => Result[];
+
+  gainMultiplier?: (m: number) => number;
+  costMultiplier?: (m: number) => number;
 };
 
 export type ResourceCount<Context = any, Result = any> = {
@@ -130,11 +128,15 @@ export type PurchaseCost<Context = any, Result = any> = {
 
 export type ResourceManagerSettings = {
   lastUpdate: number;
+
   rateUpdateSecs: number;
   rateHistoryWindow: number;
+
   minResourceUpdateSecs: number;
   maxResourceUpdateSecs: number;
   maxResourceTickSecs: number;
+
+  sellRatio: number;
   timeDilation: number;
 };
 
@@ -296,16 +298,16 @@ function update<Context, Result>(
         res.shouldTick,
         res,
         ["dt", "source"],
-        { ...rm, ...rm.context, ...rm.resources },
+        resourceContext(res),
       );
     }
     if (typeof res.tick === "string") {
-      res.tick = compileInlineFunction(res.tick, res, ["dt", "source"], {
-        ...rm,
-        ...rm.context,
-        ...rm.resources,
-        timer: apply(tickTimer, res),
-      });
+      res.tick = compileInlineFunction(
+        res.tick,
+        res,
+        ["dt", "source"],
+        resourceContext(res),
+      );
     }
   });
 
@@ -367,11 +369,11 @@ function update<Context, Result>(
     if (res.onChange) {
       const changeResults = [];
       if (res.count !== (cache[res.name] ?? {})[""]) {
-        changeResults.push(res.onChange(res, res.count, undefined, source));
+        changeResults.push(res.onChange(res.count, undefined, source));
       }
       for (const kind in res.extra) {
         if (res.extra[kind] !== (cache[res.name] ?? {})[kind]) {
-          changeResults.push(res.onChange(res, res.extra[kind], kind, source));
+          changeResults.push(res.onChange(res.extra[kind], kind, source));
         }
       }
 
@@ -392,22 +394,53 @@ function purchase<Context, Result>(
   gainMultiplier: number,
   costMultiplier: number,
 ): PurchaseCost<Context, Result> {
+  const globalGainMultiplier = rm.gainMultiplier
+    ? rm.gainMultiplier(gainMultiplier)
+    : gainMultiplier;
+  const globalCostMultiplier = rm.costMultiplier
+    ? rm.costMultiplier(costMultiplier)
+    : costMultiplier;
+
   const costs = resolveAll(rm, toBuy).map((rc) => {
+    const res = rc.resource;
+
+    if (typeof res.gainMultiplier === "string") {
+      res.gainMultiplier = compileInlineFunction(
+        res.gainMultiplier,
+        res,
+        ["m"],
+        resourceContext(res),
+      );
+    }
+    if (typeof res.costMultiplier === "string") {
+      res.costMultiplier = compileInlineFunction(
+        res.costMultiplier,
+        res,
+        ["m"],
+        resourceContext(res),
+      );
+    }
+
+    const localGainMultiplier = res.gainMultiplier
+      ? res.gainMultiplier(globalGainMultiplier)
+      : globalGainMultiplier;
+    const localCostMultiplier = res.costMultiplier
+      ? res.costMultiplier(globalCostMultiplier)
+      : globalCostMultiplier;
     const rcCost = getPurchaseCost(
       rm,
-      rc.resource,
+      res,
       rc.count,
       rc.kind,
       style,
-      gainMultiplier,
-      costMultiplier,
+      localGainMultiplier,
+      localCostMultiplier,
     );
 
     if (style === "dry-partial" || style === "dry-full") {
       return rcCost;
     } else {
-      const gain = applyToResource(rc.resource, rcCost.gain),
-        count = getCountOf(gain, rc.resource.name, rc.kind),
+      const gain = applyToResource(res, rcCost.gain),
         cost = rcCost.cost
           .map(({ resource, count, kind }) =>
             applyToResource(resolve(rm, resource), [
@@ -416,9 +449,9 @@ function purchase<Context, Result>(
           )
           .flat();
 
-      const purchaseCost = { count, gain, cost };
-      if (rc.resource.onPurchase) {
-        rc.resource.onPurchase(rc.resource, purchaseCost);
+      const purchaseCost = { ...rcCost, gain, cost };
+      if (res.onPurchase) {
+        res.onPurchase(purchaseCost);
       }
       return purchaseCost;
     }
@@ -446,23 +479,6 @@ function resolveAll<Context, Result>(
       kind: kind ?? "",
     }))
     .filter(({ resource, count }) => resource && count);
-}
-
-function getCountOf<Context, Result>(
-  rcs: ResourceCount<Context, Result>[],
-  resName: string,
-  resKind?: string,
-): number {
-  return (
-    rcs
-      .filter(
-        ({ resource, kind }) =>
-          (resKind ?? "") === (kind ?? "") &&
-          resName === (typeof resource === "string" ? resource : resource.name),
-      )
-      .map(({ count }) => count)
-      .pop() ?? 0
-  );
 }
 
 function canAfford<Context, Result>(
@@ -499,10 +515,9 @@ function getPurchaseCost<Context, Result>(
   );
 
   if (style === "free") {
-    const gainCount = gainMultiplier * (target - start);
     return {
-      count: gainCount,
-      gain: [{ resource, count: gainCount, kind }],
+      count: target - start,
+      gain: [{ resource, count: gainMultiplier * (target - start), kind }],
       cost: [],
     };
   }
@@ -512,17 +527,16 @@ function getPurchaseCost<Context, Result>(
       processCostFunction(resource.cost),
       resource,
       ["n"],
-      {
-        ...rm.context,
-        ...rm,
-        ...rm.resources,
-      },
+      resourceContext(resource),
     );
   }
 
   if (start > target) {
     [start, target] = [target, start];
-    [gainMultiplier, costMultiplier] = [-gainMultiplier, -costMultiplier];
+    [gainMultiplier, costMultiplier] = [
+      -gainMultiplier,
+      -costMultiplier * (rm.settings.sellRatio ?? 1),
+    ];
   }
 
   let cost: ResourceCount<Context, Result>[] = [];
@@ -551,11 +565,19 @@ function getPurchaseCost<Context, Result>(
     return { count: 0, gain: [], cost: [] };
   }
 
-  const gainCount = gainMultiplier * partialCount;
   return {
-    count: gainCount,
-    gain: [{ resource, count: gainCount, kind }],
+    count: partialCount,
+    gain: [{ resource, count: gainMultiplier * partialCount, kind }],
     cost,
+  };
+}
+
+function resourceContext(res: Resource) {
+  return {
+    ...res.manager.context,
+    ...res.manager,
+    ...res.manager.resources,
+    timer: apply(tickTimer, res),
   };
 }
 

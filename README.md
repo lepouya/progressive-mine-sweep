@@ -18,7 +18,7 @@ and guesser
 
 Perhaps I could do prestige/reset options once this is ready
 
-## TODO
+## Finished Milestones
 
 ### ~~M0: Framework and project config~~
 
@@ -29,6 +29,8 @@ Perhaps I could do prestige/reset options once this is ready
 ### ~~M3: Tutorial and themes~~
 
 ### ~~M4: Automation~~
+
+## Future Milestones
 
 ### M5: Achievements
 
@@ -47,8 +49,6 @@ Perhaps I could do prestige/reset options once this is ready
 - Score multipliers and cost reducers
 - Automation speed up
 
-### Bugs, Issues, and Ideas
+## Bugs, Issues, and Ideas
 
 - Turn off all automation options
-- Implement innate gain and cost multipliers for resources
-- Turn revealNeighbors into a Board function

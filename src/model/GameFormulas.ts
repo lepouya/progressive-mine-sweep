@@ -2,7 +2,15 @@ import { shuffle } from "../utils/shuffle";
 import { Board, genBoard, genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
-import { Resource } from "./Resource";
+import { Resource, ResourceManager } from "./Resource";
+
+export function gainMultiplier(this: ResourceManager<Context>, m: number) {
+  return m * difficultyScoreMultiplier(this.context);
+}
+
+export function costMultiplier(this: ResourceManager<Context>, m: number) {
+  return m;
+}
 
 export function boardProgressFormula({ board }: Context): number {
   return (
@@ -46,7 +54,7 @@ export function getBuyAmount(buyAmount?: string) {
   return _buyAmounts[buyAmount ?? ""] ?? _buyAmounts[""];
 }
 
-export function scoreMultiplier({
+export function difficultyScoreMultiplier({
   resourceManager: {
     resources: { difficulty },
   },
@@ -106,7 +114,7 @@ export function countActions(
 ) {
   if (automatic) {
     const auto = resource.manager.resources.automation;
-    auto.add(count, "", scoreMultiplier(resource.manager.context));
+    auto.add(count);
     auto.extra.total += count;
 
     if (resource.extra.auto != null) {
@@ -140,21 +148,19 @@ export function stateChanged(
   count = 1,
 ) {
   const resources = context.resourceManager.resources;
-  const multiplier = scoreMultiplier(context);
-
   const res = resources[_targetStates[target + ":" + state] ?? ""];
   if (res) {
-    res.add(count, "", multiplier);
+    res.add(count);
     countActions(res, automatic, count);
   }
 
   switch (target + ":" + state) {
     case "cell:unflagged":
-      resources.flags.add(-count, "", multiplier);
+      resources.flags.add(-count);
       resources.flags.extra.unflags += count;
       break;
     case "cell:unrevealed":
-      resources.cells.add(-count, "", multiplier);
+      resources.cells.add(-count);
       resources.cells.extra.hidden += count;
       break;
     case "board:won":

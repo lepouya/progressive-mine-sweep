@@ -13,7 +13,7 @@ export default function Main() {
     context,
     board,
     setBoard,
-    resources: { rows, cols, hints, hintsCount, resets },
+    resources: { rows, cols, hints, resets },
   } = useGameContext();
 
   const boardSizeChanged =
@@ -25,9 +25,10 @@ export default function Main() {
     F.stateChanged(context, "board", newBoard.state, false);
   }
 
-  function getHint(_res: unknown, _kind: unknown, numHints = 0) {
-    if (genHints(board, numHints, 0, 8, F.hintFormula(context)) > 0) {
-      F.countActions(hints, false);
+  function getHint(numHints: number) {
+    numHints = genHints(board, numHints, 0, 8, F.hintFormula(context));
+    if (numHints > 0) {
+      F.countActions(hints, false, numHints);
       setBoard({ ...board });
     }
   }
@@ -57,8 +58,7 @@ export default function Main() {
             resource={hints}
             overrideCount={0}
             overrideMaxCount={F.remainingHintsFormula(context)}
-            gainMultiplier={hintsCount.value()}
-            onPurchase={getHint}
+            onPurchase={(_r, _k, numHints) => getHint(numHints)}
           />
         </div>
         {boardSizeChanged && (

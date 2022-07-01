@@ -36,6 +36,8 @@ Object.assign(context, {
   ...GameAutomation,
   ...GameFormulas,
   init: function (this: typeof context) {
+    this.resourceManager.gainMultiplier = GameFormulas.gainMultiplier;
+    this.resourceManager.costMultiplier = GameFormulas.costMultiplier;
     _load_resources
       .flat()
       .forEach((props: any) => this.resourceManager.upsert(props));
