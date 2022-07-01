@@ -182,7 +182,7 @@ export function genResource<Context, Result>(
     rate: { count: 0, ticks: 0, pastCounts: [], pastTicks: [] },
   };
 
-  setSaveProperties(res, [
+  return setSaveProperties(res, [
     "name",
     "unlocked",
     "disabled",
@@ -191,7 +191,6 @@ export function genResource<Context, Result>(
     "minCount",
     "extra",
   ]);
-  return res;
 }
 
 export function genResourceManager<Context, Result>(
@@ -214,8 +213,7 @@ export function genResourceManager<Context, Result>(
     update: (now, source) => update(rm, now ?? Date.now(), source ?? "unknown"),
   };
 
-  setSaveProperties(rm, ["resources"]);
-  return rm;
+  return setSaveProperties(rm, ["resources"]);
 }
 
 function resolve<Context, Result>(

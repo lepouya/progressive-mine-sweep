@@ -16,7 +16,7 @@ export type Context<Update = any> = {
 export function emptyContext<Update>(
   oldContext?: Partial<Context<Update>>,
 ): Context<Update> {
-  const context: any = oldContext || {};
+  const context = (oldContext || {}) as Context<Update>;
 
   context.init ??= () => {};
   context.settings = {
@@ -29,7 +29,11 @@ export function emptyContext<Update>(
   context.resourceManager = genResourceManager(context, context.settings);
 
   context.init();
-  return context;
+  return Store.setSaveProperties(context, [
+    "settings",
+    "board",
+    "resourceManager",
+  ]);
 }
 
 export function wrapContext<Update>(context: Context<Update>) {
