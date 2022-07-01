@@ -112,6 +112,7 @@ export default function MineCell(props: Props) {
           }
         }
 
+        board.hadUserAction = true;
         if (board.state === "active") {
           let newBoard = genBoardState(board, context.settings.maxErrors);
           (props.setBoard ?? context.setBoard)({ ...newBoard });

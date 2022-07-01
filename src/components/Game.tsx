@@ -26,54 +26,59 @@ export default function Game() {
   const [timerId, setTimerId] = useState<NodeJS.Timer | undefined>();
   const [_, setLastRendered] = useState(0);
 
-  useEffect(() => {
-    function tick() {
-      // Update resources
-      const curBoardState = context.board.state;
-      const updated = resourceManager.update(undefined, "tick");
-      if (updated.includes(true)) {
-        context.board = genBoardState(
-          context.board,
-          context.settings.maxErrors,
-        );
-        context.board = { ...context.board };
-        if (context.board.state !== curBoardState) {
-          stateChanged(context, "board", context.board.state, false);
-        }
-      }
-
-      // Save game
-      if (
-        settings.lastUpdate - settings.lastSaved >=
-          settings.saveFrequencySecs * 1000 &&
-        settings.lastUpdate - settings.lastLoaded >=
-          settings.saveFrequencySecs * 1000
-      ) {
-        save();
-        toast.info("Game saved!");
-      }
-
-      // Force re-render of child components
-      setLastRendered((lastRendered) =>
-        settings.lastUpdate - lastRendered >= 1000.0 / settings.framesPerSecond
-          ? settings.lastUpdate
-          : lastRendered,
-      );
-    }
-
-    if (timerId) {
-      clearInterval(timerId);
-    }
-    setTimerId(setInterval(tick, 1000.0 / settings.ticksPerSecond));
-    setTheme(settings.theme);
-
-    return () => {
+  useEffect(
+    function () {
       if (timerId) {
         clearInterval(timerId);
-        setTimerId(undefined);
       }
-    };
-  }, [settings, settings.ticksPerSecond, settings.theme]);
+      setTimerId(setInterval(tick, 1000.0 / settings.ticksPerSecond));
+      setTheme(settings.theme);
+
+      return () => {
+        if (timerId) {
+          clearInterval(timerId);
+          setTimerId(undefined);
+        }
+      };
+    },
+    [settings, settings.ticksPerSecond, settings.theme],
+  );
+
+  function tick() {
+    // Update resources
+    const curBoardState = context.board.state;
+    const updated = resourceManager.update(undefined, "tick");
+    if (updated.includes(true)) {
+      context.board = genBoardState(context.board, context.settings.maxErrors);
+      context.board = { ...context.board };
+      if (context.board.state !== curBoardState) {
+        stateChanged(
+          context,
+          "board",
+          context.board.state,
+          !context.board.hadUserAction,
+        );
+      }
+    }
+
+    // Save game
+    if (
+      settings.lastUpdate - settings.lastSaved >=
+        settings.saveFrequencySecs * 1000 &&
+      settings.lastUpdate - settings.lastLoaded >=
+        settings.saveFrequencySecs * 1000
+    ) {
+      save();
+      toast.info("Game saved!");
+    }
+
+    // Force re-render of child components
+    setLastRendered((lastRendered) =>
+      settings.lastUpdate - lastRendered >= 1000.0 / settings.framesPerSecond
+        ? settings.lastUpdate
+        : lastRendered,
+    );
+  }
 
   return (
     <HashRouter>

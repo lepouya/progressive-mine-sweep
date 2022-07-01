@@ -14,6 +14,8 @@ export type Board = {
 
   state: BoardState;
   cellCounts: Expansion<CellState, number>;
+
+  hadUserAction: boolean;
 };
 
 export const emptyBoard: Board = {
@@ -29,6 +31,7 @@ export const emptyBoard: Board = {
     revealed: 0,
     blown: 0,
   },
+  hadUserAction: false,
 };
 
 export function makeClearBoard(rows: number, cols: number): Board {
@@ -47,6 +50,7 @@ export function makeClearBoard(rows: number, cols: number): Board {
     numMines: 0,
     state: "active",
     cellCounts: { ...emptyBoard.cellCounts, hidden: rows * cols },
+    hadUserAction: false,
   };
 }
 
@@ -131,7 +135,7 @@ export function genBoardState(board: Board, maxErrors = 1): Board {
     board.state = "active";
   }
 
-  return setSaveProperties(board, ["rows", "cols", "cells"]);
+  return setSaveProperties(board, ["rows", "cols", "cells", "hadUserAction"]);
 }
 
 export function genBoard(

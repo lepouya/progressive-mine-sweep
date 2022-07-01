@@ -51,5 +51,5 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Turn off all automation options
 - Implement innate gain and cost multipliers for resources
-- Auto wins/losses aren't counting
 - Turn revealNeighbors into a Board function
+- Game saved toast seems to leave something lingering up there?

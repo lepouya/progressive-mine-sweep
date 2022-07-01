@@ -1,5 +1,5 @@
 import { shuffle } from "../utils/shuffle";
-import { Board, genBoard, genBoardState, genHints } from "./Board";
+import { Board, genBoard, genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
 import { Resource } from "./Resource";
@@ -207,10 +207,6 @@ export function boardReset(context: Context, automatic = false) {
       if (cell.state === "hidden" && context.board.state === "active") {
         actOnCell(cell, "reveal");
         stateChanged(context, "cell", cell.state, true);
-        context.board = genBoardState(
-          context.board,
-          context.settings.maxErrors,
-        );
       }
     }
   }
