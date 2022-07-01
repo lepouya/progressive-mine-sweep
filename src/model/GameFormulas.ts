@@ -1,5 +1,5 @@
 import { shuffle } from "../utils/shuffle";
-import { Board, genBoard, genHints } from "./Board";
+import { Board, genBoard, genBoardState, genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
 import { Resource } from "./Resource";
@@ -190,8 +190,29 @@ export function boardReset(context: Context, automatic = false) {
     if (genHints(context.board, 1, 0, 0, 1) === 0) {
       genHints(context.board, 1, 0, 1, 1);
     }
-    stateChanged(context, "board", "active", automatic);
-    stateChanged(context, "cell", "hinted", automatic);
+    stateChanged(context, "board", "active", true);
+    stateChanged(context, "cell", "hinted", true);
+  }
+
+  // Auto click on start
+  if (
+    resources.autoClickBoard.count > 0 &&
+    (resources.autoClickBoard.unlocked ?? true) &&
+    !resources.autoClickBoard.disabled
+  ) {
+    for (let i = resources.autoClickBoard.value(); i > 0; i--) {
+      const r = Math.floor(Math.random() * resources.rows.value());
+      const c = Math.floor(Math.random() * resources.cols.value());
+      const cell = context.board.cells[r][c];
+      if (cell.state === "hidden" && context.board.state === "active") {
+        actOnCell(cell, "reveal");
+        stateChanged(context, "cell", cell.state, true);
+        context.board = genBoardState(
+          context.board,
+          context.settings.maxErrors,
+        );
+      }
+    }
   }
 
   return true;

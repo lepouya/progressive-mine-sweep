@@ -40,6 +40,12 @@
     "tick": "resetGameTask(context, dt, source)"
   },
   {
+    "name": "autoClickBoard",
+    "unlocked": false,
+    "count": 0,
+    "cost": "automation: Math.floor((n+1)**2)"
+  },
+  {
     "name": "autoBoardUpgrade",
     "singularName": "Auto Expand Board",
     "pluralName": "Auto Expand Board",

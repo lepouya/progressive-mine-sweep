@@ -53,4 +53,3 @@ Perhaps I could do prestige/reset options once this is ready
 - Implement innate gain and cost multipliers for resources
 - Auto wins/losses aren't counting
 - Turn revealNeighbors into a Board function
-- Automation to auto click first square on board

@@ -18,6 +18,7 @@ export default function Automation() {
       autoRevealHints,
       autoPurchaseHints,
       autoResetGame,
+      autoClickBoard,
       autoBoardUpgrade,
     },
   } = useGameContext();
@@ -223,6 +224,39 @@ export default function Automation() {
           Automatically initiates game reset when the game is either won or
           lost.
         </ProgressBar>
+
+        <hr className="separator" />
+
+        <div className="half">
+          <ResourceRender
+            resource={autoClickBoard}
+            showChrome={true}
+            showLocked={true}
+            infix=""
+            suffix={`time${autoClickBoard.count === 1 ? "" : "s"} after reset`}
+          />
+        </div>
+        <div className="right half">
+          <BuyButton
+            resource={autoClickBoard}
+            allowUnlocking={true}
+            prefix={!autoClickBoard.unlocked ? "Unlock" : "Additional"}
+          />
+        </div>
+        <div className="full right">
+          Enabled:
+          <ToggleButton
+            checked={autoClickBoard.unlocked && !autoClickBoard.disabled}
+            onChange={(checked) => (autoClickBoard.disabled = !checked)}
+            checkedContents={<Icon icon="robot" />}
+            unCheckedContents={<Icon icon="robot-off" />}
+            enabled={autoClickBoard.unlocked && autoClickBoard.count > 0}
+          />
+        </div>
+        <div className="full computed">
+          Automatically reveals cells on new games. Does not differentiate
+          between mines and clear cells.
+        </div>
       </div>
 
       <div className="game-controls panel">
