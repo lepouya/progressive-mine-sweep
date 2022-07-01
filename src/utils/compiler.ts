@@ -31,14 +31,20 @@ export function compileInlineFunction<A extends any[], R>(
     fnBody = `(function (___globals) { return (${fnBody}); })`;
   }
 
-  let fn = eval(fnBody);
-  if (thisBind) {
+  let fn: any;
+  try {
+    fn = eval(fnBody);
+  } catch (_) {
+    fn = null;
+  }
+
+  if (thisBind && typeof fn === "function") {
     fn = fn.bind(thisBind);
   }
 
-  if (forceGlobals) {
+  if (forceGlobals && typeof fn === "function") {
     fn = fn(globals);
-    if (thisBind && forceArgs) {
+    if (thisBind && typeof fn === "function") {
       fn = fn.bind(thisBind);
     }
   }

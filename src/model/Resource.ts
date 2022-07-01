@@ -8,7 +8,7 @@ import tickTimer from "../utils/tickTimer";
 import { Nullable } from "../utils/types";
 
 export type Resource<Context = any, Result = any> = {
-  manager: ResourceManager<Context, Result>;
+  readonly manager: ResourceManager<Context, Result>;
 
   readonly name: string;
   unlocked?: boolean;
@@ -57,6 +57,8 @@ export type Resource<Context = any, Result = any> = {
 
   gainMultiplier?: (m: number) => number;
   costMultiplier?: (m: number) => number;
+
+  autoAward?: boolean;
 
   onPurchase?: (purchase: PurchaseCost<Context, Result>) => void;
   onChange?: (value: number, kind?: string, source?: string) => Result;
@@ -290,23 +292,6 @@ function update<Context, Result>(
       now,
     );
     res.execution.lastAttempt = now;
-
-    if (typeof res.shouldTick === "string") {
-      res.shouldTick = compileInlineFunction(
-        res.shouldTick,
-        res,
-        ["dt", "source"],
-        resourceContext(res),
-      );
-    }
-    if (typeof res.tick === "string") {
-      res.tick = compileInlineFunction(
-        res.tick,
-        res,
-        ["dt", "source"],
-        resourceContext(res),
-      );
-    }
   });
 
   const results: Record<string, Result[]> = {};
@@ -338,6 +323,20 @@ function update<Context, Result>(
   }
 
   resources.forEach((res) => {
+    if (res.autoAward && res.count < (res.maxCount ?? 0)) {
+      const req = res.cost(res.count + 1);
+      if (canAfford(rm, req)) {
+        res.count++;
+        if (res.onPurchase) {
+          res.onPurchase({
+            count: 1,
+            gain: [{ resource: res, count: 1 }],
+            cost: [],
+          });
+        }
+      }
+    }
+
     const rateDt = (now - (res.rate.lastCountUpdate ?? 0)) / 1000.0;
     if (
       res.rate.lastCountUpdate == undefined ||
@@ -401,24 +400,6 @@ function purchase<Context, Result>(
 
   const costs = resolveAll(rm, toBuy).map((rc) => {
     const res = rc.resource;
-
-    if (typeof res.gainMultiplier === "string") {
-      res.gainMultiplier = compileInlineFunction(
-        res.gainMultiplier,
-        res,
-        ["m"],
-        resourceContext(res),
-      );
-    }
-    if (typeof res.costMultiplier === "string") {
-      res.costMultiplier = compileInlineFunction(
-        res.costMultiplier,
-        res,
-        ["m"],
-        resourceContext(res),
-      );
-    }
-
     const localGainMultiplier = res.gainMultiplier
       ? res.gainMultiplier(globalGainMultiplier)
       : globalGainMultiplier;
@@ -447,7 +428,7 @@ function purchase<Context, Result>(
           )
           .flat();
 
-      const purchaseCost = { ...rcCost, gain, cost };
+      const purchaseCost = { count: rcCost.count, gain, cost };
       if (res.onPurchase) {
         res.onPurchase(purchaseCost);
       }
@@ -520,15 +501,6 @@ function getPurchaseCost<Context, Result>(
     };
   }
 
-  if (typeof resource.cost === "string") {
-    resource.cost = compileInlineFunction(
-      processCostFunction(resource.cost),
-      resource,
-      ["n"],
-      resourceContext(resource),
-    );
-  }
-
   if (start > target) {
     [start, target] = [target, start];
     [gainMultiplier, costMultiplier] = [
@@ -568,37 +540,6 @@ function getPurchaseCost<Context, Result>(
     gain: [{ resource, count: gainMultiplier * partialCount, kind }],
     cost,
   };
-}
-
-function resourceContext(res: Resource) {
-  return {
-    ...res.manager.context,
-    ...res.manager,
-    ...res.manager.resources,
-    timer: apply(tickTimer, res),
-  };
-}
-
-function processCostFunction(cost: string): string {
-  return (
-    "[" +
-    cost
-      .replace(/\s/gim, "")
-      .split(/[;,]/gim)
-      .map((cost) => {
-        const parts = cost.split(/:/gim, 2);
-        const rc = [
-          `resource: ${parts[0]}`,
-          `count: ${parts[parts.length - 1]}`,
-        ];
-        if (parts.length > 2) {
-          rc.push(`kind: ${parts[1]}`);
-        }
-        return "{" + rc.join(", ") + "}";
-      })
-      .join(", ") +
-    "]"
-  );
 }
 
 function combineResources<Context, Result>(
@@ -695,4 +636,87 @@ function applyToResource<Context, Result>(
       })
       .flat(),
   );
+}
+
+export function compileAllResources<Context, Result>(
+  rm: ResourceManager<Context, Result>,
+) {
+  Object.values(rm.resources).forEach((res) => {
+    const resourceContext = {
+      ...res.manager.context,
+      ...res.manager,
+      ...res.manager.resources,
+      timer: apply(tickTimer, res),
+    };
+
+    if (typeof res.value === "string") {
+      res.value = compileInlineFunction(
+        res.value,
+        res,
+        ["kind"],
+        resourceContext,
+      );
+    }
+
+    if (typeof res.cost === "string") {
+      const costFunction =
+        "[" +
+        (res.cost as string)
+          .replace(/\s/gim, "")
+          .split(/[;,]/gim)
+          .map((cost) => {
+            const parts = cost.split(/:/gim, 2);
+            const rc = [
+              `resource: ${parts[0]}`,
+              `count: ${parts[parts.length - 1]}`,
+            ];
+            if (parts.length > 2) {
+              rc.push(`kind: ${parts[1]}`);
+            }
+            return "{" + rc.join(", ") + "}";
+          })
+          .join(", ") +
+        "]";
+      res.cost = compileInlineFunction(
+        costFunction,
+        res,
+        ["n"],
+        resourceContext,
+      );
+    }
+
+    if (typeof res.shouldTick === "string") {
+      res.shouldTick = compileInlineFunction(
+        res.shouldTick,
+        res,
+        ["dt", "source"],
+        resourceContext,
+      );
+    }
+    if (typeof res.tick === "string") {
+      res.tick = compileInlineFunction(
+        res.tick,
+        res,
+        ["dt", "source"],
+        resourceContext,
+      );
+    }
+
+    if (typeof res.gainMultiplier === "string") {
+      res.gainMultiplier = compileInlineFunction(
+        res.gainMultiplier,
+        res,
+        ["m"],
+        resourceContext,
+      );
+    }
+    if (typeof res.costMultiplier === "string") {
+      res.costMultiplier = compileInlineFunction(
+        res.costMultiplier,
+        res,
+        ["m"],
+        resourceContext,
+      );
+    }
+  });
 }

@@ -8,6 +8,7 @@ import resources_time from "../data/resources_time.json";
 import { emptyContext, wrapContext } from "../model/Context";
 import * as GameAutomation from "../model/GameAutomation";
 import * as GameFormulas from "../model/GameFormulas";
+import { compileAllResources } from "../model/Resource";
 
 const context = emptyContext<boolean>();
 const GameReactContext = createContext(context);
@@ -38,8 +39,10 @@ Object.assign(context, {
   init: function (this: typeof context) {
     this.resourceManager.gainMultiplier = GameFormulas.gainMultiplier;
     this.resourceManager.costMultiplier = GameFormulas.costMultiplier;
+
     _load_resources
       .flat()
       .forEach((props: any) => this.resourceManager.upsert(props));
+    compileAllResources(this.resourceManager);
   },
 });

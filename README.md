@@ -35,7 +35,7 @@ Perhaps I could do prestige/reset options once this is ready
 ### M5: Achievements
 
 - ~~Notifications in corner~~
-- Add achievement tracking
+- ~~Add achievement tracking~~
 - Some basic achievements to complete
 - Bonuses for achivements
 - More complex achievements perhaps
