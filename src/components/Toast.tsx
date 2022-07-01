@@ -70,11 +70,22 @@ function genToast(options: ToastOptions) {
     all_toasts[position] = all_toasts[position].filter(
       (item) => item.id !== toast.id,
     );
+    renderAllToasts();
     if (onToastHide) {
       onToastHide(toast);
     }
   };
 
+  renderAllToasts();
+  return {
+    ...new Promise((resolve) =>
+      setTimeout(resolve, (options.duration ?? 3) * 1000),
+    ),
+    hide: () => options.onHide!(options),
+  };
+}
+
+function renderAllToasts() {
   root.render(
     Object.keys(rows).map((row) => (
       <div key={row} className={`row ${row}`}>
@@ -91,13 +102,6 @@ function genToast(options: ToastOptions) {
       </div>
     )),
   );
-
-  return {
-    ...new Promise((resolve) =>
-      setTimeout(resolve, (options.duration ?? 3) * 1000),
-    ),
-    hide: () => (options.onHide ? options.onHide(options) : {}),
-  };
 }
 
 function Toast(props: ToastOptions) {
