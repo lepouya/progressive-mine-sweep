@@ -15,7 +15,7 @@ export type Resource<Context = any, Result = any> = {
   disabled?: boolean;
 
   icon?: string;
-  display?: "number" | "time" | "percentage";
+  display?: "none" | "number" | "time" | "percentage";
   description?: string;
   singularName?: string;
   pluralName?: string;

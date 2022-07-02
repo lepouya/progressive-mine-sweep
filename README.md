@@ -36,7 +36,7 @@ Perhaps I could do prestige/reset options once this is ready
 
 - ~~Notifications in corner~~
 - ~~Add achievement tracking~~
-- Some basic achievements to complete
+- ~~Some basic achievements to complete~~
 - Bonuses for achivements
 - More complex achievements perhaps
 - More complex bonuses?
@@ -52,3 +52,4 @@ Perhaps I could do prestige/reset options once this is ready
 ## Bugs, Issues, and Ideas
 
 - Turn off all automation options
+- Offline time counter might be broken

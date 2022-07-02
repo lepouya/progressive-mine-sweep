@@ -4,7 +4,7 @@ import round, { roundMethods } from "../utils/round";
 import Icon from "./Icon";
 
 const maxLengths = { tiny: 4, compact: 9, expanded: 21 };
-const multipliers = { number: 1.0, percentage: 1.0, time: 1000.0 };
+const multipliers = { none: 0, number: 1, percentage: 1, time: 1000 };
 
 export type ResourceRenderProps = {
   resource?: Partial<Resource>;
@@ -73,7 +73,7 @@ export default function ResourceRender({
   showLocked = false,
   showIcon = true,
   showName = true,
-  showValue = true,
+  showValue = display !== "none",
   showMaxValue = false,
   showRawValue = false,
   showRate = false,
@@ -103,7 +103,15 @@ export default function ResourceRender({
 
   prefix = "",
   suffix = "",
-  infix = ":",
+  infix = (showIcon || showName) &&
+  (showValue ||
+    showMaxValue ||
+    showRawValue ||
+    showRate ||
+    showExtras ||
+    showRawExtras)
+    ? ":"
+    : "",
   placeholder = "-",
   timeSeparator = length === "expanded" ? ", " : ":",
   ago = "ago",
@@ -171,6 +179,8 @@ export default function ResourceRender({
       if (plus && value >= 0 && len !== "expanded") {
         res = `+${res}`;
       }
+    } else if (disp === "none") {
+      res = "";
     }
 
     res = pre + res + post;

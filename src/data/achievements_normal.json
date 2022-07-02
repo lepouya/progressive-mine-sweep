@@ -58,5 +58,17 @@
     "value": "100/60 * 6**this.count",
     "cost": "activeTime:100 * 6**n",
     "onPurchase": "achievementAwarded"
+  },
+  {
+    "name": "achieveBoardSize",
+    "singularName": "Board Size",
+    "pluralName": "Board Size",
+    "icon": "arrows-cross",
+    "autoAward": true,
+    "count": 0,
+    "maxCount": 5,
+    "value": "[3,5,8,10,20,32][this.count] ** 2",
+    "cost": "rows: [3,5,8,10,20,32][n]; cols: [3,5,8,10,20,32][n]",
+    "onPurchase": "achievementAwarded"
   }
 ]
