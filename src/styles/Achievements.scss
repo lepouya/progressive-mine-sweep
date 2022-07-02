@@ -2,7 +2,7 @@
 
 #achievements {
   .panel {
-    margin-top: 5px;
+    margin-bottom: 1em;
 
     @include Theme.background($neutral: 7%, $positive: 7%, $secondary: 100%);
   }
@@ -32,7 +32,7 @@
     @include Theme.background($primary: 5%, $secondary: 50%);
 
     &.earned {
-      @include Theme.background($positive: 15%, $secondary: 50%);
+      @include Theme.background($positive: 25%, $secondary: 50%);
     }
   }
 

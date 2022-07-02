@@ -3,13 +3,11 @@ import { formatWord } from "../utils/format";
 import { Resource } from "./Resource";
 
 export function achievementAwarded(this: Resource) {
+  const count = Math.floor(this.value());
   toast({
     heading: "Achievement Earned!",
     icon: this.icon,
     type: "success",
-    message:
-      this.value().toFixed() +
-      " " +
-      formatWord(undefined, { ...this, count: this.value() }),
+    message: count.toFixed() + " " + formatWord(undefined, { ...this, count }),
   });
 }

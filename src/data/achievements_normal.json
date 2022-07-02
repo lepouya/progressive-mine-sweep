@@ -1,0 +1,62 @@
+[
+  {
+    "name": "achieveResets",
+    "singularName": "Game Started",
+    "pluralName": "Games Started",
+    "icon": "refresh",
+    "autoAward": true,
+    "count": 0,
+    "maxCount": 5,
+    "value": "10**(this.count-1)",
+    "cost": "resets:total: 10**(n-1)",
+    "onPurchase": "achievementAwarded"
+  },
+  {
+    "name": "achieveClicks",
+    "singularName": "Click on Board",
+    "pluralName": "Clicks on Board",
+    "icon": "hand-click",
+    "autoAward": true,
+    "count": 0,
+    "maxCount": 5,
+    "value": "10**(this.count-1)",
+    "cost": "clicks: 10**(n-1)",
+    "onPurchase": "achievementAwarded"
+  },
+  {
+    "name": "achieveWins",
+    "singularName": "Game Won",
+    "pluralName": "Games Won",
+    "icon": "square-check",
+    "autoAward": true,
+    "count": 0,
+    "maxCount": 5,
+    "value": "5**(this.count-1)",
+    "cost": "wins:total: 5**(n-1)",
+    "onPurchase": "achievementAwarded"
+  },
+  {
+    "name": "achieveLosses",
+    "singularName": "Game Lost",
+    "pluralName": "Games Lost",
+    "icon": "square-x",
+    "autoAward": true,
+    "count": 0,
+    "maxCount": 5,
+    "value": "5**(this.count-1)",
+    "cost": "losses:total: 5**(n-1)",
+    "onPurchase": "achievementAwarded"
+  },
+  {
+    "name": "achievePlayTime",
+    "singularName": "Minute Playing",
+    "pluralName": "Minutes Playing",
+    "icon": "clock",
+    "autoAward": true,
+    "count": 0,
+    "maxCount": 5,
+    "value": "100/60 * 6**this.count",
+    "cost": "activeTime:100 * 6**n",
+    "onPurchase": "achievementAwarded"
+  }
+]

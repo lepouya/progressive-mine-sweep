@@ -1,6 +1,7 @@
 import { createContext, PropsWithChildren, useContext } from "react";
 
-import achievements from "../data/achievements.json";
+import achievements_normal from "../data/achievements_normal.json";
+import achievements_secret from "../data/achievements_secret.json";
 import tasks_auto from "../data/auto.json";
 import resources_board from "../data/resources_board.json";
 import resources_cell from "../data/resources_cell.json";
@@ -33,7 +34,8 @@ const _load_resources = [
   resources_game,
   resources_cell,
   tasks_auto,
-  achievements,
+  achievements_normal,
+  achievements_secret,
 ];
 
 Object.assign(context, {

@@ -30,14 +30,14 @@
     "display": "percentage",
     "count": 0,
     "maxCount": 100,
-    "cost": "wins: Math.floor(n/10), cells: n*2"
+    "cost": "wins: Math.floor(n/10); cells: n*2"
   },
   {
     "name": "hintsCount",
     "singularName": "hint",
     "pluralName": "hints",
     "count": 1,
-    "cost": "wins: (n+1)**2, cells: 2**(n+1)"
+    "cost": "wins: (n+1)**2; cells: 2**(n+1)"
   },
   {
     "name": "resetSpeed",
@@ -48,7 +48,7 @@
     "extra": {
       "remainingTime": 0
     },
-    "cost": "resets: 1, cells: n",
+    "cost": "resets: 1; cells: n",
     "tick": "timer({ kind: 'remainingTime', direction: -1 })"
   },
   {

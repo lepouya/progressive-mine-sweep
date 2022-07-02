@@ -189,8 +189,6 @@ export function genResource<Context, Result>(
     "unlocked",
     "disabled",
     "count",
-    "maxCount",
-    "minCount",
     "extra",
   ]);
 }
@@ -677,7 +675,7 @@ export function compileAllResources<Context, Result>(
         "[" +
         (res.cost as string)
           .replace(/\s/gim, "")
-          .split(/[;,]/gim)
+          .split(/[;]/gim)
           .map((cost) => {
             const parts = cost.split(/:/gim);
             const rc = [
