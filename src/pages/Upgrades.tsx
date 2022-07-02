@@ -42,12 +42,7 @@ export default function Upgrades() {
         <div className="half"></div>
         <div className="right half">
           {cols.count > 3 && (
-            <BuyButton
-              resource={cols}
-              prefix="Shrink"
-              mode="sell"
-              precision={0}
-            />
+            <BuyButton resource={cols} prefix="Shrink" mode="sell" />
           )}
         </div>
 
@@ -66,12 +61,7 @@ export default function Upgrades() {
         <div className="half"></div>
         <div className="right half">
           {rows.count > 3 && (
-            <BuyButton
-              resource={rows}
-              prefix="Shrink"
-              mode="sell"
-              precision={0}
-            />
+            <BuyButton resource={rows} prefix="Shrink" mode="sell" />
           )}
         </div>
 
@@ -101,12 +91,7 @@ export default function Upgrades() {
         </div>
         <div className="right half">
           {difficulty.count > 1 && (
-            <BuyButton
-              resource={difficulty}
-              prefix="Decrease"
-              mode="sell"
-              precision={0}
-            />
+            <BuyButton resource={difficulty} prefix="Decrease" mode="sell" />
           )}
         </div>
       </div>

@@ -368,7 +368,7 @@ function update<Context, Result>(
   Object.values(rm.resources).forEach((res) => {
     if (res.autoAward && !res.disabled && res.count < (res.maxCount ?? 0)) {
       const req = res.cost(res.count + 1);
-      if (canAfford(rm, req)) {
+      if (canAfford(rm, req, false)) {
         res.count++;
 
         if (!(res.unlocked ?? true)) {
@@ -475,9 +475,10 @@ function resolveAll<Context, Result>(
 function canAfford<Context, Result>(
   rm: ResourceManager<Context, Result>,
   cost: ResourceCount<Context, Result>[],
+  toSpend = true,
 ): boolean {
   return resolveAll(rm, combineResources(cost)).every((rc) =>
-    checkHasResources(rc.resource, [rc], true),
+    checkHasResources(rc.resource, [rc], toSpend),
   );
 }
 
@@ -548,7 +549,7 @@ function getPurchaseCost<Context, Result>(
   }
 
   return {
-    count: partialCount,
+    count: partialCount * Math.sign(gainMultiplier),
     gain: [{ resource, count: gainMultiplier * partialCount, kind }],
     cost,
   };

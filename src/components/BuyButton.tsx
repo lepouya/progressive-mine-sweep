@@ -50,7 +50,7 @@ export default function BuyButton({
   maxNum,
   minNum,
   increment,
-  precision,
+  precision = 0,
 
   gainMultiplier = 1,
   costMultiplier = 1,
@@ -141,11 +141,12 @@ export default function BuyButton({
     }
   }
 
-  function adjustCount(count = 0, increment = 1) {
+  function adjustCount(count = 0) {
     const currentCount = overrideCount ?? res.value(kind);
     return (
       clamp(
-        Math.floor((currentCount + count) / increment) * increment,
+        Math.floor((currentCount + count) / (increment ?? 1)) *
+          (increment ?? 1),
         Math.max(overrideMinCount ?? -Infinity, res.minCount ?? 0),
         Math.min(overrideMaxCount ?? Infinity, res.maxCount ?? Infinity),
       ) - currentCount
@@ -154,7 +155,7 @@ export default function BuyButton({
 
   let active = true;
   let purchase = res.buy(
-    adjustCount(maxNum, increment),
+    adjustCount(maxNum),
     "dry-partial",
     kind,
     gainMultiplier,
@@ -162,7 +163,7 @@ export default function BuyButton({
   );
   if (purchase.count % increment !== 0) {
     purchase = res.buy(
-      adjustCount(purchase.count, increment),
+      adjustCount(purchase.count),
       "dry-partial",
       kind,
       gainMultiplier,
@@ -174,13 +175,11 @@ export default function BuyButton({
     (minNum < 0 && purchase.count > minNum) ||
     purchase.count === 0
   ) {
+    const adjusted = adjustCount(
+      clamp(increment, Math.min(minNum, maxNum), Math.max(minNum, maxNum)),
+    );
     purchase = res.buy(
-      Math.max(
-        Math.sign(increment),
-        adjustCount(
-          clamp(increment, Math.min(minNum, maxNum), Math.max(minNum, maxNum)),
-        ),
-      ),
+      Math.abs(adjusted) < 1 ? Math.sign(increment) : adjusted,
       "dry-full",
       kind,
       gainMultiplier,
