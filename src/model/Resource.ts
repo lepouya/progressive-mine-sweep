@@ -718,5 +718,22 @@ export function compileAllResources<Context, Result>(
         resourceContext,
       );
     }
+
+    if (typeof res.onPurchase === "string") {
+      res.onPurchase = compileInlineFunction(
+        res.onPurchase,
+        res,
+        ["purchase"],
+        resourceContext,
+      );
+    }
+    if (typeof res.onChange === "string") {
+      res.onChange = compileInlineFunction(
+        res.onChange,
+        res,
+        ["value", "kind", "source"],
+        resourceContext,
+      );
+    }
   });
 }
