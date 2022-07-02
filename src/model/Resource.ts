@@ -323,20 +323,6 @@ function update<Context, Result>(
   }
 
   resources.forEach((res) => {
-    if (res.autoAward && res.count < (res.maxCount ?? 0)) {
-      const req = res.cost(res.count + 1);
-      if (canAfford(rm, req)) {
-        res.count++;
-        if (res.onPurchase) {
-          res.onPurchase({
-            count: 1,
-            gain: [{ resource: res, count: 1 }],
-            cost: [],
-          });
-        }
-      }
-    }
-
     const rateDt = (now - (res.rate.lastCountUpdate ?? 0)) / 1000.0;
     if (
       res.rate.lastCountUpdate == undefined ||
@@ -378,6 +364,34 @@ function update<Context, Result>(
         ...(results[res.name] ?? []),
         ...changeResults,
       ]);
+    }
+  });
+
+  Object.values(rm.resources).forEach((res) => {
+    if (res.autoAward && !res.disabled && res.count < (res.maxCount ?? 0)) {
+      const req = res.cost(res.count + 1);
+      if (canAfford(rm, req)) {
+        res.count++;
+
+        if (!(res.unlocked ?? true)) {
+          res.unlocked = true;
+        }
+
+        if (res.onPurchase) {
+          res.onPurchase({
+            count: 1,
+            gain: [{ resource: res, count: 1 }],
+            cost: [],
+          });
+        }
+
+        if (res.onChange) {
+          results[res.name] = dedupe([
+            ...(results[res.name] ?? []),
+            res.onChange(res.count, undefined, source),
+          ]);
+        }
+      }
     }
   });
 
@@ -665,13 +679,13 @@ export function compileAllResources<Context, Result>(
           .replace(/\s/gim, "")
           .split(/[;,]/gim)
           .map((cost) => {
-            const parts = cost.split(/:/gim, 2);
+            const parts = cost.split(/:/gim);
             const rc = [
               `resource: ${parts[0]}`,
               `count: ${parts[parts.length - 1]}`,
             ];
             if (parts.length > 2) {
-              rc.push(`kind: ${parts[1]}`);
+              rc.push(`kind: "${parts[1]}"`);
             }
             return "{" + rc.join(", ") + "}";
           })
