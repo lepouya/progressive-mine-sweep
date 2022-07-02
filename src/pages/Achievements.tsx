@@ -2,10 +2,11 @@ import useGameContext from "../components/GameContext";
 import ResourceRender from "../components/ResourceRender";
 import achievements_normal from "../data/achievements_normal.json";
 import achievements_secret from "../data/achievements_secret.json";
+import { achievementScoreMultiplier } from "../model/GameAchievements";
 import { Resource } from "../model/Resource";
 
 export default function Achievements() {
-  const { resource } = useGameContext();
+  const { context, resource } = useGameContext();
 
   let [earned, total] = [0, 0];
 
@@ -54,7 +55,11 @@ export default function Achievements() {
         <div className="title-bar">Achievements</div>
         <div className="half right">Total achievements score:</div>
         <div className="half left">
-          &nbsp; {earned} / {total}
+          {earned} / {total}
+        </div>
+        <div className="half right">Score multiplier from achievements:</div>
+        <div className="half left">
+          {Math.floor(achievementScoreMultiplier(context) * 100)}%
         </div>
       </div>
 

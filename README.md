@@ -37,7 +37,7 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Notifications in corner~~
 - ~~Add achievement tracking~~
 - ~~Some basic achievements to complete~~
-- Bonuses for achivements
+- ~~Bonuses for achivements~~
 - More complex achievements perhaps
 - More complex bonuses?
 

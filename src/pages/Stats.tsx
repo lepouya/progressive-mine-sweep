@@ -1,8 +1,12 @@
+import { useLocation } from "react-router";
+
 import useGameContext from "../components/GameContext";
 import ResourceRender from "../components/ResourceRender";
 
 export default function Stats() {
   const { resource } = useGameContext();
+  const location = useLocation();
+  const debug = location.search.toLowerCase().includes("debug");
 
   function render(name: string) {
     const res = resource(name);
@@ -13,7 +17,7 @@ export default function Stats() {
         precision={res.display === "percentage" ? 1 : undefined}
         showMaxValue={true}
         showRate={true}
-        showExtras={true}
+        showExtras={debug}
         showZeroRates={true}
         showRateColors={true}
         placeholder=""

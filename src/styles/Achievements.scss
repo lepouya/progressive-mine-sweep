@@ -5,12 +5,16 @@
     margin-bottom: 1em;
 
     @include Theme.background($neutral: 7%, $positive: 7%, $secondary: 100%);
+
+    > div {
+      padding: 0 0.5ex 0.5ex;
+      box-sizing: border-box;
+    }
   }
 
   .achievement {
     width: calc(50% - 10px);
     min-height: 4em;
-    padding: 0.5ex;
     margin: 5px;
 
     display: flex;

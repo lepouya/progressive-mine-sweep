@@ -2,10 +2,15 @@ import { shuffle } from "../utils/shuffle";
 import { Board, genBoard, genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
+import { achievementScoreMultiplier } from "./GameAchievements";
 import { Resource, ResourceManager } from "./Resource";
 
 export function gainMultiplier(this: ResourceManager<Context>, m: number) {
-  return m * difficultyScoreMultiplier(this.context);
+  return (
+    m *
+    difficultyScoreMultiplier(this.context) *
+    achievementScoreMultiplier(this.context)
+  );
 }
 
 export function costMultiplier(this: ResourceManager<Context>, m: number) {
