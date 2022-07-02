@@ -104,3 +104,37 @@ export function formatTime(
     (ago.length > 0 ? " " + ago : "")
   );
 }
+
+export function formatWord(
+  word?: string,
+  item?: {
+    name?: string;
+    count?: number;
+    singularName?: string;
+    pluralName?: string;
+  },
+  options?: {
+    condition?: boolean;
+    allowEmpties?: boolean;
+    capitalize?: boolean;
+  },
+): string | undefined {
+  if (!word) {
+    word =
+      (Math.abs(item?.count ?? 0) === 1
+        ? item?.singularName
+        : item?.pluralName) ?? item?.name;
+  }
+
+  if (!(options?.condition ?? true)) {
+    return undefined;
+  } else if (!word && !(options?.allowEmpties ?? false)) {
+    return undefined;
+  } else if (!(options?.capitalize ?? true)) {
+    return word;
+  } else {
+    return (word ?? "")
+      .replace(/([a-z])([A-Z]|_\S)/g, (_, c1, c2) => `${c1} ${c2.slice(-1)}`)
+      .replace(/(?:^|\s)\S/g, (c) => c.toUpperCase());
+  }
+}

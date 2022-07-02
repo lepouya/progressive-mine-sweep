@@ -52,3 +52,4 @@ Perhaps I could do prestige/reset options once this is ready
 ## Bugs, Issues, and Ideas
 
 - Turn off all automation options
+- There's still something wrong with ->|5 and ->|10

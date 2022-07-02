@@ -1,5 +1,5 @@
 import { Resource } from "../model/Resource";
-import { formatNumber, formatTime } from "../utils/format";
+import { formatNumber, formatTime, formatWord } from "../utils/format";
 import round, { roundMethods } from "../utils/round";
 import Icon from "./Icon";
 
@@ -189,49 +189,12 @@ export default function ResourceRender({
     return res;
   }
 
-  function getWord(
-    word?: string,
-    { condition = true, empties = false, caps = showCapitalized } = {},
-  ) {
-    return condition && (empties || (word != null && word.length > 0))
-      ? caps
-        ? (word ?? "")
-            .replace(
-              /([a-z])([A-Z]|_\S)/g,
-              (_, c1, c2) => `${c1} ${c2.slice(-1)}`,
-            )
-            .replace(/(?:^|\s)\S/g, (c) => c.toUpperCase())
-        : word
-      : null;
-  }
-
-  function getValue(): number | undefined {
-    return (
-      value ??
-      (resource.value ? resource.value(kind) : undefined) ??
-      (resource.extra ?? {})[kind ?? ""] ??
-      resource.count
-    );
-  }
-
-  function getName(): string | undefined {
-    if (name) {
-      return name;
-    }
-
-    let count = round(
-      (getValue() ?? 0) * multipliers[display],
-      valuePrecision,
-      rounding,
-    );
-
-    return (
-      (Math.abs(count) === 1 ? resource.singularName : resource.pluralName) ??
-      resource.name
-    );
-  }
-
   const classNames = ["resource"];
+  const adjustedValue =
+    value ??
+    (resource.value ? resource.value(kind) : undefined) ??
+    (resource.extra ?? {})[kind ?? ""] ??
+    resource.count;
 
   if ((showIcon && resource.icon) || (showName && resource.name)) {
     output.push(
@@ -239,7 +202,24 @@ export default function ResourceRender({
         {showIcon && resource.icon && resource.icon.length > 0 ? (
           <Icon icon={resource.icon} size="1em" />
         ) : null}
-        {getWord(getName(), { condition: showName })}
+        {formatWord(
+          name,
+          {
+            count: round(
+              adjustedValue * multipliers[display],
+              valuePrecision,
+              rounding,
+            ),
+            name: resource.name,
+            singularName: resource.singularName,
+            pluralName: resource.pluralName,
+          },
+          {
+            condition: showName,
+            allowEmpties: false,
+            capitalize: showCapitalized,
+          },
+        )}
         {infix}
       </div>,
     );
@@ -254,7 +234,7 @@ export default function ResourceRender({
         })
       : "";
 
-    addValueDiv(getValue(), "value", {
+    addValueDiv(adjustedValue, "value", {
       prec: valuePrecision,
       ref: epoch != undefined && !isNaN(epoch),
       post: denom,
@@ -297,7 +277,7 @@ export default function ResourceRender({
     }
 
     let usePercentage = showRatePercentages;
-    let rateDenom = showRatePercentages ? getValue() ?? 0 : 1;
+    let rateDenom = showRatePercentages ? adjustedValue : 1;
     if (
       rateDenom === 0 ||
       (usePercentage && (rate / rateDenom < 0.01 || rateDenom < 1000))
@@ -334,7 +314,9 @@ export default function ResourceRender({
         }
         output.push(
           <div className="extra-name" key={`extra-name-${k}`}>
-            {getWord(k)}
+            {formatWord(k, undefined, {
+              capitalize: showCapitalized,
+            })}
             {infix}
           </div>,
         );
