@@ -3,6 +3,7 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 
 import { genBoardState } from "../model/Board";
 import { stateChanged } from "../model/GameFormulas";
+import Achievements from "../pages/Achievements";
 import Automation from "../pages/Automation";
 import Help from "../pages/Help";
 import Main from "../pages/Main";
@@ -94,6 +95,7 @@ export default function Game() {
         </div>
         <div className="spacer"></div>
         <div className="right">
+          <Link to="/achievements">Achievements</Link>
           <Link to="/stats">Statistics</Link>
           <Link to="/help">Help</Link>
           <Link to="/options">Settings</Link>
@@ -104,6 +106,7 @@ export default function Game() {
         <Route path="/" element={<Main />} />
         <Route path="/upgrades" element={<Upgrades />} />
         <Route path="/auto" element={<Automation />} />
+        <Route path="/achievements" element={<Achievements />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/help" element={<Help />} />
         <Route path="/options" element={<Options />} />

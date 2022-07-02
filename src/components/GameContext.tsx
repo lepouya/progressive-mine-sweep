@@ -1,11 +1,13 @@
 import { createContext, PropsWithChildren, useContext } from "react";
 
+import achievements from "../data/achievements.json";
 import tasks_auto from "../data/auto.json";
 import resources_board from "../data/resources_board.json";
 import resources_cell from "../data/resources_cell.json";
 import resources_game from "../data/resources_game.json";
 import resources_time from "../data/resources_time.json";
 import { emptyContext, wrapContext } from "../model/Context";
+import * as GameAchievements from "../model/GameAchievements";
 import * as GameAutomation from "../model/GameAutomation";
 import * as GameFormulas from "../model/GameFormulas";
 import { compileAllResources } from "../model/Resource";
@@ -31,9 +33,11 @@ const _load_resources = [
   resources_game,
   resources_cell,
   tasks_auto,
+  achievements,
 ];
 
 Object.assign(context, {
+  ...GameAchievements,
   ...GameAutomation,
   ...GameFormulas,
   init: function (this: typeof context) {

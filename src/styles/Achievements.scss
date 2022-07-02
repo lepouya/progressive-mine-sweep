@@ -1,0 +1,43 @@
+@use "./Theme";
+
+#achievements {
+  .panel {
+    margin-top: 5px;
+
+    @include Theme.background($neutral: 7%, $positive: 7%, $secondary: 100%);
+  }
+
+  .achievement {
+    width: calc(50% - 10px);
+    min-height: 4em;
+    padding: 0.5ex;
+    margin: 5px;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    white-space: nowrap;
+    gap: 0.5em;
+
+    border: 1px solid Theme.color(primary, 50%);
+    border-radius: 0.5em;
+    box-sizing: border-box;
+
+    > * {
+      pointer-events: none;
+    }
+
+    @include Theme.background($primary: 5%, $secondary: 50%);
+
+    &.earned {
+      @include Theme.background($positive: 15%, $secondary: 50%);
+    }
+  }
+
+  .subtext {
+    font-size: smaller;
+    color: Theme.color(primary, 75%);
+  }
+}
