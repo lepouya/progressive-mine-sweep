@@ -47,3 +47,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Turn off all automation options
 - Offline time counter might be broken
 - Hint buying is bonused twice
+- Tutorial buttons on small height screens could become unclickable
