@@ -31,7 +31,8 @@ function canRevealNeighbors(cell: Cell) {
   return (
     cell.state === "revealed" &&
     cell.contents === "clear" &&
-    cell.neighborContents.mine === cell.neighborStates.flagged &&
+    cell.neighborContents.mine ===
+      cell.neighborStates.flagged + cell.neighborStates.blown &&
     cell.neighborStates.hidden > 0
   );
 }
@@ -97,7 +98,9 @@ function canFlagMines(cell: Cell) {
     cell.state === "revealed" &&
     cell.contents === "clear" &&
     cell.neighborContents.mine ===
-      cell.neighborStates.flagged + cell.neighborStates.hidden &&
+      cell.neighborStates.flagged +
+        cell.neighborStates.blown +
+        cell.neighborStates.hidden &&
     cell.neighborContents.clear === cell.neighborStates.revealed &&
     cell.neighborStates.hidden > 0
   );
@@ -194,7 +197,7 @@ export function purchaseHintsTask(context: Context) {
 
   const numHints = genHints(
     context.board,
-    purchase.count,
+    purchase.gain[0].count,
     0,
     8,
     F.hintFormula(context),

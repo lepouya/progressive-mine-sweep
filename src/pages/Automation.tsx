@@ -27,7 +27,8 @@ export default function Automation() {
   } = useGameContext();
 
   const autoTime = formatTime(
-    (1000 * context.settings.automationBaseSecs) /
+    1000 *
+      context.settings.automationBaseSecs *
       achievementAutomationDiscount(context),
   );
 

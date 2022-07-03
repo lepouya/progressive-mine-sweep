@@ -53,4 +53,3 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Turn off all automation options
 - Offline time counter might be broken
-- Lots of weird behaviors when fractions are introduced in scores

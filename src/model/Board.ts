@@ -125,10 +125,9 @@ export function genBoardState(board: Board, maxErrors = 1): Board {
   } else if (board.cols * board.rows === 0) {
     board.state = "inactive";
   } else if (
-    board.cellCounts["blown"] + board.cellCounts["flagged"] ===
-      board.numMines &&
+    board.cellCounts["blown"] + board.cellCounts["flagged"] >= board.numMines &&
     board.cellCounts["hidden"] === 0 &&
-    board.cellCounts["revealed"] === board.cols * board.rows - board.numMines
+    board.cellCounts["revealed"] >= board.cols * board.rows - board.numMines
   ) {
     board.state = "won";
   } else {

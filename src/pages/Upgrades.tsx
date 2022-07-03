@@ -110,7 +110,14 @@ export default function Upgrades() {
           />
         </div>
         <div className="right half">
-          <BuyButton resource={resetSpeed} prefix="Speed up" />
+          <BuyButton
+            resource={resetSpeed}
+            prefix={
+              resetSpeed.count < (resetSpeed.maxCount ?? Infinity)
+                ? "Speed up"
+                : "Max Speed!"
+            }
+          />
         </div>
 
         <hr className="separator" />
@@ -139,7 +146,14 @@ export default function Upgrades() {
           />
         </div>
         <div className="right half">
-          <BuyButton resource={hintsCount} prefix="Improve" />
+          <BuyButton
+            resource={hintsCount}
+            prefix={
+              hintsCount.count < (hintsCount.maxCount ?? Infinity)
+                ? "Improve"
+                : "Max Quality!"
+            }
+          />
         </div>
 
         <hr className="separator" />

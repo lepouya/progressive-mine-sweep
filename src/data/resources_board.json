@@ -5,7 +5,8 @@
     "icon": "arrows-vertical",
     "count": 3,
     "minCount": 3,
-    "cost": "cells: n**2"
+    "cost": "cells: n**2",
+    "value": "Math.floor(this.count)"
   },
   {
     "name": "cols",
@@ -13,7 +14,8 @@
     "icon": "arrows-horizontal",
     "count": 3,
     "minCount": 3,
-    "cost": "cells: n**2"
+    "cost": "cells: n**2",
+    "value": "Math.floor(this.count)"
   },
   {
     "name": "difficulty",
@@ -37,7 +39,8 @@
     "singularName": "hint",
     "pluralName": "hints",
     "count": 1,
-    "cost": "wins: (n+1)**2; cells: 2**(n+1)"
+    "cost": "wins: (n+1)**2; cells: 2**(n+1)",
+    "value": "Math.floor(this.count)"
   },
   {
     "name": "resetSpeed",
@@ -64,6 +67,7 @@
       "manual": 0,
       "useless": 0
     },
-    "cost": "cells: 2**(n+1)"
+    "cost": "cells: 2**(n+1)",
+    "value": "Math.floor(value(kind))"
   }
 ]

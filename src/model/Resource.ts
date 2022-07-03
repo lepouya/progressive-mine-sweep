@@ -152,10 +152,7 @@ export function genResource<Context, Result>(
     count: 0,
     extra: {},
 
-    value: (kind) =>
-      !kind
-        ? clamp(res.count, res.minCount ?? 0, res.maxCount ?? Infinity)
-        : res.extra[kind] ?? 0,
+    value: (kind) => valueFunction(res, kind),
     cost: () => [],
 
     buy: (
@@ -651,6 +648,12 @@ function applyToResource<Context, Result>(
   );
 }
 
+function valueFunction(res: Resource, kind?: string) {
+  return !kind
+    ? clamp(res.count, res.minCount ?? 0, res.maxCount ?? Infinity)
+    : res.extra[kind] ?? 0;
+}
+
 export function compileAllResources<Context, Result>(
   rm: ResourceManager<Context, Result>,
 ) {
@@ -660,6 +663,7 @@ export function compileAllResources<Context, Result>(
       ...res.manager,
       ...res.manager.resources,
       timer: apply(tickTimer, res),
+      value: apply(valueFunction, res),
     };
 
     if (typeof res.value === "string") {
