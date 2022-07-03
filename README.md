@@ -30,16 +30,9 @@ Perhaps I could do prestige/reset options once this is ready
 
 ### ~~M4: Automation~~
 
+### ~~M5: Achievements~~
+
 ## Future Milestones
-
-### M5: Achievements
-
-- ~~Notifications in corner~~
-- ~~Add achievement tracking~~
-- ~~Some basic achievements to complete~~
-- ~~Bonuses for achivements~~
-- ~~More complex achievements perhaps~~
-- ~~More complex bonuses~~
 
 ### M6: Prestige
 
@@ -53,3 +46,4 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Turn off all automation options
 - Offline time counter might be broken
+- Hint buying is bonused twice
