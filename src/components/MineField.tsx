@@ -16,7 +16,7 @@ export default function MineField(props: PropsWithChildren<Props>) {
 
   const mineField = useMemo(
     function () {
-      const cellRatio = Math.floor(95 / Math.max(board.rows, board.cols));
+      const cellRatio = 100 / Math.max(board.rows, board.cols);
       return (
         <table
           id={board === context.board ? "board-main" : "board-custom"}

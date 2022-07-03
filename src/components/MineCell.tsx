@@ -127,8 +127,12 @@ export default function MineCell(props: Props) {
     [board, cell, props.enabled],
   );
 
-  const minPx = Math.floor(((props.boardWidth ?? 640) * props.cellRatio) / 100);
-  const cellSize = `min(${props.cellRatio}vmin, ${minPx}px)`;
+  const minPx = Math.floor(
+    ((props.boardWidth ?? 640) * props.cellRatio * 0.98) / 100,
+  );
+  const vwRatio = Math.floor(props.cellRatio * 0.95);
+  const vhRatio = Math.floor(props.cellRatio * 0.8);
+  const cellSize = `min(${vwRatio}vw, ${vhRatio}vh, ${minPx}px)`;
 
   return (
     <td

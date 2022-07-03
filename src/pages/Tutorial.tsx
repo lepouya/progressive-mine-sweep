@@ -70,9 +70,12 @@ export default function Tutorial() {
 
   const bounds = {
     left: calcStyle(tutorialStep.bounds.left),
-    top: calcStyle(tutorialStep.bounds.top),
+    bottom: calcStyle(
+      "100vh - " + tutorialStep.bounds.top + " - " + tutorialStep.bounds.height,
+    ),
     width: calcStyle(tutorialStep.bounds.width),
     minHeight: calcStyle(tutorialStep.bounds.height),
+    maxHeight: calcStyle("100%"),
   };
 
   const tutorial = (
