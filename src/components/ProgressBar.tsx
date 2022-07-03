@@ -1,5 +1,7 @@
 import { PropsWithChildren } from "react";
 
+import clamp from "../utils/clamp";
+
 export type ProgressBarProps = PropsWithChildren<{
   value?: number;
   minValue?: number;
@@ -31,7 +33,7 @@ export default function ProgressBar({
 
   children,
 }: ProgressBarProps) {
-  const pct = (value - minValue) / (maxValue - minValue);
+  const pct = clamp((value - minValue) / (maxValue - minValue));
   const endX = orientation === "horizontal" ? pct : 1;
   const endY = orientation === "vertical" ? pct : 1;
 

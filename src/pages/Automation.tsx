@@ -26,15 +26,16 @@ export default function Automation() {
     },
   } = useGameContext();
 
-  const autoTime = formatTime(
-    1000 *
-      context.settings.automationBaseSecs *
-      achievementAutomationDiscount(context),
-  );
+  const autoTime =
+    context.settings.automationBaseSecs *
+    achievementAutomationDiscount(context);
+  const autoTimeStr = formatTime(1000 * autoTime);
 
   function tickProgress(res: Resource) {
     // Prevent flickering
-    return res.count >= 100 ? 1 : getTickProgress(res);
+    return !res.disabled && autoTime / res.value() <= 1
+      ? 1
+      : getTickProgress(res);
   }
 
   return (
@@ -53,7 +54,7 @@ export default function Automation() {
             infix=""
             suffix={`time${
               autoRevealNeighbors.count === 1 ? "" : "s"
-            } every ${autoTime}`}
+            } every ${autoTimeStr}`}
           />
         </div>
         <div className="right half">
@@ -96,7 +97,7 @@ export default function Automation() {
             infix=""
             suffix={`time${
               autoFlagMines.count === 1 ? "" : "s"
-            } every ${autoTime}`}
+            } every ${autoTimeStr}`}
           />
         </div>
         <div className="right half">
@@ -137,7 +138,7 @@ export default function Automation() {
             infix=""
             suffix={`time${
               autoRevealHints.count === 1 ? "" : "s"
-            } every ${autoTime}`}
+            } every ${autoTimeStr}`}
           />
         </div>
         <div className="right half">
@@ -174,7 +175,7 @@ export default function Automation() {
             infix=""
             suffix={`time${
               autoPurchaseHints.count === 1 ? "" : "s"
-            } every ${autoTime}`}
+            } every ${autoTimeStr}`}
           />
         </div>
         <div className="right half">
@@ -214,7 +215,7 @@ export default function Automation() {
             infix=""
             suffix={`time${
               autoResetGame.count === 1 ? "" : "s"
-            } every ${autoTime}`}
+            } every ${autoTimeStr}`}
           />
         </div>
         <div className="right half">
@@ -287,7 +288,7 @@ export default function Automation() {
             infix=""
             suffix={`time${
               autoBoardUpgrade.count === 1 ? "" : "s"
-            } every ${autoTime}`}
+            } every ${autoTimeStr}`}
           />
         </div>
         <div className="right half">
