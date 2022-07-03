@@ -2,10 +2,11 @@ import { shuffle } from "../utils/shuffle";
 import { genHints } from "./Board";
 import { actOnCell, Cell } from "./Cell";
 import { Context } from "./Context";
+import { achievementAutomationDiscount } from "./GameAchievements";
 import * as F from "./GameFormulas";
 import { Resource } from "./Resource";
 
-export function getTickProgress(res: Resource, dt?: number): number {
+export function getTickProgress(res: Resource<Context>, dt?: number): number {
   if (!res || res.count <= 0 || !(res.unlocked ?? true) || res.disabled) {
     return NaN;
   }
@@ -15,7 +16,11 @@ export function getTickProgress(res: Resource, dt?: number): number {
     (Date.now() - (res.execution.lastTick ?? Date.now())) /
     1000.0 /
     context.settings.timeDilation;
-  return (dt * res.count) / context.settings.automationBaseSecs;
+  return (
+    (dt * res.count) /
+    context.settings.automationBaseSecs /
+    achievementAutomationDiscount(context)
+  );
 }
 
 export function shouldAutoTick(this: Resource, dt: number, src?: string) {

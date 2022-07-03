@@ -1,5 +1,6 @@
 import useGameContext from "../components/GameContext";
 import ResourceRender from "../components/ResourceRender";
+import achievements_advanced from "../data/achievements_advanced.json";
 import achievements_normal from "../data/achievements_normal.json";
 import achievements_secret from "../data/achievements_secret.json";
 import { achievementScoreMultiplier } from "../model/GameAchievements";
@@ -11,6 +12,12 @@ export default function Achievements() {
   let [earned, total] = [0, 0];
 
   const resources_normal = achievements_normal.flat().map(({ name }) => {
+    const res = resource(name);
+    earned += res.count;
+    total += res.maxCount ?? 0;
+    return res;
+  });
+  const resources_advanced = achievements_advanced.flat().map(({ name }) => {
     const res = resource(name);
     earned += res.count;
     total += res.maxCount ?? 0;
@@ -38,6 +45,9 @@ export default function Achievements() {
           placeholder="???"
           className="value-first"
         />
+        {(achievement.unlocked ?? true) && achievement.description && (
+          <div className="subtext">{achievement.description}</div>
+        )}
         {(achievement.unlocked ?? true) &&
           achievement.maxCount &&
           achievement.maxCount > 1 && (
@@ -66,6 +76,11 @@ export default function Achievements() {
       <div className="panel">
         <div className="title-bar">Normal Achievements</div>
         {resources_normal.map(renderAchievement)}
+      </div>
+
+      <div className="panel">
+        <div className="title-bar">Advanced Achievements</div>
+        {resources_advanced.map(renderAchievement)}
       </div>
 
       <div className="panel">

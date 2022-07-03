@@ -38,8 +38,8 @@ Perhaps I could do prestige/reset options once this is ready
 - ~~Add achievement tracking~~
 - ~~Some basic achievements to complete~~
 - ~~Bonuses for achivements~~
-- More complex achievements perhaps
-- More complex bonuses?
+- ~~More complex achievements perhaps~~
+- ~~More complex bonuses~~
 
 ### M6: Prestige
 
@@ -53,3 +53,4 @@ Perhaps I could do prestige/reset options once this is ready
 
 - Turn off all automation options
 - Offline time counter might be broken
+- Lots of weird behaviors when fractions are introduced in scores

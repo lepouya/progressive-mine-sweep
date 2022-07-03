@@ -6,11 +6,14 @@ import ProgressBar from "../components/ProgressBar";
 import ResourceBar from "../components/ResourceBar";
 import ResourceRender from "../components/ResourceRender";
 import ToggleButton from "../components/ToggleButton";
+import { achievementAutomationDiscount } from "../model/GameAchievements";
 import { getTickProgress } from "../model/GameAutomation";
 import { Resource } from "../model/Resource";
+import { formatTime } from "../utils/format";
 
 export default function Automation() {
   const {
+    context,
     resources: {
       revealNeighbors,
       autoRevealNeighbors,
@@ -22,6 +25,11 @@ export default function Automation() {
       autoBoardUpgrade,
     },
   } = useGameContext();
+
+  const autoTime = formatTime(
+    (1000 * context.settings.automationBaseSecs) /
+      achievementAutomationDiscount(context),
+  );
 
   function tickProgress(res: Resource) {
     // Prevent flickering
@@ -44,7 +52,7 @@ export default function Automation() {
             infix=""
             suffix={`time${
               autoRevealNeighbors.count === 1 ? "" : "s"
-            } a minute`}
+            } every ${autoTime}`}
           />
         </div>
         <div className="right half">
@@ -85,7 +93,9 @@ export default function Automation() {
             showChrome={true}
             showLocked={true}
             infix=""
-            suffix={`time${autoFlagMines.count === 1 ? "" : "s"} a minute`}
+            suffix={`time${
+              autoFlagMines.count === 1 ? "" : "s"
+            } every ${autoTime}`}
           />
         </div>
         <div className="right half">
@@ -124,7 +134,9 @@ export default function Automation() {
             showChrome={true}
             showLocked={true}
             infix=""
-            suffix={`time${autoRevealHints.count === 1 ? "" : "s"} a minute`}
+            suffix={`time${
+              autoRevealHints.count === 1 ? "" : "s"
+            } every ${autoTime}`}
           />
         </div>
         <div className="right half">
@@ -159,7 +171,9 @@ export default function Automation() {
             showChrome={true}
             showLocked={true}
             infix=""
-            suffix={`time${autoPurchaseHints.count === 1 ? "" : "s"} a minute`}
+            suffix={`time${
+              autoPurchaseHints.count === 1 ? "" : "s"
+            } every ${autoTime}`}
           />
         </div>
         <div className="right half">
@@ -197,7 +211,9 @@ export default function Automation() {
             showChrome={true}
             showLocked={true}
             infix=""
-            suffix={`time${autoResetGame.count === 1 ? "" : "s"} a minute`}
+            suffix={`time${
+              autoResetGame.count === 1 ? "" : "s"
+            } every ${autoTime}`}
           />
         </div>
         <div className="right half">
@@ -268,7 +284,9 @@ export default function Automation() {
             showChrome={true}
             showLocked={true}
             infix=""
-            suffix={`time${autoBoardUpgrade.count === 1 ? "" : "s"} a minute`}
+            suffix={`time${
+              autoBoardUpgrade.count === 1 ? "" : "s"
+            } every ${autoTime}`}
           />
         </div>
         <div className="right half">

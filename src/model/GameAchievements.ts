@@ -3,7 +3,7 @@ import { formatWord } from "../utils/format";
 import { Context } from "./Context";
 import { Resource } from "./Resource";
 
-export function achievementAwarded(this: Resource) {
+export function achievementAwarded(this: Resource<Context>) {
   const count = Math.floor(this.value());
   const showCount = this.display === "none" ? "" : count.toFixed() + " ";
   _achievementTotal = undefined;
@@ -14,8 +14,13 @@ export function achievementAwarded(this: Resource) {
     type: "success",
     message: showCount + formatWord(undefined, { ...this, count }),
   });
+
+  if (this.name === "achieveExtraMistake") {
+    this.manager.context.settings.maxErrors = 2;
+  }
 }
 
+let _achievementTotal: number | undefined;
 export function achievementScoreMultiplier({
   resourceManager: { resources },
 }: Context): number {
@@ -31,4 +36,6 @@ export function achievementScoreMultiplier({
   return 1 + _achievementTotal / 50;
 }
 
-let _achievementTotal: number | undefined;
+export function achievementAutomationDiscount(context: Context): number {
+  return 1 - 0.2 * context.resourceManager.resources.achieveAutomation.count;
+}
