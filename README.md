@@ -47,3 +47,6 @@ Perhaps I could do prestige/reset options once this is ready
 - Turn off all automation options
 - Offline time counter might be broken
 - Hint buying is bonused twice
+- Negative numbers should truncate upwards
+- First click shouldn't lead to explosion
+- Rebalance hint costs
