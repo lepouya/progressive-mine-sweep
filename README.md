@@ -50,3 +50,4 @@ Perhaps I could do prestige/reset options once this is ready
 - Negative numbers should truncate upwards
 - First click shouldn't lead to explosion
 - Rebalance hint costs
+- Turning off auto click on reset doesn't actually turn it off
