@@ -109,9 +109,9 @@
   }
 
   .info {
+    border-color: Theme.color(neutral, 75%);
     color: Theme.color(primary);
     @include Theme.background($neutral: 25%, $secondary: 75%);
-    border-color: Theme.color(neutral, 75%);
 
     .icon {
       color: Theme.color(neutral);
@@ -119,9 +119,9 @@
   }
 
   .success {
+    border-color: Theme.color(positive, 75%);
     color: Theme.color(primary);
     @include Theme.background($positive: 25%, $secondary: 75%);
-    border-color: Theme.color(positive, 75%);
 
     .icon {
       color: Theme.color(positive);
@@ -129,9 +129,9 @@
   }
 
   .fail {
+    border-color: Theme.color(negative, 75%);
     color: Theme.color(primary);
     @include Theme.background($negative: 25%, $secondary: 75%);
-    border-color: Theme.color(negative, 75%);
 
     .icon {
       color: Theme.color(negative);

@@ -39,11 +39,11 @@
     height: 5em;
     margin: 0 1em;
 
-    color: Theme.color(primary);
-    @include Theme.background($secondary: 100%);
-
     border: 1px solid Theme.color(primary, 66%);
     border-radius: 0.5em;
+
+    color: Theme.color(primary);
+    @include Theme.background($secondary: 100%);
   }
 
   &.reset {

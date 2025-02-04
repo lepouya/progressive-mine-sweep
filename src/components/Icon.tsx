@@ -1,4 +1,3 @@
-import tablerIcons from "../../assets/sprites/tabler-sprite-nostroke.svg";
 import cellIcons from "../data/cell_icons.json";
 import { Cell, CellState } from "../model/Cell";
 import { getHTMLElement } from "../utils/document";
@@ -65,17 +64,11 @@ export default function Icon(props: IconProps) {
 
 window.addEventListener(
   "load",
-  () => (getHTMLElement("icon").innerHTML = tablerIcons),
+  () => {
+    fetch("sprites/tabler-sprite-nostroke.svg")
+      .then((response) => response.text())
+      .then((data) => (getHTMLElement("icon").innerHTML = data))
+      .catch((error) => console.error("Error loading icons:", error));
+  },
   false,
 );
-
-/* Alternative method to dynamically load the svg:
-webpack:
-  output: { assetModuleFilename: "[name][ext]" }
-  module: { rules: [{ test: /\.svg$/i, type: "asset/resource" }] }
-
-ts:
-  fetch(tablerIcons)
-    .then((response) => response.text())
-    .then((data) => (getHTMLElement("icon").innerHTML = data));
-*/

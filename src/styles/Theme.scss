@@ -14,11 +14,15 @@
     $color: color($color, $alpha);
     $top: if($top == "", "", $top + ", ") + linear-gradient(0, $color, $color);
   }
-  background: #{$top};
+  & {
+    background: #{$top};
+  }
 }
 
 @function expand($color) {
-  @return color.red($color) color.green($color) color.blue($color);
+  @return color.channel($color, "red", $space: rgb)
+    color.channel($color, "green", $space: rgb)
+    color.channel($color, "blue", $space: rgb);
 }
 
 @mixin color-theme($args...) {
@@ -36,8 +40,10 @@
 
   $middle: color.scale(
     $primary,
-    $saturation: if(color.saturation($primary) > 50%, -50%, 50%),
-    $lightness: if(color.lightness($primary) > 50%, -50%, 50%)
+    $saturation:
+      if(color.channel($primary, "saturation", $space: hsl) > 50%, -50%, 50%),
+    $lightness:
+      if(color.channel($primary, "lightness", $space: hsl) > 50%, -50%, 50%)
   );
 
   @include color-theme(

@@ -1,31 +1,42 @@
 {
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "test"],
   "compilerOptions": {
-    "rootDir": "./src",
+    /* Directories */
     "outDir": "./dist",
     "typeRoots": ["./src/@types", "./node_modules/@types"],
+
+    /* Module generation */
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "ScriptHost"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "lib": ["DOM", "ESNext", "ScriptHost"],
-    "module": "ES6",
-    "moduleResolution": "node",
-    "target": "ES6",
-    "allowJs": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "allowUmdGlobalAccess": true,
     "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
     "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "isolatedModules": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
+    "sourceMap": true,
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "allowJs": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "resolveJsonModule": true,
-    "sourceMap": true,
-    "strict": true
-  }
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "test"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

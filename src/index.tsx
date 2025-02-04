@@ -1,3 +1,5 @@
+import "./index.scss";
+
 import { createRoot } from "react-dom/client";
 
 import { GameContextProvider } from "./components/GameContext";

@@ -5,8 +5,8 @@
   flex-flow: row wrap;
   position: relative;
 
-  @include Theme.background($primary: 7%, $secondary: 100%);
   color: Theme.color(primary);
+  @include Theme.background($primary: 7%, $secondary: 100%);
 
   @media only screen and (max-device-width: 640px) {
     font-size: smaller;

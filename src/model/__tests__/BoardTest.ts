@@ -1,8 +1,4 @@
-import "mocha";
-
-import { expect } from "chai";
-
-import { Board, genBoard } from "../src/model/Board";
+import { Board, genBoard } from "../Board";
 
 function setupBoard(
   rows: number,
@@ -12,11 +8,11 @@ function setupBoard(
 ): Board {
   let board = genBoard(rows, cols, mines, maxMines);
 
-  expect(board.rows).to.equal(rows);
-  expect(board.cols).to.equal(cols);
+  expect(board.rows).toEqual(rows);
+  expect(board.cols).toEqual(cols);
 
   if (maxMines === undefined) {
-    expect(board.numMines).to.equal(mines);
+    expect(board.numMines).toEqual(mines);
   }
 
   return board;
@@ -26,11 +22,11 @@ function expectCleanCells(board: Board): void {
   for (let r = 0; r < board.rows; r++) {
     for (let c = 0; c < board.cols; c++) {
       const cell = board.cells[r][c];
-      expect(cell.row).to.equal(r);
-      expect(cell.col).to.equal(c);
-      expect(cell.neighborContents.mine).to.equal(0);
-      expect(cell.contents).to.equal("clear");
-      expect(cell.state).to.equal("hidden");
+      expect(cell.row).toEqual(r);
+      expect(cell.col).toEqual(c);
+      expect(cell.neighborContents.mine).toEqual(0);
+      expect(cell.contents).toEqual("clear");
+      expect(cell.state).toEqual("hidden");
     }
   }
 }
@@ -61,8 +57,8 @@ function expectCorrectMineCounts(board: Board): void {
     }
   }
 
-  expect(countedMines).to.equal(board.numMines);
-  expect(countedClear).to.equal(board.rows * board.cols - board.numMines);
+  expect(countedMines).toEqual(board.numMines);
+  expect(countedClear).toEqual(board.rows * board.cols - board.numMines);
 }
 
 describe("Mine placements", () => {
@@ -78,7 +74,7 @@ describe("Mine placements", () => {
 
   it("There aren't too many mines on board", () => {
     const board = setupBoard(3, 3, 10, 20);
-    expect(board.numMines).to.equal(3 * 3 - 1);
+    expect(board.numMines).toEqual(3 * 3 - 1);
     expectCorrectMineCounts(board);
   });
 });
@@ -104,7 +100,7 @@ function expectCorrectNeighboringMineCounts(board: Board): void {
         )
         .filter(([r2, c2]) => board.cells[r2][c2].contents === "mine").length;
 
-      expect(mines).to.equal(cell.neighborContents.mine);
+      expect(mines).toEqual(cell.neighborContents.mine);
     }
   }
 }

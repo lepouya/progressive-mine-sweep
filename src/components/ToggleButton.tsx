@@ -1,4 +1,4 @@
-import { MouseEvent, PropsWithChildren, useEffect, useState } from "react";
+import { JSX, MouseEvent, PropsWithChildren, useEffect, useState } from "react";
 
 export type ToggleButtonProps = {
   enabled?: boolean;

@@ -34,15 +34,15 @@
     font-weight: var(--font-weight);
     font-size: smaller;
 
-    color: Theme.color(primary);
-    @include Theme.background($primary: 15%, $secondary: 100%);
-
     border: 1px solid Theme.color(primary);
     border-radius: 0.5em;
 
     cursor: pointer;
     user-select: none;
     touch-action: pan-x;
+
+    color: Theme.color(primary);
+    @include Theme.background($primary: 15%, $secondary: 100%);
 
     > * {
       pointer-events: none;
@@ -57,12 +57,12 @@
     }
 
     &:disabled {
-      color: Theme.color(primary, 66%);
-      @include Theme.background($primary: 5%, $secondary: 50%);
-
       border: 1px solid Theme.color(primary, 50%);
 
       cursor: initial;
+
+      color: Theme.color(primary, 66%);
+      @include Theme.background($primary: 5%, $secondary: 50%);
     }
   }
 

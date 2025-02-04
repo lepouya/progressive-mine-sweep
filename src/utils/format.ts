@@ -66,7 +66,7 @@ export function formatTime(
     return now;
   }
 
-  let words = [];
+  let words: string[] = [];
   if (len !== "expanded") {
     words = [
       years > 0 ? years.toFixed(0) : "",
@@ -82,13 +82,15 @@ export function formatTime(
         : num,
     );
   } else {
-    words = [
-      [years, "year"],
-      [days, "day"],
-      [hours, "hour"],
-      [mins, "minute"],
-      [secs, "second", years + days + hours + mins === 0, msec],
-    ].map(([num, word, allowZeros = false, fraction = 0]) =>
+    words = (
+      [
+        [years, "year"],
+        [days, "day"],
+        [hours, "hour"],
+        [mins, "minute"],
+        [secs, "second", years + days + hours + mins === 0, msec],
+      ] as const
+    ).map(([num, word, allowZeros = false, fraction = 0]) =>
       num > 0 || fraction > 0 || (allowZeros && num === 0)
         ? num.toString() +
           (fraction > 0 ? "." + fraction.toString() : "") +

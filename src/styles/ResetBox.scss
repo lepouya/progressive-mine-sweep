@@ -47,13 +47,13 @@
 
   .board-state {
     &-won {
-      @include Theme.background($positive: 15%, $secondary: 85%);
       text-shadow: Theme.color(positive) 0 0 1em;
+      @include Theme.background($positive: 15%, $secondary: 85%);
     }
 
     &-lost {
-      @include Theme.background($negative: 15%, $secondary: 85%);
       text-shadow: Theme.color(negative) 0 0 1em;
+      @include Theme.background($negative: 15%, $secondary: 85%);
     }
   }
 }

@@ -1,3 +1,5 @@
+import { JSX } from "react";
+
 import { Resource } from "../model/Resource";
 import { formatNumber, formatTime, formatWord } from "../utils/format";
 import round, { roundMethods } from "../utils/round";

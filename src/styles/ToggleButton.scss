@@ -9,15 +9,15 @@
   padding: 0;
   margin: 0 0.5em;
 
-  color: Theme.color(primary);
-  @include Theme.background($primary: 15%, $secondary: 100%);
-
   border: 1px solid Theme.color(primary);
   border-radius: 1em;
 
   cursor: pointer;
   user-select: none;
   touch-action: pan-x;
+
+  color: Theme.color(primary);
+  @include Theme.background($primary: 15%, $secondary: 100%);
 
   .contents {
     position: relative;

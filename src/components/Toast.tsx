@@ -1,6 +1,6 @@
 // Inspired by github:Cogoport/cogo-toast
 
-import { MouseEventHandler, useEffect, useState } from "react";
+import { JSX, MouseEventHandler, useEffect, useState } from "react";
 import { createRoot, Root } from "react-dom/client";
 
 import { getHTMLElement } from "../utils/document";

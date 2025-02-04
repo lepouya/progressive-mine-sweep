@@ -1,3 +1,5 @@
+import { JSX } from "react";
+
 import generate, { Generative } from "../utils/generate";
 import round from "../utils/round";
 import { Context } from "./Context";

@@ -24,7 +24,7 @@ export default function Game() {
     save,
     resources: { automation, resets },
   } = useGameContext();
-  const [timerId, setTimerId] = useState<NodeJS.Timer | undefined>();
+  const [timerId, setTimerId] = useState<NodeJS.Timeout | undefined>();
   const [_, setLastRendered] = useState(0);
 
   useEffect(
